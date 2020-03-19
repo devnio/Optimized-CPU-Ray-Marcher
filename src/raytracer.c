@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "lodepng.h"
+
 // MACROS
 #define MAX_RAY_DEPTH 4
 #define OBJS_IN_SCENE 5
@@ -79,7 +81,6 @@ typedef struct
     Vector3 c;
     Vector3 emissionColor;
 } PointLight;
-
 
 /* ===============
  * Sphere - START
@@ -189,7 +190,8 @@ Vector3 trace(Vector3 o, Vector3 dir, Sphere sps[], PointLight pLight, int depth
     }
 
     // No intersection case (return black)
-    if (!nearestSp) return new_vector(0, 0, 0);
+    if (!nearestSp)
+        return new_vector(0, 0, 0);
     float bias = 1e-4;
     Vector3 surfaceColor = nearestSp->surfCol;
 
@@ -206,7 +208,7 @@ Vector3 trace(Vector3 o, Vector3 dir, Sphere sps[], PointLight pLight, int depth
     }
 
     // Light dir
-    Vector3 L = vec_sub(pLight.c, phit); 
+    Vector3 L = vec_sub(pLight.c, phit);
     L = vec_normalized(L);
 
     if ((depth < MAX_RAY_DEPTH) && (nearestSp->refl > 0))
@@ -251,21 +253,29 @@ Vector3 trace(Vector3 o, Vector3 dir, Sphere sps[], PointLight pLight, int depth
     return finalColor;
 }
 
+void encodeOneStep(const char *filename, const unsigned char *image, unsigned width, unsigned height)
+{
+    /*Encode the image*/
+    unsigned error = lodepng_encode32_file(filename, image, width, height);
+
+    /*if there's an error, display it*/
+    if (error)
+        printf("error %u: %s\n", error, lodepng_error_text(error));
+}
+
 void render(Sphere sps[], PointLight pLight)
 {
-    float multiplier = 1.0;
-
-    unsigned width = 1280, height = 720;
+    unsigned int width = 1280;
+    unsigned int height = 720;
     float invWidth = 1 / (float)width;
     float invHeight = 1 / (float)height;
     float fov = 30;
     float aspectratio = width / (float)height;
     float angle = tan(M_PI * 0.5 * fov / 180.);
 
-    FILE *f = fopen("render_c.ppm", "w");
-    fprintf(f, "P3 \n%d %d 255\n", width, height);
-
     // TRACE
+    size_t png_img_size = width * height * 4 * sizeof(unsigned char);
+    unsigned char *img = (unsigned char *)malloc(png_img_size);
     for (unsigned y = 0; y < height; ++y)
     {
         for (unsigned x = 0; x < width; ++x)
@@ -276,15 +286,18 @@ void render(Sphere sps[], PointLight pLight)
             dir = vec_normalized(dir);
 
             Vector3 px_col = trace(new_vector(0, 0, 0), dir, sps, pLight, 0);
-            px_col = vec_mult1(px_col, multiplier); 
+            px_col = px_col;
 
-            fprintf(f, "%d", (int)(min(1, px_col.x) * 255));
-            fprintf(f, " %d", (int)(min(1, px_col.y) * 255));
-            fprintf(f, " %d \n", (int)(min(1, px_col.z) * 255));
+
+            img[y*width*4 + x*4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
+            img[y*width*4 + x*4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
+            img[y*width*4 + x*4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
+            img[y*width*4 + x*4 + 3] = 255;
         }
     }
 
-    fclose(f);
+    encodeOneStep("../output/output_img.png", img, width, height);
+    free(img);
 }
 
 int main()
