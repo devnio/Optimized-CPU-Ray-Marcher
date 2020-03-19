@@ -10,13 +10,13 @@ LIBS=-lm
 _DEPS = lodepng.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = raytracer.o lodepng.o
+_OBJ = raymarcher.o lodepng.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-raytracer: $(OBJ)
+raymarcher: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
