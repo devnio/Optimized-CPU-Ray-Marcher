@@ -1,3 +1,14 @@
+/*
+ * RAYMARHCER Base Class
+ * ----------------------------
+ *   Authors:
+ *    Nihat Isik
+ *    Qais EL Okaili
+ *    Alexandre Cavaleri
+ *    David Graf
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -5,110 +16,30 @@
 
 #include "lodepng.h"
 #include "camera.h"
+#include "utility.h"
+#include "sphere.h"
+#include "light.h"
 
 // MACROS
 #define MAX_RAY_DEPTH 4
 #define OBJS_IN_SCENE 5
 #define SPECULAR_COEFF 0.2
 
-/* ===============
- * Vector 3 - END
- * =============== */
-typedef struct
-{
-    Vec3 c;
-    Vec3 emissionColor;
-} PointLight;
+// Screen width and height
+#define WIDTH 1280
+#define HEIGHT 720
 
-/* ===============
- * Sphere - START
- * =============== */
-typedef struct
-{
-    Vec3 c;
-    double r;
-    double r2;
-    Vec3 surfCol;
-    double refl;
-    float shininess;
-    Vec3 emissionColor;
-} Sphere;
 
-double sphere_ray_intersection(Vec3 o, Vec3 dir, Sphere s)
-{
-    Vec3 l = vec_sub(s.c, o);
-    float tca = vec_dot(l, dir);
-    if (tca < 0)
-        return -1;
 
-    float d2 = vec_dot(l, l) - tca * tca;
-    if (d2 > s.r2)
-        return -1;
-
-    float thc = sqrt(s.r2 - d2);
-    float t0 = tca - thc;
-    float t1 = tca + thc;
-
-    if (t0 < 0)
-        return t1;
-    else
-        return t0;
-}
-
-double sdf(Vec3 p, Sphere s)
-{
-    return vec_norm(vec_sub(s.c, p)) - s.r;
-}
-
-/* ===============
- * Sphere - END
- * =============== */
-
-/* ===============
- * HELPER - START
- * =============== */
-double mix(double a, double b, double mix)
-{
-    return b * mix + a * (1 - mix);
-}
-
-double min(double a, double b)
-{
-    if (a < b)
-        return a;
-    else
-        return b;
-}
-
-double max(double a, double b)
-{
-    if (a < b)
-        return b;
-    else
-        return a;
-}
-
-Vec3 color_addWeighted(Vec3 colA, Vec3 colB, double weightA, double weightB)
-{
-    double sum = weightA + weightB;
-    Vec3 c;
-    c.x = ((colA.x * weightA) + (colB.x * weightB)) / sum;
-    c.y = ((colA.y * weightA) + (colB.y * weightB)) / sum;
-    c.z = ((colA.z * weightA) + (colB.z * weightB)) / sum;
-    return c;
-}
-
-Vec3 color_blend(Vec3 colA, Vec3 colB, double weightA)
-{
-    double wA = weightA > 1 ? 1 : weightA;
-    double weightB = 1 - wA;
-    Vec3 c;
-    return color_addWeighted(colA, colB, wA, weightB);
-}
-
-/* ===============
- * HELPER - END
- * =============== */
+/*
+ * Function: trace
+ * ----------------------------
+ *   TODO: function describtion 
+ *
+ *   TODO
+ *
+ *   returns: TODO
+ */
 Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], PointLight pLight, int depth, int excludeSp)
 {
     // SOME GLOBAL VARIABLES
@@ -135,7 +66,7 @@ Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], PointLight pLight, int depth, int exc
                 currIdx = k;
             }
         }
-        phit = vec_add(phit, vec_mult1(dir, minDist));
+        phit = vec_add(phit, vec_mult_scalar(dir, minDist));
         // TOL
         if (minDist < 0.0001)
         {
@@ -159,7 +90,7 @@ Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], PointLight pLight, int depth, int exc
     // In theory not necessary if normals are computed outwards
     if (vec_dot(dir, N) > 0)
     {
-        N = vec_mult1(N, -1);
+        N = vec_mult_scalar(N, -1);
     }
 
     // Light dir
@@ -169,18 +100,18 @@ Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], PointLight pLight, int depth, int exc
     if ((depth < MAX_RAY_DEPTH) && (nearestSp->refl > 0))
     {
         // Compute reflected dir
-        Vec3 reflDir = vec_sub(dir, vec_mult1(vec_mult1(N, vec_dot(dir, N)), 2));
+        Vec3 reflDir = vec_sub(dir, vec_mult_scalar(vec_mult_scalar(N, vec_dot(dir, N)), 2));
         reflDir = vec_normalized(reflDir);
 
         // Compute reflected color
-        Vec3 reflectedCol = trace(vec_add(phit, vec_mult1(N, bias)), reflDir, sps, pLight, depth + 1, currIdx);
-        finalColor = vec_mult1(reflectedCol, nearestSp->refl);
+        Vec3 reflectedCol = trace(vec_add(phit, vec_mult_scalar(N, bias)), reflDir, sps, pLight, depth + 1, currIdx);
+        finalColor = vec_mult_scalar(reflectedCol, nearestSp->refl);
     }
 
     // Before doing anything else check if shadow ray
     for (int j = 0; j < OBJS_IN_SCENE; j++)
     {
-        float t_shadow = sphere_ray_intersection(vec_add(phit, vec_mult1(N, bias)), L, sps[j]);
+        float t_shadow = sphere_ray_intersection(vec_add(phit, vec_mult_scalar(N, bias)), L, sps[j]);
         if (t_shadow > 0)
         {
             return ambientColor; // return vec_add(finalColor, ambientColor);
@@ -192,17 +123,17 @@ Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], PointLight pLight, int depth, int exc
     if (lambertian > 0.0)
     {
         // Light reflected on normal
-        Vec3 R = vec_reflect(vec_mult1(L, -1), N);
-        Vec3 V = vec_normalized(vec_mult1(dir, -1));
+        Vec3 R = vec_reflect(vec_mult_scalar(L, -1), N);
+        Vec3 V = vec_normalized(vec_mult_scalar(dir, -1));
 
         // Specular term
         float specAngle = max(vec_dot(R, V), 0.0);
         specular = pow(specAngle, nearestSp->shininess);
     }
 
-    Vec3 diffuseColor = vec_mult1(surfaceColor, lambertian);
+    Vec3 diffuseColor = vec_mult_scalar(surfaceColor, lambertian);
     Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
-    specularColor = vec_mult(pLight.emissionColor, vec_mult1(specularColor, specular));
+    specularColor = vec_mult(pLight.emissionColor, vec_mult_scalar(specularColor, specular));
     finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
 
     return finalColor;
@@ -218,10 +149,19 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
         printf("error %u: %s\n", error, lodepng_error_text(error));
 }
 
+/*
+ * Function: render
+ * ----------------------------
+ *   TODO: function describtion 
+ *
+ *   TODO
+ *
+ *   returns: void
+ */
 void render(Sphere sps[], PointLight pLight)
 {
-    unsigned int width = 1280;
-    unsigned int height = 720;
+    unsigned int width = WIDTH;
+    unsigned int height = HEIGHT;
     float invWidth = 1 / (float)width;
     float invHeight = 1 / (float)height;
     float fov = 30;

@@ -1,6 +1,7 @@
 #include<stdlib.h>
-#define _USE_MATH_DEFINES
 #include "camera.h"
+
+#define _USE_MATH_DEFINES
 
 
 Vec3 up = {0.,1.,0.};

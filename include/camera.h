@@ -1,3 +1,6 @@
+#ifndef CAMERA
+#define CAMERA
+
 #include "mat4.h"
 
 
@@ -26,3 +29,5 @@ Vec3 shoot_ray(Camera *camera, int coordX, int coordY);
 void free_camera(Camera *camera);
 
 float degrees_to_rad(float x);
+
+#endif

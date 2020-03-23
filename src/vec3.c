@@ -1,5 +1,17 @@
 #include "vec3.h"
 
+
+/*
+ * Function: new_vector
+ * ----------------------------
+ *   Returns a new vector
+ *
+ *   x: double value 
+ *   y: double value
+ *   z: double value
+ *
+ *   returns: a new vector with the specified values
+ */
 Vec3 new_vector(double x, double y, double z)
 {
     Vec3 v;
@@ -7,47 +19,141 @@ Vec3 new_vector(double x, double y, double z)
     return v;
 }
 
+
+/*
+ * Function: vec_mult
+ * ----------------------------
+ *   Returns a new vector
+ *
+ *   v1: of type Vec3 
+ *   v2: of type Vec3
+ *
+ *   returns: returns a new vector that is the vector product between v1 and v2
+ */
 Vec3 vec_mult(Vec3 v1, Vec3 v2)
 {
     return new_vector(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
 }
 
-Vec3 vec_mult1(Vec3 v, double m)
+
+/*
+ * Function: vec_mult_scalar
+ * ----------------------------
+ *   Returns a new vector
+ *
+ *   v: of type Vec3 
+ *   m: of type double
+ *
+ *   returns: a new vector that is the result of vector v multiplied by scalar m
+ */
+Vec3 vec_mult_scalar(Vec3 v, double m)
 {
     return new_vector(v.x * m, v.y * m, v.z * m);
 }
 
+/*
+ * Function: vec_add
+ * ----------------------------
+ *   Performs vector addition between two vectors
+ *
+ *   v1: of type Vec3 
+ *   v2: of type Vec3
+ *
+ *   returns: returns a new vector including the addition of v1 and v2
+ */
 Vec3 vec_add(Vec3 v1, Vec3 v2)
 {
     return new_vector(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
 
-Vec3 vec_add1(Vec3 v, double m)
+/*
+ * Function: vec_add_scalar
+ * ----------------------------
+ *   Adds a scalar value to each element of the vector
+ *
+ *   v: of type Vec3 
+ *   m: of type double
+ *
+ *   returns: a new vector with the specified values
+ */
+Vec3 vec_add_scalar(Vec3 v, double m)
 {
     return new_vector(v.x + m, v.y + m, v.z + m);
 }
 
+/*
+ * Function: vec_sub
+ * ----------------------------
+ *   Computes vector subtraction
+ *
+ *   v1: of type Vec3 
+ *   v2: of type Vec3
+ *
+ *   returns: new vector with subtraction between v1 and v2 
+ */
 Vec3 vec_sub(Vec3 v1, Vec3 v2)
 {
     return new_vector(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
 }
 
+
+/*
+ * Function: vec_norm
+ * ----------------------------
+ *   Computes the norm of the vector 
+ *
+ *   v1: of type Vec3 
+ *
+ *   returns: norm of the given vector
+ */
 double vec_norm(Vec3 v)
 {
     return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
+
+/*
+ * Function: vec_norm
+ * ----------------------------
+ *   Normalizes the given vector
+ *
+ *   v1: of type Vec3 
+ *
+ *   returns: normalized vector
+ */
 Vec3 vec_normalized(Vec3 v)
 {
     double norm = vec_norm(v);
-    return vec_mult1(v, 1/norm);
+    return vec_mult_scalar(v, 1/norm);
 }
 
+
+/*
+ * Function: vec_dot
+ * ----------------------------
+ *   Computes the dot product between the two vectors
+ *
+ *   v1: of type Vec3 
+ *   v2: of type Vec3 
+ *
+ *   returns: a new vector that is the dot product between v1 and v2
+ */
 double vec_dot(Vec3 v1, Vec3 v2)
 {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
+
+/*
+ * Function: vec_cross
+ * ----------------------------
+ *   Computes the cross product between v1 and v2
+ *
+ *   u: of type Vec3 
+ *   v: of type Vec3 
+ *
+ *   returns: new vector that is the cross product between u and v
+ */
 Vec3 vec_cross(Vec3 u, Vec3 v){
     Vec3 result = {0,0,0};
     result.x = u.y*v.z-v.y*u.z;
@@ -56,7 +162,18 @@ Vec3 vec_cross(Vec3 u, Vec3 v){
     return result;
 }
 
+
+/*
+ * Function: new_vector
+ * ----------------------------
+ *   Computes the reflection of the vector around a normal
+ * 
+ *   u: of type Vec3 
+ *   normal: of type Vec3 
+ *
+ *   returns: a new vector that is the reflection of v around the normal
+ */
 Vec3 vec_reflect(Vec3 v, Vec3 normal)
 {
-    return vec_sub(v, vec_mult1(vec_mult1(normal, vec_dot(v, normal)), 2));
+    return vec_sub(v, vec_mult_scalar(vec_mult_scalar(normal, vec_dot(v, normal)), 2));
 }

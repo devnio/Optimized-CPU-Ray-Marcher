@@ -7,10 +7,10 @@ LDIR =../lib
 
 LIBS=-lm
 
-_DEPS = lodepng.h vec3.h mat4.h camera.h
+_DEPS = lodepng.h vec3.h mat4.h camera.h utility.h sphere.h light.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = raymarcher.o lodepng.o vec3.o mat4.o camera.o
+_OBJ = raymarcher.o lodepng.o vec3.o mat4.o camera.o utility.o sphere.o light.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.c $(DEPS)

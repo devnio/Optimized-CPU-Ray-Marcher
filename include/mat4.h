@@ -1,3 +1,6 @@
+#ifndef MAT_4
+#define MAT_4
+
 #include "vec3.h"
 
 typedef struct{
@@ -19,3 +22,5 @@ Mat4 mult_mat(Mat4* m1, Mat4* m2);
 Vec3 mult_vec_matrix(Mat4* m, Vec3 v);
 
 Mat4 look_at(Vec3 pos, Vec3 dir, Vec3 up);
+
+#endif

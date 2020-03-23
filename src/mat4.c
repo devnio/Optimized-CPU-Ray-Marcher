@@ -2,7 +2,13 @@
 
 
 
-//Creates identity matrix
+/*
+ * Function: create_mat4_id
+ * ----------------------------
+ *   Creates 4x4 identity matrix
+ *
+ *   returns: new 4x4 identity matrix
+ */
 Mat4 create_mat4_id(){
 
     Mat4 mat;
@@ -22,6 +28,17 @@ Mat4 create_mat4_id(){
 }
 
 
+/*
+ * Function: create_mat4
+ * ----------------------------
+ *   Creates a matrix with the specified doubles values in row-major
+ *
+ *   m00: double value 
+ *   ...
+ *   m33: double value
+ *
+ *   returns: a new matrix initialized with the given values
+ */
 Mat4 create_mat4(double m00, double m01, double m02, double m03,
                 double m10, double m11, double m12, double m13, 
                 double m20, double m21, double m22, double m23, 
@@ -36,6 +53,16 @@ Mat4 create_mat4(double m00, double m01, double m02, double m03,
     return mat;
 }
 
+
+/*
+ * Function: transpose
+ * ----------------------------
+ *   Creates the transpose of the given matrix
+ *
+ *   mat: of type Mat4
+ *
+ *   returns: creates a new matrix that is the transpose of mat
+ */
 Mat4 transpose(Mat4* mat){
     return create_mat4(mat->m[0][0], mat->m[1][0], mat->m[2][0], mat->m[3][0],
                         mat->m[0][1], mat->m[1][1], mat->m[2][1], mat->m[3][1],
@@ -43,6 +70,16 @@ Mat4 transpose(Mat4* mat){
                         mat->m[0][3], mat->m[1][3], mat->m[2][3], mat->m[3][3]);
 }
 
+/*
+ * Function: mult_mat
+ * ----------------------------
+ *   Computes the matrix multiplication between m1 and m2
+ *
+ *   mat1: of type Mat4
+ *   mat2: of type Mat4
+ *
+ *   returns: creates a new matrix with the multiplication result of m1 and m2
+ */
 Mat4 mult_mat(Mat4* m1, Mat4* m2){
     Mat4 mat;
     for (int i = 0; i < 4; i++)
@@ -54,7 +91,13 @@ Mat4 mult_mat(Mat4* m1, Mat4* m2){
     return mat;
 }
 
-
+/*
+ * Function: mult_vec_matrix
+ * ----------------------------
+ *   TODO
+ *
+ *   returns: TODO
+ */
 Vec3 mult_vec_matrix(Mat4* m, Vec3 v){
 
     Vec3 res;
@@ -67,13 +110,22 @@ Vec3 mult_vec_matrix(Mat4* m, Vec3 v){
     w = v.x * m->m[3][0] + v.y * m->m[3][1] + v.z * m->m[3][2] + m->m[3][3];
 
     //From homogenenous coordinates back to normal coords
-    res.x = x / w;
-    res.y = y / w;
-    res.z = z / w;
+    double inv = 1/w;
+    res.x = x * inv;
+    res.y = y * inv;
+    res.z = z * inv;
 
     return res;
 }
 
+
+/*
+ * Function: look_at
+ * ----------------------------
+ *   TODO
+ *
+ *   returns: TODO
+ */
 Mat4 look_at(Vec3 pos, Vec3 dir, Vec3 up){
 
     Mat4 viewMatrix;
