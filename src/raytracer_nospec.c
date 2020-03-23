@@ -3,87 +3,29 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "camera.h"
+
 // MACROS
 #define MAX_RAY_DEPTH 4
 #define OBJS_IN_SCENE 4
-
-/* ===============
- * Vector 3 - START
- * =============== */
-
-typedef struct {
-    double x, y, z;
-} Vector3;
-
-Vector3 new_vector(double x, double y, double z)
-{
-    Vector3 v;
-    v.x = x; v.y = y; v.z = z;
-    return v;
-}
-
-Vector3 vec_mult(Vector3 v1, Vector3 v2)
-{
-    return new_vector(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
-}
-
-Vector3 vec_mult1(Vector3 v, double m)
-{
-    return new_vector(v.x * m, v.y * m, v.z * m);
-}
-
-Vector3 vec_add(Vector3 v1, Vector3 v2)
-{
-    return new_vector(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
-}
-
-Vector3 vec_add1(Vector3 v, double m)
-{
-    return new_vector(v.x + m, v.y + m, v.z + m);
-}
-
-Vector3 vec_sub(Vector3 v1, Vector3 v2)
-{
-    return new_vector(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
-}
-
-double vec_norm(Vector3 v)
-{
-    return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-}
-
-Vector3 vec_normalized(Vector3 v)
-{
-    double norm = vec_norm(v);
-    return vec_mult1(v, 1/norm);
-}
-
-double vec_dot(Vector3 v1, Vector3 v2)
-{
-    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-}
-
-/* ===============
- * Vector 3 - END
- * =============== */
 
 /* ===============
  * Sphere - START
  * =============== */
 typedef struct 
 {
-    Vector3 c;
+    Vec3 c;
     double r;
     double r2;
-    Vector3 surfCol;
+    Vec3 surfCol;
     double refl;
-    Vector3 emissionColor;
+    Vec3 emissionColor;
     // for now leave out emission, transparency, reflectance
 } Sphere;
 
-double sphere_ray_intersection(Vector3 o, Vector3 dir, Sphere s)
+double sphere_ray_intersection(Vec3 o, Vec3 dir, Sphere s)
 {
-    Vector3 l = vec_sub(s.c, o);
+    Vec3 l = vec_sub(s.c, o);
     float tca = vec_dot(l, dir);
     if (tca < 0) return -1;
 
@@ -123,20 +65,20 @@ double max(double a, double b)
     else return a;
 }
 
-Vector3 color_addWeighted(Vector3 colA, Vector3 colB, double weightA, double weightB) {
+Vec3 color_addWeighted(Vec3 colA, Vec3 colB, double weightA, double weightB) {
     double sum = weightA + weightB;
-    Vector3 c;
+    Vec3 c;
     c.x = ((colA.x * weightA) + (colB.x * weightB)) / sum;
     c.y = ((colA.y * weightA) + (colB.y * weightB)) / sum;
     c.z = ((colA.z * weightA) + (colB.z * weightB)) / sum;
     return c;
 }
 
-Vector3 color_blend(Vector3 colA, Vector3 colB, double weightA)
+Vec3 color_blend(Vec3 colA, Vec3 colB, double weightA)
 {
     double wA = weightA > 1 ? 1 : weightA;
     double weightB = 1 - wA;
-    Vector3 c;
+    Vec3 c;
     return color_addWeighted(colA, colB, wA, weightB);
 }
 /* ===============
@@ -144,7 +86,7 @@ Vector3 color_blend(Vector3 colA, Vector3 colB, double weightA)
  * =============== */
 
 
-Vector3 trace(Vector3 o, Vector3 dir, Sphere sps[], int depth)
+Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], int depth)
 {
     // CHECK INTERSECTION WITH SCENE
     float tnear = INFINITY;
@@ -165,9 +107,9 @@ Vector3 trace(Vector3 o, Vector3 dir, Sphere sps[], int depth)
     // No intersection case (return black)
     if (!nearestSp) return new_vector(0, 0, 0);
     
-    Vector3 surfaceColor = nearestSp->surfCol;
-    Vector3 phit = vec_add(o, vec_mult1(dir, tnear));
-    Vector3 nhit = vec_sub(phit, nearestSp->c);
+    Vec3 surfaceColor = nearestSp->surfCol;
+    Vec3 phit = vec_add(o, vec_mult1(dir, tnear));
+    Vec3 nhit = vec_sub(phit, nearestSp->c);
     nhit = vec_normalized(nhit);
 
     float bias = 1e-4; // add some bias to the point from which we will be tracing
@@ -181,16 +123,16 @@ Vector3 trace(Vector3 o, Vector3 dir, Sphere sps[], int depth)
     if ((depth < MAX_RAY_DEPTH) && (nearestSp->refl > 0)) 
     {
         // COMPUTE reflection value
-        Vector3 reflDir = vec_sub(dir, vec_mult1(vec_mult1(nhit, vec_dot(dir, nhit)), 2));
+        Vec3 reflDir = vec_sub(dir, vec_mult1(vec_mult1(nhit, vec_dot(dir, nhit)), 2));
         reflDir = vec_normalized(reflDir);
 
-        Vector3 reflection = trace(vec_add(phit, vec_mult1(nhit, bias)), reflDir, sps, depth + 1);
+        Vec3 reflection = trace(vec_add(phit, vec_mult1(nhit, bias)), reflDir, sps, depth + 1);
         surfaceColor = color_blend(reflection, surfaceColor, nearestSp->refl);
     }
 
     // TODO: is this right? compute light contribution everytime? (should make sense)
     float transmission = 1;
-    Vector3 lightDir = vec_sub(sps[OBJS_IN_SCENE].c, phit); // last element
+    Vec3 lightDir = vec_sub(sps[OBJS_IN_SCENE].c, phit); // last element
     lightDir = vec_normalized(lightDir);
     
     // CHECK FOR SHADOW RAY
@@ -207,7 +149,7 @@ Vector3 trace(Vector3 o, Vector3 dir, Sphere sps[], int depth)
     // IF NO SHADOW RAY - COMPUTE LIGHT CONTRIBUTION
     if (transmission != 0)
     {
-        Vector3 lightColRatio = vec_mult1(nearestSp->surfCol, transmission);
+        Vec3 lightColRatio = vec_mult1(nearestSp->surfCol, transmission);
         lightColRatio = vec_mult1(lightColRatio, max(0, vec_dot(nhit, lightDir)));
         surfaceColor = vec_add(surfaceColor, vec_mult(lightColRatio, sps[OBJS_IN_SCENE].emissionColor)); 
     }
@@ -225,6 +167,12 @@ void render(Sphere sps[])
     float aspectratio = width / (float)height;
     float angle = tan(M_PI * 0.5 * fov / 180.);
 
+    Camera* camera = create_camera(fov, width, height, 0, 1000);
+
+    //translation example
+    Vec3 t = {0.0,0.0,0.0};
+    move_camera(camera, t);
+
     FILE *f = fopen("render_c.ppm", "w");
     fprintf(f, "P3 \n%d %d 255\n", width, height);
 
@@ -233,12 +181,9 @@ void render(Sphere sps[])
     {
         for (unsigned x = 0; x < width; ++x)
         {
-            float xx = (2 * ((x + 0.5) * invWidth) - 1) * angle * aspectratio;
-            float yy = (1 - 2 * ((y + 0.5) * invHeight)) * angle;
-            Vector3 dir = new_vector(xx, yy, -1);
-            dir = vec_normalized(dir);
+            Vec3 dir = shoot_ray(camera, x, y);
 
-            Vector3 px_col = trace(new_vector(0, 0, 0), dir, sps, 0);
+            Vec3 px_col = trace(new_vector(0, 0, 0), dir, sps, 0);
             px_col = vec_mult1(px_col, 1./4);  // TODO: should divide by a counter of successful bounces instead
 
             fprintf(f, "%d",     (int)(min(1, px_col.x) * 255));

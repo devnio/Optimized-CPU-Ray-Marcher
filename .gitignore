@@ -1,2 +1,5 @@
+*.o
+*.png
+*.exe
 .DS_Store
 .vscode/
