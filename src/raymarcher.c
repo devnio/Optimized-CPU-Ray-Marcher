@@ -20,27 +20,41 @@
 #include "sphere.h"
 #include "light.h"
 
-// MACROS
-#define MAX_RAY_DEPTH 4
+// ===== MACROS =====
+
+// RENDERING
+#define MAX_RAY_DEPTH 4    // max nr. bounces
+#define MARCH_COUNT 5000   // max marching steps
+#define BBOX_AXES 100     // bounding box size
+
 #define OBJS_IN_SCENE 5
 #define SPECULAR_COEFF 0.2
 
-// Screen width and height
+// SCREEN
 #define WIDTH 1280
 #define HEIGHT 720
 
-
+// DEBUG
+#define DEBUG_MODE 1
 
 /*
  * Function: trace
  * ----------------------------
- *   TODO: function describtion 
+ *   o: origin
+ *   dir: direction of ray
+ *   sps: scene, spheres
+ *   pLight: pointLight that lits the scene
+ *   depth: the maximum amount of bounces (for reflective surfaces)
+ *   exlcudeSp: the sphere we just bounced off (exclude it in the distance search)
  *
- *   TODO
- *
- *   returns: TODO
+ *   returns: the color of the pixel that generated the direction
  */
-Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], PointLight pLight, int depth, int excludeSp)
+Vec3 trace(Vec3 o, 
+           Vec3 dir, 
+           Sphere sps[], 
+           PointLight pLight, 
+           int depth, 
+           int excludeSp)
 {
     // SOME GLOBAL VARIABLES
     Vec3 ambientColor = new_vector(0, 0, 0);
@@ -52,7 +66,7 @@ Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], PointLight pLight, int depth, int exc
     Vec3 phit = o;
     Sphere *nearestSp = NULL;
     int currIdx;
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < MARCH_COUNT; i++)
     {
         for (int k = 0; k < OBJS_IN_SCENE; k++)
         {
@@ -73,6 +87,11 @@ Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], PointLight pLight, int depth, int exc
             nearestSp = &sps[currIdx];
             break;
         }
+        // BBOX CHECK
+        if (vec_norm(phit) > BBOX_AXES)
+        {
+            break;
+        }
     }
 
     // No intersection case (return black)
@@ -81,8 +100,6 @@ Vec3 trace(Vec3 o, Vec3 dir, Sphere sps[], PointLight pLight, int depth, int exc
     float bias = 1e-4;
     Vec3 surfaceColor = nearestSp->surfCol;
 
-    // Hit point
-    // Vec3 phit = vec_add(o, vec_mult1(dir, tnear));
     // Normal
     Vec3 N = vec_sub(phit, nearestSp->c);
     N = vec_normalized(N);
@@ -152,9 +169,10 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
 /*
  * Function: render
  * ----------------------------
- *   TODO: function describtion 
+ *   Render an image based on the defined scene and save it in ouput. 
  *
- *   TODO
+ *   sps: scene, spheres
+ *   pLight: point light 
  *
  *   returns: void
  */
@@ -162,20 +180,24 @@ void render(Sphere sps[], PointLight pLight)
 {
     unsigned int width = WIDTH;
     unsigned int height = HEIGHT;
-    float invWidth = 1 / (float)width;
-    float invHeight = 1 / (float)height;
+    float invWidth = 1. / (float)width;
+    float invHeight = 1. / (float)height;
     float fov = 30;
     float aspectratio = width / (float)height;
     float angle = tan(M_PI * 0.5 * fov / 180.);
 
-
     Camera* camera = create_camera(fov, width, height, 0, 1000);
 
-    //translation example
+    // translation example
     Vec3 t = {0.0,0.0,0.0};
     move_camera(camera, t);
 
-    // TRACE
+    // debug
+    printf("RENDERING... ");
+    float progress = 0.;
+    float progress_step = 1./(WIDTH*HEIGHT);
+
+    // render
     size_t png_img_size = width * height * 4 * sizeof(unsigned char);
     unsigned char *img = (unsigned char *)malloc(png_img_size);
     for (unsigned y = 0; y < height; ++y)
@@ -187,10 +209,19 @@ void render(Sphere sps[], PointLight pLight)
             Vec3 px_col = trace(new_vector(0, 0, 0), dir, sps, pLight, 0, -1);
             px_col = px_col;
 
+            // save colors computed by trace into current pixel
             img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
             img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
             img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
             img[y * width * 4 + x * 4 + 3] = 255;
+
+            if (DEBUG_MODE)
+            {
+                progress += progress_step;
+                fflush(stdout);
+                printf(" %.2f\b\b\b\b\b", progress);
+                fflush(stdout);
+            }
         }
     }
 
@@ -202,6 +233,7 @@ void render(Sphere sps[], PointLight pLight)
 
 int main()
 {
+    // scene definition
     Sphere sp0;
     sp0.c = new_vector(0, -10004, 20);
     sp0.r = 10000;
@@ -245,7 +277,7 @@ int main()
 
     // Lights (in future can be an array)
     PointLight pLight;
-    pLight.c = new_vector(0, 550, 15);
+    pLight.c = new_vector(0, 100, 0);
     double em = 2;
     pLight.emissionColor = new_vector(em, em, em);
 
