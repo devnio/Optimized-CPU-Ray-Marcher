@@ -18,7 +18,7 @@
 #include "lodepng.h"
 #include "camera.h"
 #include "utility.h"
-#include "sphere.h"
+#include "geometry/sphere.h"
 #include "light.h"
 
 // ===== MACROS =====
@@ -266,7 +266,7 @@ void render(Sphere sps[], PointLight pLight)
     }
 
     encodeOneStep("../output/output_img.png", img, width, height);
-    printf("Image rendered and saved in output folder");
+    printf("\nImage rendered and saved in output folder");
     free(img);
     free_camera(camera);
 }

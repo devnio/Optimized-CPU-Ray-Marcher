@@ -2,7 +2,7 @@
 <!-- MI test scene from Eric Veach's thesis - modeled
      after a file by Steve Marschner (CS667)
 -->
-
+ 
 <scene version="0.5.0">
 	<integrator type="direct"/>
 	<!-- <shape type="sphere">
