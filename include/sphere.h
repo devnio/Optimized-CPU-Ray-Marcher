@@ -17,6 +17,6 @@ typedef struct
 } Sphere;
 
 double sphere_ray_intersection(Vec3 o, Vec3 dir, Sphere s);
-double sdf(Vec3 p, Sphere s);
+double sdf_sphere(Vec3 p, Sphere s);
 
 #endif
