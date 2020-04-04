@@ -1,7 +1,8 @@
+#undef __STRICT_ANSI__ // on win: for M_PI, remove guards in math.h
+
 #include<stdlib.h>
 #include "camera.h"
-
-#define _USE_MATH_DEFINES
+#include <math.h>
 
 
 Vec3 up = {0.,1.,0.};

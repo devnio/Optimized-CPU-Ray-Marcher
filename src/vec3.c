@@ -19,6 +19,24 @@ Vec3 new_vector(double x, double y, double z)
     return v;
 }
 
+/*
+ * Function: new_vector
+ * ----------------------------
+ *   Returns a new vector
+ *
+ *   x: double value 
+ *   y: double value
+ *   z: double value
+ *
+ *   returns: a new vector with the specified values
+ */
+Vec3 new_vector_one(double xyz)
+{
+    Vec3 v;
+    v.x = xyz; v.y = xyz; v.z = xyz;
+    return v;
+}
+
 
 /*
  * Function: vec_mult

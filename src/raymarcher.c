@@ -8,6 +8,7 @@
  *    David Graf
  * 
  */
+#undef __STRICT_ANSI__ // on win: for M_PI, remove guards in math.h
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,12 +24,14 @@
 // ===== MACROS =====
 
 // RENDERING
-#define MAX_RAY_DEPTH 4    // max nr. bounces
+#define MAX_RAY_DEPTH 2    // max nr. bounces
 #define MARCH_COUNT 5000   // max marching steps
 #define BBOX_AXES 100     // bounding box size
 
 #define OBJS_IN_SCENE 5
 #define SPECULAR_COEFF 0.2
+
+#define EPSILON 0.0001
 
 // SCREEN
 #define WIDTH 1280
@@ -36,6 +39,53 @@
 
 // DEBUG
 #define DEBUG_MODE 1
+
+typedef struct  
+{
+    double min_dist;
+    int intersected_obj_idx;
+} SDF_Info;
+
+// TODO: make more general for whole scene and not only spheres
+// This is marching for the entire scene returning the sdf
+SDF_Info sdf(Vec3 p, Sphere sps[], int excludeSp)
+{
+    SDF_Info sdf_info;
+    double minDist = INFINITY;
+    int currIdx;
+    for (int k = 0; k < OBJS_IN_SCENE; k++)
+    {
+        if (k == excludeSp)
+            continue;
+
+        double dist = sdf_sphere(p, sps[k]);
+        if (dist < minDist)
+        {
+            minDist = dist;
+            currIdx = k;
+        }
+    }
+
+    sdf_info.min_dist = minDist;
+    sdf_info.intersected_obj_idx = currIdx;
+    return sdf_info;
+}
+
+Vec3 compute_normal(Vec3 p, Sphere sps[])
+{
+    Vec3 p0 = vec_add(p, new_vector(EPSILON, 0, 0));
+    Vec3 p1 = vec_add(p, new_vector(0, EPSILON, 0));
+    Vec3 p2 = vec_add(p, new_vector(0, 0, EPSILON));
+    
+    Vec3 c = new_vector_one(sdf(p, sps, -1).min_dist); 
+    Vec3 ch;
+    ch.x = sdf(p0, sps, -1).min_dist;
+    ch.y = sdf(p1, sps, -1).min_dist;
+    ch.z = sdf(p2, sps, -1).min_dist;
+    
+    Vec3 n = vec_sub(ch, c);
+    return vec_normalized(n);
+}
 
 /*
  * Function: trace
@@ -62,29 +112,18 @@ Vec3 trace(Vec3 o,
     float specular = 0;
 
     // CHECK INTERSECTION WITH SCENE
-    double minDist = INFINITY;
     Vec3 phit = o;
     Sphere *nearestSp = NULL;
-    int currIdx;
+    SDF_Info sdf_info;
+
     for (int i = 0; i < MARCH_COUNT; i++)
     {
-        for (int k = 0; k < OBJS_IN_SCENE; k++)
-        {
-            if (k == excludeSp)
-                continue;
-
-            double dist = sdf(phit, sps[k]);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                currIdx = k;
-            }
-        }
-        phit = vec_add(phit, vec_mult_scalar(dir, minDist));
+        sdf_info = sdf(phit, sps, excludeSp);
+        phit = vec_add(phit, vec_mult_scalar(dir, sdf_info.min_dist));
         // TOL
-        if (minDist < 0.0001)
+        if (sdf_info.min_dist < 0.0001)
         {
-            nearestSp = &sps[currIdx];
+            nearestSp = &sps[sdf_info.intersected_obj_idx];
             break;
         }
         // BBOX CHECK
@@ -101,8 +140,9 @@ Vec3 trace(Vec3 o,
     Vec3 surfaceColor = nearestSp->surfCol;
 
     // Normal
-    Vec3 N = vec_sub(phit, nearestSp->c);
-    N = vec_normalized(N);
+    // Vec3 N = vec_sub(phit, nearestSp->c);
+    // N = vec_normalized(N);
+    Vec3 N = compute_normal(phit, sps);
 
     // In theory not necessary if normals are computed outwards
     if (vec_dot(dir, N) > 0)
@@ -121,7 +161,7 @@ Vec3 trace(Vec3 o,
         reflDir = vec_normalized(reflDir);
 
         // Compute reflected color
-        Vec3 reflectedCol = trace(vec_add(phit, vec_mult_scalar(N, bias)), reflDir, sps, pLight, depth + 1, currIdx);
+        Vec3 reflectedCol = trace(vec_add(phit, vec_mult_scalar(N, bias)), reflDir, sps, pLight, depth + 1, sdf_info.intersected_obj_idx);
         finalColor = vec_mult_scalar(reflectedCol, nearestSp->refl);
     }
 
