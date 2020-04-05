@@ -4,16 +4,14 @@
 #ifndef VEC_3
  #include "vec3.h"
 #endif
+#include "material.h"
 
 typedef struct
 {
     Vec3 c;
     double r;
     double r2;
-    Vec3 surfCol;
-    double refl;
-    float shininess;
-    Vec3 emissionColor;
+    Material mat;
 } Sphere;
 
 double sphere_ray_intersection(Vec3 o, Vec3 dir, Sphere s);
