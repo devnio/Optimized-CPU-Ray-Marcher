@@ -1,5 +1,5 @@
 #include "utility.h"
-
+#include "math.h"
 
 /*
  * Function:  mix 
@@ -107,11 +107,59 @@ Vec3 color_blend(Vec3 colA, Vec3 colB, double weight)
  * 
  *  returns: the input value clamped between bounds
  */
-double clamp(double value, double min, double max){
-    double res = value;
-    if (value > max)
-        res = max;
-    if (value < min)
-        res = min;
-    return res;
+double clamp(double val, double min, double max)
+{
+    if (val < min) return min;
+    if (val > max) return max;
+    return val;
+}
+
+double sign(double val)
+{
+    return val/fabs(val);
+}
+
+Vec3 vec_max(Vec3 v1, Vec3 v2)
+{
+    Vec3 q;
+    q.x = max(v1.x, v2.x);
+    q.y = max(v1.y, v2.y);
+    q.z = max(v1.z, v2.z);
+    return q;
+}
+
+Vec3 rotate_point(Vec3 p, Vec3 angle)
+{
+    float a;
+    Vec3 q = p; 
+    if (angle.x > 0.1)
+    {
+        a = to_radians(angle.x);
+        double c = cos(a);
+        double s = sin(a);
+        q.y = c * p.y - s * p.z;
+        q.z = s * p.y + c * p.z;
+    }
+    else if (angle.y > 0.1)
+    {
+        a = to_radians(angle.y);
+        double c = cos(a);
+        double s = sin(a);
+        q.x = c * p.x - s * p.z;
+        q.z = s * p.x + c * p.z;
+    }
+    else if (angle.z > 0.1)
+    {
+        a = to_radians(angle.z);
+        double c = cos(a);
+        double s = sin(a);
+        q.x = c * p.x - s * p.y;
+        q.y = s * p.x + c * p.y;
+    }
+
+    return q;
+}
+
+double to_radians(double degrees) {
+    return degrees * (M_PI / 180.0);
 }

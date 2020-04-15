@@ -26,14 +26,14 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
     for (int k = 0; k < scene.nr_octahedrons; k++)
     {
         // check if has to skip (because it's bouncing off this object)
-        if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_OCTAHEDRON &&  prev_sdf_info->nearest_obj_idx == k)
+        if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_Octahedron &&  prev_sdf_info->nearest_obj_idx == k)
             continue;
 
         double dist = sdf_octahedron(p, scene.octahedrons[k]);
         if (dist < sdf_info.min_dist)
         {
             sdf_info.min_dist = dist;
-            sdf_info.nearest_obj_type = T_OCTAHEDRON;
+            sdf_info.nearest_obj_type = T_Octahedron;
             sdf_info.nearest_obj_idx = k;
         }
     }
@@ -54,6 +54,23 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
         }
     }
 
+    // Check boxes
+    for (int k = 0; k < scene.nr_boxes; k++)
+    {
+        // check if has to skip (because it's bouncing off this object)
+        if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_Box &&  prev_sdf_info->nearest_obj_idx == k)
+            continue;
+
+        double dist = sdf_box(p, scene.boxes[k]);
+        if (dist < sdf_info.min_dist)
+        {
+            sdf_info.min_dist = dist;
+            sdf_info.nearest_obj_type = T_Box;
+            sdf_info.nearest_obj_idx = k;
+        }
+    }
+
+   
    // check cones 
    for (int k = 0; k < scene.nr_cones; k++)
     {

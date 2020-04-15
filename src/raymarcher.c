@@ -24,13 +24,13 @@
 // ===== MACROS =====
 
 // RENDERING
-#define MAX_RAY_DEPTH 4    // max nr. bounces
-#define MARCH_COUNT 5000   // max marching steps
+#define MAX_RAY_DEPTH 2    // max nr. bounces
+#define MARCH_COUNT 3000   // max marching steps
 #define BBOX_AXES 100     // bounding box size
 
 #define SPECULAR_COEFF 0.2
 
-#define EPSILON 0.0001
+#define EPSILON 0.001
 
 // SCREEN
 #define WIDTH 1280
@@ -126,13 +126,17 @@ Vec3 trace(Vec3 o,
         mat = scene.cones[sdf_info.nearest_obj_idx].mat;
     }
 
-    else if (sdf_info.nearest_obj_type == T_OCTAHEDRON)
+    else if (sdf_info.nearest_obj_type == T_Octahedron)
     {
         mat = scene.octahedrons[sdf_info.nearest_obj_idx].mat;
     }
     else if (sdf_info.nearest_obj_type == T_Sphere)
     {
         mat = scene.spheres[sdf_info.nearest_obj_idx].mat;
+    } 
+    else if (sdf_info.nearest_obj_type == T_Box)
+    {
+        mat = scene.boxes[sdf_info.nearest_obj_idx].mat;
     }
 
     // Normal
@@ -225,12 +229,13 @@ void render(Scene scene, PointLight pLight)
     Vec3 t = {0.0,0.0,-10.0};
     move_camera(camera, t);
 
-    rotate_camera(camera, 10, 15);
+    rotate_camera(camera, -3, 0);
 
     // debug
     printf("RENDERING... ");
     float progress = 0.;
     float progress_step = 1./(WIDTH*HEIGHT);
+    progress += progress_step;
 
     // render
     size_t png_img_size = width * height * 4 * sizeof(unsigned char);
@@ -240,7 +245,6 @@ void render(Scene scene, PointLight pLight)
         for (unsigned x = 0; x < width; ++x)
         {
             Vec3 dir = shoot_ray(camera, x, y);
-
             Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
             px_col = px_col;
 
@@ -301,7 +305,7 @@ int main()
     sp1.r = 3;
     sp1.r2 = 9;
     sp1.mat.surfCol = new_vector(0.8, 0.1, 0);
-    sp1.mat.refl = 0.1;
+    sp1.mat.refl = 0.3;
     sp1.mat.shininess = 5;
     sp1.mat.emissionColor = new_vector(0, 0, 0);
     
@@ -323,6 +327,16 @@ int main()
     sp3.mat.shininess = 15;
     sp3.mat.emissionColor = new_vector(0, 0, 0);
 
+    // box
+    Box box0;
+    Vec3 vec_box0; vec_box0.x = 1.0; vec_box0.y = 1.0; vec_box0.z = 1.0;
+    box0.b = vec_box0; 
+    box0.mat.surfCol = new_vector(0.3, 1, 0.36);
+    box0.mat.refl = 0;
+    box0.mat.shininess = 105;
+    box0.mat.emissionColor = new_vector(0, 0, 0);
+
+    // ================
     // cones
     Cone cone0;
     cone0.c = new_vector(4, 3, 25);
@@ -356,9 +370,11 @@ int main()
     cone2.mat.emissionColor = new_vector(0, 0, 0);
 
     // scene definition
+    // ================
     Scene scene;
     scene.nr_planes = 1;
     scene.nr_spheres = 4;
+    scene.nr_boxes = 1;
     scene.nr_cones = 3;
     scene.nr_octahedrons = 1;
 
@@ -376,6 +392,10 @@ int main()
     sps[1] = sp1;
     sps[2] = sp2;
     sps[3] = sp3;
+    
+    // build pyramid array
+    Box boxes[scene.nr_boxes];
+    boxes[0] = box0;
 
     // build cone array
     Cone cones[scene.nr_cones];
@@ -386,6 +406,7 @@ int main()
     // assign arrays to scene
     scene.planes = planes;
     scene.spheres = sps;
+    scene.boxes = boxes;
     scene.cones = cones;
     scene.octahedrons = octahedrons;
 
