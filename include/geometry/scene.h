@@ -2,18 +2,22 @@
 #define SCENE_H_
 
 #include "geometry/plane.h"
+#include "geometry/octahedron.h"
 #include "geometry/sphere.h"
 
 typedef enum
 {
     T_Plane,
+    T_OCTAHEDRON,
     T_Sphere
 } GeometryType; 
 
 typedef struct {
     int nr_planes;
+    int nr_octahedrons;
     int nr_spheres;
     Plane *planes;
+    Octahedron *octahedrons;
     Sphere *spheres; 
 } Scene;
 
