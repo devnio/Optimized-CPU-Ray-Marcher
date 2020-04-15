@@ -210,7 +210,7 @@ void render(Scene scene, PointLight pLight)
     Camera* camera = create_camera(fov, width, height, 0, 1000);
 
     // translation example
-    Vec3 t = {0.0,0.0,0.0};
+    Vec3 t = {0.0,0.0,-10.0};
     move_camera(camera, t);
 
     // debug
@@ -227,7 +227,7 @@ void render(Scene scene, PointLight pLight)
         {
             Vec3 dir = shoot_ray(camera, x, y);
 
-            Vec3 px_col = trace(new_vector(0, 0, 0), dir, scene, pLight, 0, NULL);
+            Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
             px_col = px_col;
 
             // save colors computed by trace into current pixel

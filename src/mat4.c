@@ -92,11 +92,31 @@ Mat4 mult_mat(Mat4* m1, Mat4* m2){
 }
 
 /*
+ * Function: mult_vec_matrix_no_homo
+ * ----------------------------
+ *   Computes matrix-vector multiplication ignoring 4 homeogeneous value column, thus no translation component for view matrix component
+ *
+ *   returns: vector resulting from matrix multiplication
+ */
+Vec3 mult_vec_matrix_no_homo(Mat4* m, Vec3 v){
+
+    Vec3 res;
+
+    double x, y, z, w;
+
+    res.x = v.x * m->m[0][0] + v.y * m->m[0][1] + v.z * m->m[0][2];
+    res.y = v.x * m->m[1][0] + v.y * m->m[1][1] + v.z * m->m[1][2];
+    res.z = v.x * m->m[2][0] + v.y * m->m[2][1] + v.z * m->m[2][2];
+
+    return res;
+}
+
+/*
  * Function: mult_vec_matrix
  * ----------------------------
- *   TODO
+ *   Computes matrix-vector multiplication, Assumes homogenous value w of v is 1
  *
- *   returns: TODO
+ *   returns: vector resulting from matrix multiplication
  */
 Vec3 mult_vec_matrix(Mat4* m, Vec3 v){
 

@@ -31,13 +31,14 @@ float degrees_to_rad(float x){
 }
 
 void move_camera(Camera *camera, Vec3 t){
-    camera->viewMatrix.m[0][3] += t.x;
-    camera->viewMatrix.m[1][3] += t.y;
-    camera->viewMatrix.m[2][3] += t.z;
+    camera->pos = vec_add(camera->pos, t);
+    camera->viewMatrix = look_at(camera->pos, camera->dir, up);
 }
 
-//TODO: Need matrix inversion
 void rotate_camera(Camera *camera, double xRot, double yRot){
+
+    
+    camera->viewMatrix = look_at(camera->pos, camera->dir, up);
 }
 
 Vec3 shoot_ray(Camera *camera, int i, int j){
@@ -48,7 +49,7 @@ Vec3 shoot_ray(Camera *camera, int i, int j){
 
     Vec3 dir = new_vector(x, y, camera->dir.z);
 
-    Vec3 sRay = mult_vec_matrix(&(camera->viewMatrix), dir);
+    Vec3 sRay = mult_vec_matrix_no_homo(&(camera->viewMatrix), dir);
 
     return vec_normalized(sRay);
 }
