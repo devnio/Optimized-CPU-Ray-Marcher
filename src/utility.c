@@ -95,3 +95,23 @@ Vec3 color_blend(Vec3 colA, Vec3 colB, double weight)
     Vec3 c;
     return color_add_weighted(colA, colB, weight, weight_);
 }
+
+/*
+ * Function:  clamp 
+ * --------------------
+ * clamps a value between a minimum and maximum value
+ *
+ *  value: the value to clamp
+ *  min: minimum bound
+ *  max: maximum bound
+ * 
+ *  returns: the input value clamped between bounds
+ */
+double clamp(double value, double min, double max){
+    double res = value;
+    if (value > max)
+        res = max;
+    if (value < min)
+        res = min;
+    return res;
+}

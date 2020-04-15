@@ -118,6 +118,10 @@ Vec3 trace(Vec3 o,
     {
         mat = scene.planes[sdf_info.nearest_obj_idx].mat;
     }
+    else if (sdf_info.nearest_obj_type == T_OCTAHEDRON)
+    {
+        mat = scene.octahedrons[sdf_info.nearest_obj_idx].mat;
+    }
     else if (sdf_info.nearest_obj_type == T_Sphere)
     {
         mat = scene.spheres[sdf_info.nearest_obj_idx].mat;
@@ -265,6 +269,15 @@ int main()
     pl0.mat.shininess = 15;
     pl0.mat.emissionColor = new_vector(0, 0, 0);
 
+    // Ocathedron
+    Octahedron oct0;
+    oct0.c = new_vector(4, 0, 20);
+    oct0.s = 2;
+    oct0.mat.surfCol = new_vector(0, 0.3, 0.6);
+    oct0.mat.refl = 0;
+    oct0.mat.shininess = 15;
+    oct0.mat.emissionColor = new_vector(0, 0, 0);
+
     // spheres
     Sphere sp0;
     sp0.c = new_vector(50, 0, 100);
@@ -306,10 +319,15 @@ int main()
     Scene scene;
     scene.nr_planes = 1;
     scene.nr_spheres = 4;
+    scene.nr_octahedrons = 1;
 
     // build plane array
     Plane planes[scene.nr_planes];
     planes[0] = pl0;
+
+    // build Ocathedron array
+    Octahedron octahedrons[scene.nr_octahedrons];
+    octahedrons[0] = oct0;
 
     // build sphere array
     Sphere sps[scene.nr_spheres];
@@ -321,6 +339,7 @@ int main()
     // assign arrays to scene
     scene.planes = planes;
     scene.spheres = sps;
+    scene.octahedrons = octahedrons;
 
     // Lights (in future can be an array)
     PointLight pLight;

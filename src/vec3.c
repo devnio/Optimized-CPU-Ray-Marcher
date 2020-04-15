@@ -196,7 +196,19 @@ Vec3 vec_reflect(Vec3 v, Vec3 normal)
     return vec_sub(v, vec_mult_scalar(vec_mult_scalar(normal, vec_dot(v, normal)), 2));
 }
 
-
+/*
+ * Function: vec_abs
+ * ----------------------------
+ *   Computes the absolute value of vector
+ *
+ *   v1: of type Vec3 
+ *
+ *   returns: absolute valued vector
+ */
+Vec3 vec_abs(Vec3 v)
+{
+    return new_vector(fabs(v.x), fabs(v.y), fabs(v.z));
+}
 /*
  * Function: vec_rotate
  * ----------------------------
