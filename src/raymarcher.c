@@ -24,7 +24,7 @@
 // ===== MACROS =====
 
 // RENDERING
-#define MAX_RAY_DEPTH 2    // max nr. bounces
+#define MAX_RAY_DEPTH 4    // max nr. bounces
 #define MARCH_COUNT 5000   // max marching steps
 #define BBOX_AXES 100     // bounding box size
 
@@ -66,6 +66,7 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info)
         // TOL
         if (sdf_info.min_dist < 0.0001)
         {
+            //printf("\n ENTERED \n");
             sdf_info.intersected = 1;
             sdf_info.intersection_pt = march_pt;
             break;
@@ -105,10 +106,12 @@ Vec3 trace(Vec3 o,
 
     // CHECK INTERSECTION WITH SCENE
     SDF_Info sdf_info = ray_march(o, dir, scene, prev_sdf_info);
+    //printf("min dist: %f\n", sdf_info.min_dist);
 
     // No intersection case (return black)
     if (sdf_info.intersected != 1)
         return ambientColor;
+
 
     // Shade intersected object    
     Material mat;
@@ -118,6 +121,11 @@ Vec3 trace(Vec3 o,
     {
         mat = scene.planes[sdf_info.nearest_obj_idx].mat;
     }
+    else if (sdf_info.nearest_obj_type == T_Cone)
+    {
+        mat = scene.cones[sdf_info.nearest_obj_idx].mat;
+    }
+
     else if (sdf_info.nearest_obj_type == T_OCTAHEDRON)
     {
         mat = scene.octahedrons[sdf_info.nearest_obj_idx].mat;
@@ -253,7 +261,7 @@ void render(Scene scene, PointLight pLight)
     }
 
     encodeOneStep("../output/output_img.png", img, width, height);
-    printf("\nImage rendered and saved in output folder");
+    printf("\nImage rendered and saved in output folder\n");
     free(img);
     free_camera(camera);
 }
@@ -315,10 +323,43 @@ int main()
     sp3.mat.shininess = 15;
     sp3.mat.emissionColor = new_vector(0, 0, 0);
 
+    // cones
+    Cone cone0;
+    cone0.c = new_vector(4, 3, 25);
+    cone0.r1 = 3;
+    cone0.r2 = 0.01;
+    cone0.h = 3;
+    cone0.mat.surfCol = new_vector(0.8, 0.1, 0);
+    cone0.mat.refl = 0.1;
+    cone0.mat.shininess = 5;
+    cone0.mat.emissionColor = new_vector(0, 0, 0);
+
+    Cone cone1;
+    cone1.c = new_vector(-4, 3, 15);
+    cone1.r1 = 3;
+    cone1.r2 = 0.01;
+    cone1.h = 3;
+    cone1.mat.surfCol = new_vector(0.3, 1, 0.36);
+    cone1.mat.refl = 0.1;
+    cone1.mat.shininess = 105;
+    cone1.mat.emissionColor = new_vector(0, 0, 0);
+
+
+    Cone cone2;
+    cone2.c = new_vector(0, 3, 40);
+    cone2.r1 = 3;
+    cone2.r2 = 0.01;
+    cone2.h = 3;
+    cone2.mat.surfCol = new_vector(0.2, 0.2, 0.97);
+    cone2.mat.refl = 0.1;
+    cone2.mat.shininess = 15;
+    cone2.mat.emissionColor = new_vector(0, 0, 0);
+
     // scene definition
     Scene scene;
     scene.nr_planes = 1;
     scene.nr_spheres = 4;
+    scene.nr_cones = 3;
     scene.nr_octahedrons = 1;
 
     // build plane array
@@ -336,9 +377,16 @@ int main()
     sps[2] = sp2;
     sps[3] = sp3;
 
+    // build cone array
+    Cone cones[scene.nr_cones];
+    cones[0] = cone0;
+    cones[1] = cone1;
+    cones[2] = cone2;
+
     // assign arrays to scene
     scene.planes = planes;
     scene.spheres = sps;
+    scene.cones = cones;
     scene.octahedrons = octahedrons;
 
     // Lights (in future can be an array)

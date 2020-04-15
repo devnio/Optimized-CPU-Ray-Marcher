@@ -4,21 +4,25 @@
 #include "geometry/plane.h"
 #include "geometry/octahedron.h"
 #include "geometry/sphere.h"
+#include "geometry/cone.h"
 
 typedef enum
 {
     T_Plane,
     T_OCTAHEDRON,
-    T_Sphere
+    T_Sphere,
+    T_Cone
 } GeometryType; 
 
 typedef struct {
     int nr_planes;
     int nr_octahedrons;
     int nr_spheres;
+    int nr_cones;
     Plane *planes;
     Octahedron *octahedrons;
     Sphere *spheres; 
+    Cone *cones;
 } Scene;
 
 typedef struct  
