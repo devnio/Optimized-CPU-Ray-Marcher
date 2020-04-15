@@ -54,5 +54,22 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
         }
     }
 
+   // check cones 
+   for (int k = 0; k < scene.nr_cones; k++)
+    {
+        // check if has to skip (because it's bouncing off this object)
+        if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_Cone &&  prev_sdf_info->nearest_obj_idx == k)
+            continue;
+        
+        double dist = sdf_cone(p, scene.cones[k]);
+        //printf("\n CONE %f\n", dist);//TODO
+        if (dist < sdf_info.min_dist)
+        {   
+            sdf_info.min_dist = dist;
+            sdf_info.nearest_obj_type = T_Cone;
+            sdf_info.nearest_obj_idx = k;
+        }
+    }
+
     return sdf_info;
 }
