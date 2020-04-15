@@ -4,13 +4,15 @@
 #include "geometry/plane.h"
 #include "geometry/octahedron.h"
 #include "geometry/sphere.h"
+#include "geometry/box.h"
 #include "geometry/cone.h"
 
 typedef enum
 {
     T_Plane,
-    T_OCTAHEDRON,
     T_Sphere,
+    T_Box,
+    T_Octahedron,
     T_Cone
 } GeometryType; 
 
@@ -18,13 +20,15 @@ typedef struct {
     int nr_planes;
     int nr_octahedrons;
     int nr_spheres;
+    int nr_boxes;
     int nr_cones;
+    
     Plane *planes;
     Octahedron *octahedrons;
     Sphere *spheres; 
+    Box *boxes; 
     Cone *cones;
 } Scene;
-
 typedef struct  
 {
     double min_dist;
