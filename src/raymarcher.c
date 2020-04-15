@@ -209,9 +209,11 @@ void render(Scene scene, PointLight pLight)
 
     Camera* camera = create_camera(fov, width, height, 0, 1000);
 
-    // translation example
+    //Translation and rotation
     Vec3 t = {0.0,0.0,-10.0};
     move_camera(camera, t);
+
+    rotate_camera(camera, 10, 15);
 
     // debug
     printf("RENDERING... ");

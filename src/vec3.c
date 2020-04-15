@@ -182,11 +182,11 @@ Vec3 vec_cross(Vec3 u, Vec3 v){
 
 
 /*
- * Function: new_vector
+ * Function: vec_reflect
  * ----------------------------
  *   Computes the reflection of the vector around a normal
  * 
- *   u: of type Vec3 
+ *   v: of type Vec3 
  *   normal: of type Vec3 
  *
  *   returns: a new vector that is the reflection of v around the normal
@@ -194,4 +194,26 @@ Vec3 vec_cross(Vec3 u, Vec3 v){
 Vec3 vec_reflect(Vec3 v, Vec3 normal)
 {
     return vec_sub(v, vec_mult_scalar(vec_mult_scalar(normal, vec_dot(v, normal)), 2));
+}
+
+
+/*
+ * Function: vec_rotate
+ * ----------------------------
+ *   Rotates the vector around a given axis k
+ * 
+ *   v: of type Vec3 
+ *   k: of type Vec3 
+ *   theta: in radians
+ *
+ *   returns: a new vecotr rotated around an axis by a given angle
+ */
+Vec3 vec_rotate(Vec3 v, Vec3 k, double theta)
+{
+    //based on Euler rodrigues formula
+    double cosTheta = cos(theta);
+    Vec3 first =  vec_mult_scalar(v, cosTheta);
+    Vec3 second = vec_mult_scalar(vec_cross(k, v), sin(theta));
+    Vec3 third = vec_mult_scalar(k, vec_dot(k, v)*(1-cosTheta));
+    return vec_add(first, vec_add(second, third));
 }

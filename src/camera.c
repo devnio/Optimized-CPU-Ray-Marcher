@@ -8,6 +8,7 @@
 Vec3 up = {0.,1.,0.};
 
 
+
 struct Camera* create_camera(float fov, unsigned int widthPx, unsigned int heightPx, float near, float far){
 
     Camera* camera = malloc(sizeof(Camera));
@@ -37,6 +38,14 @@ void move_camera(Camera *camera, Vec3 t){
 
 void rotate_camera(Camera *camera, double xRot, double yRot){
 
+    xRot = degrees_to_rad(xRot);
+    yRot = degrees_to_rad(yRot);
+
+    Vec3 xAxis = new_vector(camera->viewMatrix.m[0][0], camera->viewMatrix.m[1][0], camera->viewMatrix.m[2][0]);
+    Vec3 yAxis = new_vector(camera->viewMatrix.m[0][1], camera->viewMatrix.m[1][1], camera->viewMatrix.m[2][1]);
+
+    camera->dir = vec_rotate(camera->dir, xAxis, xRot);
+    camera->dir = vec_rotate(camera->dir, yAxis, yRot);
     
     camera->viewMatrix = look_at(camera->pos, camera->dir, up);
 }
