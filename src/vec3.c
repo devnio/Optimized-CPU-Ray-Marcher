@@ -142,6 +142,7 @@ double vec_norm(Vec3 v)
 Vec3 vec_normalized(Vec3 v)
 {
     double norm = vec_norm(v);
+    if(norm == 0.0 || norm == NAN) return v;
     return vec_mult_scalar(v, 1/norm);
 }
 
