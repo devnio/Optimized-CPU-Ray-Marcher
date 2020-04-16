@@ -9,7 +9,7 @@ float sdf_box(Vec3 p, Box box)
   Vec3 t = vec_sub(p, d);
 
   Vec3 m = rotate_point(t, new_vector(0, 45, 0));
-  m = rotate_point(m, new_vector(20, 0, 0));
+  m = rotate_point(m, new_vector(45, 0, 0));
 
   Vec3 q;
   q.x = (m.x < 0) ? (m.x * -1 - box.b.x) : (m.x - box.b.x);

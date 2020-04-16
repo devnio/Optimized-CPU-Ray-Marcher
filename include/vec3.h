@@ -32,6 +32,9 @@ Vec3 vec_cross(Vec3 u, Vec3 v);
 Vec3 vec_reflect(Vec3 v, Vec3 normal);
 
 Vec3 vec_abs(Vec3 v);
+
 Vec3 vec_rotate(Vec3 v, Vec3 k, double theta);
+
+Vec3 vec_lerp(Vec3 a, Vec3 b, float t);
 
 #endif
