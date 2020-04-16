@@ -22,7 +22,7 @@ struct Camera* create_camera(float fov, unsigned int widthPx, unsigned int heigh
 
     camera->aspectRatio = widthPx/(float)heightPx;
 
-    camera->scale = tan(degrees_to_rad(camera->fov * 0.5));
+    camera->scale = 2.0*tan(degrees_to_rad(camera->fov * 0.5));
     camera->viewMatrix = look_at(camera->pos, camera->dir, up);
     return camera;
 }

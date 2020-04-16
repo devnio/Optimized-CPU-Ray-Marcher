@@ -52,6 +52,8 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     ch.y = sdf(p1, scene, NULL).min_dist;
     ch.z = sdf(p2, scene, NULL).min_dist;
     
+    // Vec3 n = vec_mult_scalar(vec_sub(ch, c), 1.0/EPSILON);
+    // return n;
     Vec3 n = vec_sub(ch, c);
     return vec_normalized(n);
 }
@@ -235,14 +237,14 @@ void render(Scene scene, PointLight pLight)
     unsigned int height = HEIGHT;
     float invWidth = 1. / (float)width;
     float invHeight = 1. / (float)height;
-    float fov = 30;
+    float fov = 15;
     float aspectratio = width / (float)height;
     float angle = tan(M_PI * 0.5 * fov / 180.);
 
     Camera* camera = create_camera(fov, width, height, 0, 1000);
 
     //Translation and rotation
-    Vec3 t = {0.0,0.0,-10.0};
+    Vec3 t = {0.0,0.0,-10};
     move_camera(camera, t);
 
     rotate_camera(camera, -3, 0);
