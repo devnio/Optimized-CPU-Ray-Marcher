@@ -36,6 +36,7 @@ typedef struct
     int nearest_obj_idx;
     int intersected;
     Vec3 intersection_pt; // if intersected is 0, this shouldn't be used (TODO: maybe separate this?)
+    double s;
 } SDF_Info;
 
 SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info);

@@ -31,6 +31,7 @@
 #define SPECULAR_COEFF 0.2
 
 #define EPSILON 0.001
+#define LIGHT_STR 1.5
 
 // SCREEN
 #define WIDTH 1280
@@ -55,14 +56,20 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     return vec_normalized(n);
 }
 
-SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info)
+SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info, int doShadowSteps)
 {
     SDF_Info sdf_info;
     Vec3 march_pt = p;
+
+    double t = 0;
+    double s = 1.0;
+    float ph = 1e10;
+
     for (int i = 0; i < MARCH_COUNT; i++)
     {
         sdf_info = sdf(march_pt, scene, prev_sdf_info);
         march_pt = vec_add(march_pt, vec_mult_scalar(dir, sdf_info.min_dist));
+
         // TOL
         if (sdf_info.min_dist < 0.0001)
         {
@@ -76,8 +83,19 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info)
         {
             break;
         }
+
+        if (doShadowSteps==1)
+        {
+            float mid = sdf_info.min_dist*sdf_info.min_dist;
+            float y = mid/(2.0*ph);
+            float d = sqrt(mid-y*y);
+            s = min(s, LIGHT_STR*d/max(0.0,t-y));
+            ph = sdf_info.min_dist;
+            t += sdf_info.min_dist;
+        }
     }
     
+    sdf_info.s = s;
     return sdf_info;
 }
 
@@ -105,8 +123,7 @@ Vec3 trace(Vec3 o,
     Vec3 finalColor = new_vector(0, 0, 0);
 
     // CHECK INTERSECTION WITH SCENE
-    SDF_Info sdf_info = ray_march(o, dir, scene, prev_sdf_info);
-    //printf("min dist: %f\n", sdf_info.min_dist);
+    SDF_Info sdf_info = ray_march(o, dir, scene, prev_sdf_info, 0);
 
     // No intersection case (return black)
     if (sdf_info.intersected != 1)
@@ -168,8 +185,8 @@ Vec3 trace(Vec3 o,
      * We assume that light is not in between objects. 
      * Otherwise should check only interval between light and sdf_info.intersection_pt. 
     */
-    SDF_Info sdf_shadow_info = ray_march(sdf_info.intersection_pt, L, scene, &sdf_info);
-    if (sdf_shadow_info.intersected == 1) return ambientColor;
+    SDF_Info sdf_shadow_info = ray_march(sdf_info.intersection_pt, L, scene, &sdf_info, 1);
+    sdf_shadow_info.s = clamp(sdf_shadow_info.s+0.5, 0, 1);
 
     // Lamber's cosine law
     double lambertian = max(vec_dot(N, L), 0.0);
@@ -185,11 +202,10 @@ Vec3 trace(Vec3 o,
         specular = pow(specAngle, mat.shininess);
     }
 
-    Vec3 diffuseColor = vec_mult_scalar(mat.surfCol, lambertian);
+    Vec3 diffuseColor = vec_mult_scalar(vec_mult_scalar(mat.surfCol, lambertian), sdf_shadow_info.s);
     Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
     specularColor = vec_mult(pLight.emissionColor, vec_mult_scalar(specularColor, specular));
     finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
-
     return finalColor;
 }
 
