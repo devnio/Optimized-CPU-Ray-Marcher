@@ -24,7 +24,7 @@ void move_camera(Camera *camera, Vec3 t);
 
 void rotate_camera(Camera *camera, double xRot, double yRot);
 
-Vec3 shoot_ray(Camera *camera, int coordX, int coordY);
+Vec3 shoot_ray(Camera *camera, double coordX, double coordY);
 
 void free_camera(Camera *camera);
 

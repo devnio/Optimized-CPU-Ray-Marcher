@@ -50,7 +50,7 @@ void rotate_camera(Camera *camera, double xRot, double yRot){
     camera->viewMatrix = look_at(camera->pos, camera->dir, up);
 }
 
-Vec3 shoot_ray(Camera *camera, int i, int j){
+Vec3 shoot_ray(Camera *camera, double i, double j){
 
     //Normalize screen coordinates
     float x = (2 * (i + 0.5) / (float)camera->widthPx - 1) * camera->aspectRatio * camera->scale; 

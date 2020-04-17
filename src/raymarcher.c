@@ -37,6 +37,9 @@
 #define WIDTH 1280
 #define HEIGHT 720
 
+// ANTI ALIASING
+#define AA 1
+
 // DEBUG
 #define DEBUG_MODE 1
 
@@ -246,7 +249,6 @@ void render(Scene scene, PointLight pLight)
     //Translation and rotation
     Vec3 t = {0.0,0.0,-10};
     move_camera(camera, t);
-
     rotate_camera(camera, -3, 0);
 
     // debug
@@ -255,6 +257,9 @@ void render(Scene scene, PointLight pLight)
     float progress_step = 1./(WIDTH*HEIGHT);
     progress += progress_step;
 
+    double inv_AA = 1.0/AA;
+    Vec3 tot_col;
+
     // render
     size_t png_img_size = width * height * 4 * sizeof(unsigned char);
     unsigned char *img = (unsigned char *)malloc(png_img_size);
@@ -262,10 +267,27 @@ void render(Scene scene, PointLight pLight)
     {
         for (unsigned x = 0; x < width; ++x)
         {
+
+#if AA>1
+            tot_col = new_vector(0,0,0);
+            for( int m=0; m<AA; m++ )
+            {
+                for( int n=0; n<AA; n++ )
+                {
+                    // pixel coordinates
+                    double disp_x = (inv_AA*n - 0.5) + x;
+                    double disp_y = (inv_AA*m - 0.5) + y;
+                    Vec3 dir = shoot_ray(camera, disp_x, disp_y);
+                    Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
+                    tot_col = vec_add(tot_col, px_col);
+                }
+            }
+            Vec3 px_col = vec_mult_scalar(tot_col, 1.0/(AA*AA));
+#else
             Vec3 dir = shoot_ray(camera, x, y);
             Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
-            px_col = px_col;
-
+#endif
+            
             // save colors computed by trace into current pixel
             img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
             img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
@@ -279,6 +301,7 @@ void render(Scene scene, PointLight pLight)
                 printf(" %.2f\b\b\b\b\b", progress);
                 fflush(stdout);
             }
+
         }
     }
 
