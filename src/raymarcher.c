@@ -326,7 +326,7 @@ void render_all(SceneContainer scenes_container, PointLight pLight){
 
     for(int i=0;i<scenes_container.num_scenes;++i){
         render(*(scenes_container.scenes)[i], pLight);
-        //destroy_scene(&(*(scenes_container.scenes)[i]));
+        destroy_scene(&(*(scenes_container.scenes)[i]));
     }
 }
 
