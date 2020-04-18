@@ -3,13 +3,14 @@
 #include<stdlib.h>
 #include "camera.h"
 #include <math.h>
+#include "utility.h"
 
 
 Vec3 up = {0.,1.,0.};
 
 
 
-struct Camera* create_camera(float fov, unsigned int widthPx, unsigned int heightPx, float near, float far){
+struct Camera* create_camera(double fov, unsigned int widthPx, unsigned int heightPx){
 
     Camera* camera = malloc(sizeof(Camera));
     camera->pos = (Vec3) {0.,0.,0.};
@@ -17,19 +18,14 @@ struct Camera* create_camera(float fov, unsigned int widthPx, unsigned int heigh
     camera->fov = fov;
     camera->widthPx = widthPx;
     camera->heightPx = heightPx;
-    camera->near = near;
-    camera->far = far;
 
-    camera->aspectRatio = widthPx/(float)heightPx;
+    camera->aspectRatio = widthPx/(double)heightPx;
 
-    camera->scale = 2.0*tan(degrees_to_rad(camera->fov * 0.5));
+    camera->scale = tan(to_radians(camera->fov * 0.5));
     camera->viewMatrix = look_at(camera->pos, camera->dir, up);
     return camera;
 }
 
-float degrees_to_rad(float x){
-    return x * M_PI / 180.0;
-}
 
 void move_camera(Camera *camera, Vec3 t){
     camera->pos = vec_add(camera->pos, t);
@@ -38,8 +34,8 @@ void move_camera(Camera *camera, Vec3 t){
 
 void rotate_camera(Camera *camera, double xRot, double yRot){
 
-    xRot = degrees_to_rad(xRot);
-    yRot = degrees_to_rad(yRot);
+    xRot = to_radians(xRot);
+    yRot = to_radians(yRot);
 
     Vec3 xAxis = new_vector(camera->viewMatrix.m[0][0], camera->viewMatrix.m[1][0], camera->viewMatrix.m[2][0]);
     Vec3 yAxis = new_vector(camera->viewMatrix.m[0][1], camera->viewMatrix.m[1][1], camera->viewMatrix.m[2][1]);
