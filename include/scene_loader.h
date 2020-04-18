@@ -13,3 +13,4 @@ void add_scene(scene_builder builder);
 void add_scenes();
 SceneContainer build_scenes();
 Scene* scene_baseline();
+void destroy_scene(Scene* scene);
