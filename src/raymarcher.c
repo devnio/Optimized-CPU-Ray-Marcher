@@ -239,13 +239,9 @@ void render(Scene scene, PointLight pLight)
 
     unsigned int width = WIDTH;
     unsigned int height = HEIGHT;
-    float invWidth = 1. / (float)width;
-    float invHeight = 1. / (float)height;
-    float fov = 15;
-    float aspectratio = width / (float)height;
-    float angle = tan(M_PI * 0.5 * fov / 180.);
+    float fov = 30;
 
-    Camera* camera = create_camera(fov, width, height, 0, 1000);
+    Camera* camera = create_camera(fov, width, height);
 
     //Translation and rotation
     Vec3 t = {0.0,0.0,-10};
