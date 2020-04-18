@@ -11,5 +11,6 @@ typedef struct {
 } Plane;
 
 double sdf_plane(Vec3 p, Plane plane);
+Plane* build_plane(Vec3 c, double x, Material mat);
 
 #endif // PLANE_H_

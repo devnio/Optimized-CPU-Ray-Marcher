@@ -24,3 +24,12 @@ double sdf_cone(Vec3 p, Cone c){
     return s*sqrt(fmin(vec_dot(ca,ca),vec_dot(cb,cb)));
 }
 
+Cone* build_cone(Vec3 c, double r1, double r2, double h, Material mat){
+    Cone* cone = (Cone*) malloc(sizeof(Cone));
+    cone->c = c;
+    cone->r1 = r1;
+    cone->r2 = r2;
+    cone->h = h;
+    cone->mat = mat;
+    return cone;
+}

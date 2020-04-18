@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include "geometry/scene.h"
+#include <string.h>
 
 SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
 {
@@ -13,7 +13,7 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
         if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_Plane &&  prev_sdf_info->nearest_obj_idx == k)
             continue;
 
-        double dist = sdf_plane(p, scene.planes[k]);
+        double dist = sdf_plane(p, (*(scene.planes)[k]));
         if (dist < sdf_info.min_dist)
         {
             sdf_info.min_dist = dist;
@@ -29,7 +29,7 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
         if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_Octahedron &&  prev_sdf_info->nearest_obj_idx == k)
             continue;
 
-        double dist = sdf_octahedron(p, scene.octahedrons[k]);
+        double dist = sdf_octahedron(p, (*(scene.octahedrons)[k]));
         if (dist < sdf_info.min_dist)
         {
             sdf_info.min_dist = dist;
@@ -45,7 +45,7 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
         if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_Sphere &&  prev_sdf_info->nearest_obj_idx == k)
             continue;
 
-        double dist = sdf_sphere(p, scene.spheres[k]);
+        double dist = sdf_sphere(p, (*(scene.spheres)[k]));
         if (dist < sdf_info.min_dist)
         {
             sdf_info.min_dist = dist;
@@ -61,7 +61,7 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
         if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_Box &&  prev_sdf_info->nearest_obj_idx == k)
             continue;
 
-        double dist = sdf_box(p, scene.boxes[k]);
+        double dist = sdf_box(p, (*(scene.boxes)[k]));
         if (dist < sdf_info.min_dist)
         {
             sdf_info.min_dist = dist;
@@ -78,7 +78,7 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
         if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_Cone &&  prev_sdf_info->nearest_obj_idx == k)
             continue;
         
-        double dist = sdf_cone(p, scene.cones[k]);
+        double dist = sdf_cone(p, (*(scene.cones)[k]));
         //printf("\n CONE %f\n", dist);//TODO
         if (dist < sdf_info.min_dist)
         {   
@@ -89,4 +89,26 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
     }
 
     return sdf_info;
+}
+
+Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, const char* name){
+    Scene* scene = (Scene*) malloc(sizeof(Scene));
+    scene->name = strdup(name);
+    scene->nr_planes = nr_planes;
+    scene->nr_spheres = nr_spheres;
+    scene->nr_boxes = nr_boxes;
+    scene->nr_cones = nr_cones;
+    scene->nr_octahedrons = nr_octahedrons;
+    Plane** planes = (Plane**) malloc(sizeof(Plane*)*scene->nr_planes);
+    Sphere** sps =(Sphere**) malloc(sizeof(Sphere*)*scene->nr_spheres);
+    Box** boxes = (Box**) malloc(sizeof(Box*)*scene->nr_boxes);
+    Cone** cones = (Cone**) malloc(sizeof(Cone*)*scene->nr_cones);
+    Octahedron** octahedrons = (Octahedron**) malloc(sizeof(Octahedron*)*scene->nr_octahedrons);
+    scene->planes = planes;
+    scene->spheres = sps;
+    scene->boxes = boxes;
+    scene->cones = cones;
+    scene->octahedrons = octahedrons;
+    return scene;
+
 }

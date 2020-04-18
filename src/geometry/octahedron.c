@@ -15,3 +15,12 @@ double sdf_octahedron(Vec3 p, Octahedron octahedron)
     float k = clamp( 0.5*(q.z - q.y + octahedron.s), 0.0, octahedron.s); 
     return vec_norm(new_vector(q.x, q.y-octahedron.s + k, q.z - k)); 
 }
+
+
+Octahedron* build_octahedron(Vec3 c, double s, Material mat){
+    Octahedron* oct = (Octahedron*) malloc(sizeof(Octahedron));
+    oct->c = c;
+    oct->s = s;
+    oct->mat = mat;
+    return oct;
+}

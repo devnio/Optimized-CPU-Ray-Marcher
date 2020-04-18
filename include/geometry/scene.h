@@ -17,17 +17,19 @@ typedef enum
 } GeometryType; 
 
 typedef struct {
+    char* name;
+
     int nr_planes;
     int nr_octahedrons;
     int nr_spheres;
     int nr_boxes;
     int nr_cones;
     
-    Plane *planes;
-    Octahedron *octahedrons;
-    Sphere *spheres; 
-    Box *boxes; 
-    Cone *cones;
+    Plane **planes;
+    Octahedron **octahedrons;
+    Sphere **spheres; 
+    Box **boxes; 
+    Cone **cones;
 } Scene;
 typedef struct  
 {
@@ -37,8 +39,11 @@ typedef struct
     int intersected;
     Vec3 intersection_pt; // if intersected is 0, this shouldn't be used (TODO: maybe separate this?)
     double s;
+    
 } SDF_Info;
 
 SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info);
+
+Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, const char* name);
 
 #endif // SCENE_H_

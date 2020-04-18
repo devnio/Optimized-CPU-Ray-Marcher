@@ -15,6 +15,7 @@ typedef struct
 } Octahedron;
 
 double sdf_octahedron(Vec3 p, Octahedron octahedron);
+Octahedron* build_octahedron(Vec3 c, double s, Material mat);
 
 
 #endif // OCTAHEDRON_H_
