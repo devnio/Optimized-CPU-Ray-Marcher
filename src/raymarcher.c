@@ -20,6 +20,7 @@
 #include "camera.h"
 #include "utility.h"
 #include "light.h"
+#include "scene_loader.h"
 
 // ===== MACROS =====
 
@@ -78,7 +79,6 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info, int d
         // TOL
         if (sdf_info.min_dist < 0.0001)
         {
-            //printf("\n ENTERED \n");
             sdf_info.intersected = 1;
             sdf_info.intersection_pt = march_pt;
             break;
@@ -141,24 +141,24 @@ Vec3 trace(Vec3 o,
     // Find the object and take it's material
     if (sdf_info.nearest_obj_type == T_Plane)
     {
-        mat = scene.planes[sdf_info.nearest_obj_idx].mat;
+        mat = (*(scene.planes)[sdf_info.nearest_obj_idx]).mat;
     }
     else if (sdf_info.nearest_obj_type == T_Cone)
     {
-        mat = scene.cones[sdf_info.nearest_obj_idx].mat;
+        mat = (*(scene.cones)[sdf_info.nearest_obj_idx]).mat;
     }
 
     else if (sdf_info.nearest_obj_type == T_Octahedron)
     {
-        mat = scene.octahedrons[sdf_info.nearest_obj_idx].mat;
+        mat = (*(scene.octahedrons)[sdf_info.nearest_obj_idx]).mat;
     }
     else if (sdf_info.nearest_obj_type == T_Sphere)
     {
-        mat = scene.spheres[sdf_info.nearest_obj_idx].mat;
+        mat = (*(scene.spheres)[sdf_info.nearest_obj_idx]).mat;
     } 
     else if (sdf_info.nearest_obj_type == T_Box)
     {
-        mat = scene.boxes[sdf_info.nearest_obj_idx].mat;
+        mat = (*(scene.boxes)[sdf_info.nearest_obj_idx]).mat;
     }
 
     // Normal
@@ -236,6 +236,7 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
  */
 void render(Scene scene, PointLight pLight)
 {
+
     unsigned int width = WIDTH;
     unsigned int height = HEIGHT;
     float invWidth = 1. / (float)width;
@@ -305,151 +306,33 @@ void render(Scene scene, PointLight pLight)
         }
     }
 
-    encodeOneStep("../output/output_img.png", img, width, height);
+    encodeOneStep(scene.name, img, width, height);
     printf("\nImage rendered and saved in output folder\n");
     free(img);
     free_camera(camera);
+    
+}
+
+/*
+ * Function: render_all
+ * ----------------------------
+ *   Render all the different scenes and save it in ouput. 
+ *
+ *   pLight: point light 
+ *
+ *   returns: void
+ */
+void render_all(SceneContainer scenes_container, PointLight pLight){
+
+    for(int i=0;i<scenes_container.num_scenes;++i){
+        render(*(scenes_container.scenes)[i], pLight);
+        //destroy_scene(&(*(scenes_container.scenes)[i]));
+    }
 }
 
 int main()
 {
-    // planes
-    Plane pl0;
-    pl0.n = new_vector(0,1,0);
-    pl0.d = 3;
-    pl0.mat.surfCol = new_vector(0, 0.3, 0.6);
-    pl0.mat.refl = 0;
-    pl0.mat.shininess = 15;
-    pl0.mat.emissionColor = new_vector(0, 0, 0);
-
-    // Ocathedron
-    Octahedron oct0;
-    oct0.c = new_vector(4, 0, 20);
-    oct0.s = 2;
-    oct0.mat.surfCol = new_vector(0, 0.3, 0.6);
-    oct0.mat.refl = 0;
-    oct0.mat.shininess = 15;
-    oct0.mat.emissionColor = new_vector(0, 0, 0);
-
-    // spheres
-    Sphere sp0;
-    sp0.c = new_vector(50, 0, 100);
-    sp0.r = 50;
-    sp0.r2 = 2500;
-    sp0.mat.surfCol = new_vector(0.6, 0.6, 0);
-    sp0.mat.refl = 0;
-    sp0.mat.shininess = 15;
-    sp0.mat.emissionColor = new_vector(0, 0, 0);
-    
-    Sphere sp1;
-    sp1.c = new_vector(4, 0, 25);
-    sp1.r = 3;
-    sp1.r2 = 9;
-    sp1.mat.surfCol = new_vector(0.8, 0.1, 0);
-    sp1.mat.refl = 0.3;
-    sp1.mat.shininess = 5;
-    sp1.mat.emissionColor = new_vector(0, 0, 0);
-    
-    Sphere sp2;
-    sp2.c = new_vector(-4, 0, 15);
-    sp2.r = 3;
-    sp2.r2 = 9;
-    sp2.mat.surfCol = new_vector(0.3, 1, 0.36);
-    sp2.mat.refl = 0;
-    sp2.mat.shininess = 105;
-    sp2.mat.emissionColor = new_vector(0, 0, 0);
-    
-    Sphere sp3;
-    sp3.c = new_vector(0, 0, 40);
-    sp3.r = 3;
-    sp3.r2 = 9;
-    sp3.mat.surfCol = new_vector(0.2, 0.2, 0.97);
-    sp3.mat.refl = 0.1;
-    sp3.mat.shininess = 15;
-    sp3.mat.emissionColor = new_vector(0, 0, 0);
-
-    // box
-    Box box0;
-    Vec3 vec_box0; vec_box0.x = 1.0; vec_box0.y = 1.0; vec_box0.z = 1.0;
-    box0.b = vec_box0; 
-    box0.mat.surfCol = new_vector(0.3, 1, 0.36);
-    box0.mat.refl = 0;
-    box0.mat.shininess = 105;
-    box0.mat.emissionColor = new_vector(0, 0, 0);
-
-    // ================
-    // cones
-    Cone cone0;
-    cone0.c = new_vector(4, 3, 25);
-    cone0.r1 = 3;
-    cone0.r2 = 0.01;
-    cone0.h = 3;
-    cone0.mat.surfCol = new_vector(0.8, 0.1, 0);
-    cone0.mat.refl = 0.1;
-    cone0.mat.shininess = 5;
-    cone0.mat.emissionColor = new_vector(0, 0, 0);
-
-    Cone cone1;
-    cone1.c = new_vector(-4, 3, 15);
-    cone1.r1 = 3;
-    cone1.r2 = 0.01;
-    cone1.h = 3;
-    cone1.mat.surfCol = new_vector(0.3, 1, 0.36);
-    cone1.mat.refl = 0.1;
-    cone1.mat.shininess = 105;
-    cone1.mat.emissionColor = new_vector(0, 0, 0);
-
-
-    Cone cone2;
-    cone2.c = new_vector(0, 3, 40);
-    cone2.r1 = 3;
-    cone2.r2 = 0.01;
-    cone2.h = 3;
-    cone2.mat.surfCol = new_vector(0.2, 0.2, 0.97);
-    cone2.mat.refl = 0.1;
-    cone2.mat.shininess = 15;
-    cone2.mat.emissionColor = new_vector(0, 0, 0);
-
-    // scene definition
-    // ================
-    Scene scene;
-    scene.nr_planes = 1;
-    scene.nr_spheres = 4;
-    scene.nr_boxes = 1;
-    scene.nr_cones = 3;
-    scene.nr_octahedrons = 1;
-
-    // build plane array
-    Plane planes[scene.nr_planes];
-    planes[0] = pl0;
-
-    // build Ocathedron array
-    Octahedron octahedrons[scene.nr_octahedrons];
-    octahedrons[0] = oct0;
-
-    // build sphere array
-    Sphere sps[scene.nr_spheres];
-    sps[0] = sp0;
-    sps[1] = sp1;
-    sps[2] = sp2;
-    sps[3] = sp3;
-    
-    // build pyramid array
-    Box boxes[scene.nr_boxes];
-    boxes[0] = box0;
-
-    // build cone array
-    Cone cones[scene.nr_cones];
-    cones[0] = cone0;
-    cones[1] = cone1;
-    cones[2] = cone2;
-
-    // assign arrays to scene
-    scene.planes = planes;
-    scene.spheres = sps;
-    scene.boxes = boxes;
-    scene.cones = cones;
-    scene.octahedrons = octahedrons;
+    SceneContainer scenes_container = build_scenes();
 
     // Lights (in future can be an array)
     PointLight pLight;
@@ -457,6 +340,10 @@ int main()
     double em = 2;
     pLight.emissionColor = new_vector(em, em, em);
 
-    render(scene, pLight);
+    //render(*(scenes_container.scenes)[1], pLight);
+    render_all(scenes_container, pLight);
+
     return 0;
 }
+
+

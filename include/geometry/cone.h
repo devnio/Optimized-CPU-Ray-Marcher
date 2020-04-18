@@ -17,4 +17,6 @@ typedef struct
 
 double sdf_cone(Vec3 p, Cone c);
 
+Cone* build_cone(Vec3 c, double r1, double r2, double h, Material mat);
+
 #endif

@@ -2,6 +2,8 @@
 #define VEC_3
 
 #include <math.h>
+#include <stdlib.h>
+
 
 typedef struct {
     double x, y, z;

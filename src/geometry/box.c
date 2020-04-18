@@ -2,6 +2,7 @@
 #include "vec3.h"
 #include "utility.h"
 
+
 float sdf_box(Vec3 p, Box box)
 {
 
@@ -20,4 +21,11 @@ float sdf_box(Vec3 p, Box box)
 
 
   return vec_norm(vec_max(q, zero)) + min(max(q.x,max(q.y,q.z)),0.0);
+}
+
+Box* build_box(Vec3 b, Material mat){
+    Box* box = (Box*) malloc(sizeof(Box));
+    box->b = b; 
+    box->mat = mat;
+    return box;
 }

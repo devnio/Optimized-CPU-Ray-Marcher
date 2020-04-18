@@ -48,3 +48,12 @@ double sdf_sphere(Vec3 p, Sphere s)
 {
     return vec_norm(vec_sub(s.c, p)) - s.r;
 }
+
+Sphere* build_sphere(Vec3 c, double r, Material mat){
+    Sphere* sp =(Sphere*) malloc(sizeof(Sphere));
+    sp->c = c;
+    sp->r = r;
+    sp->r2 = 0;
+    sp->mat = mat;
+    return sp;
+}
