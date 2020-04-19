@@ -88,27 +88,52 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
         }
     }
 
+   // check toruses 
+   for (int k = 0; k < scene.nr_toruses; k++)
+    {
+        // check if has to skip (because it's bouncing off this object)
+        if (prev_sdf_info != NULL && prev_sdf_info->nearest_obj_type == T_TORUS &&  prev_sdf_info->nearest_obj_idx == k)
+            continue;
+        
+        double dist = sdf_torus(p, (*(scene.toruses)[k]));
+        //printf("\n CONE %f\n", dist);//TODO
+        if (dist < sdf_info.min_dist)
+        {   
+            sdf_info.min_dist = dist;
+            sdf_info.nearest_obj_type = T_TORUS;
+            sdf_info.nearest_obj_idx = k;
+        }
+    }
+
     return sdf_info;
 }
 
-Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, const char* name){
+Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, int nr_toruses, const char* name){
+
     Scene* scene = (Scene*) malloc(sizeof(Scene));
+
     scene->name = strdup(name);
     scene->nr_planes = nr_planes;
     scene->nr_spheres = nr_spheres;
     scene->nr_boxes = nr_boxes;
     scene->nr_cones = nr_cones;
     scene->nr_octahedrons = nr_octahedrons;
+    scene->nr_toruses = nr_toruses;
+
     Plane** planes = (Plane**) malloc(sizeof(Plane*)*scene->nr_planes);
     Sphere** sps =(Sphere**) malloc(sizeof(Sphere*)*scene->nr_spheres);
     Box** boxes = (Box**) malloc(sizeof(Box*)*scene->nr_boxes);
     Cone** cones = (Cone**) malloc(sizeof(Cone*)*scene->nr_cones);
     Octahedron** octahedrons = (Octahedron**) malloc(sizeof(Octahedron*)*scene->nr_octahedrons);
+    Torus** toruses = (Torus**) malloc(sizeof(Torus*)*scene->nr_toruses);
+
     scene->planes = planes;
     scene->spheres = sps;
     scene->boxes = boxes;
     scene->cones = cones;
     scene->octahedrons = octahedrons;
+    scene->toruses = toruses;
+
     return scene;
 
 }
