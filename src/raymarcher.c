@@ -147,7 +147,6 @@ Vec3 trace(Vec3 o,
     {
         mat = (*(scene.cones)[sdf_info.nearest_obj_idx]).mat;
     }
-
     else if (sdf_info.nearest_obj_type == T_Octahedron)
     {
         mat = (*(scene.octahedrons)[sdf_info.nearest_obj_idx]).mat;
@@ -159,6 +158,10 @@ Vec3 trace(Vec3 o,
     else if (sdf_info.nearest_obj_type == T_Box)
     {
         mat = (*(scene.boxes)[sdf_info.nearest_obj_idx]).mat;
+    }    
+    else if (sdf_info.nearest_obj_type == T_TORUS)
+    {
+        mat = (*(scene.toruses)[sdf_info.nearest_obj_idx]).mat;
     }
 
     // Normal
@@ -244,9 +247,9 @@ void render(Scene scene, PointLight pLight)
     Camera* camera = create_camera(fov, width, height);
 
     //Translation and rotation
-    Vec3 t = {0.0,0.0,-10};
+    Vec3 t = {0.0,5.0,-7};
     move_camera(camera, t);
-    rotate_camera(camera, -3, 0);
+    rotate_camera(camera, 20, 0);
 
     // debug
     printf("RENDERING... ");

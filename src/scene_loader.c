@@ -50,12 +50,22 @@ void add_cones(int nr, Cone** sps, ...){
         sps[x] = va_arg ( arguments, Cone* ); 
     }
     va_end ( arguments );  
-}
 
+}
+void add_torus(int nr, Torus** tos, ...){
+    va_list arguments;                     
+    va_start ( arguments, tos);           
+    for ( int x = 0; x < nr; x++ )        
+    {
+        tos[x] = va_arg ( arguments, Torus* ); 
+    }
+    va_end ( arguments );  
+
+}
 ////////////////////////////////  SCENES DEFINITION /////////////////////////////////////
 
 Scene* scene_baseline(){
-    Scene* scene = build_scene(1,4,1,3,1, "../output/baseline.png");
+    Scene* scene = build_scene(1,4,1,3,1,0, "../output/baseline.png");
   
     Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
     add_plane(scene->nr_planes, scene->planes,pl0);
@@ -77,7 +87,7 @@ Scene* scene_baseline(){
 }
 
 Scene* scene_baseline2(){
-    Scene* scene = build_scene(1,1,0,0,1, "../output/baseline2.png");
+    Scene* scene = build_scene(1,1,0,0,1,0, "../output/baseline2.png");
     
     Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
     add_plane(scene->nr_planes, scene->planes,pl0);
@@ -89,13 +99,31 @@ Scene* scene_baseline2(){
     return scene;
 }
 
+
+Scene* scene_torus_test(){
+    Scene* scene = build_scene(1,1,0,0,0,1, "../output/torus_test.png");
+    
+    Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
+    add_plane(scene->nr_planes, scene->planes,pl0);
+
+    Torus* torus0 = build_torus(new_vector(0, 0, 6), 3.2, 0.7, new_material(new_vector(0.65, 0.2, 0.3),0,15,new_vector(0, 0, 0)));
+    add_torus(scene->nr_toruses, scene->toruses, torus0);
+    
+    Sphere* sp0 = build_sphere(new_vector(50, 0, 100),50,new_material(new_vector(0.6, 0.6, 0),0,15,new_vector(0, 0, 0)));
+    add_spheres(scene->nr_spheres, scene->spheres, sp0);
+
+    return scene;
+}
+
+
 /*
 *   TODO: here you can add the scenes that have to be added
 *   Note: If needed modify MAX_NR_SCENES
 */
 void add_scenes(){
-    add_scene(&scene_baseline2);
-    add_scene(&scene_baseline);
+    // add_scene(&scene_baseline2);
+    // add_scene(&scene_baseline);
+    add_scene(&scene_torus_test);
     
 }
 
@@ -155,6 +183,13 @@ void destroy_scene(Scene* scene){
     }
     free(scene->cones);
     scene->cones=0;
+
+    for(int i=0; i<scene->nr_toruses;++i){
+        Torus* t = (scene->toruses)[i];
+        free(t);
+    }
+    free(scene->toruses);
+    scene->toruses=0;
 
     free(scene);
     scene=0;

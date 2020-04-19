@@ -6,6 +6,7 @@
 #include "geometry/sphere.h"
 #include "geometry/box.h"
 #include "geometry/cone.h"
+#include "geometry/torus.h"
 
 typedef enum
 {
@@ -13,7 +14,8 @@ typedef enum
     T_Sphere,
     T_Box,
     T_Octahedron,
-    T_Cone
+    T_Cone,
+    T_TORUS
 } GeometryType; 
 
 typedef struct {
@@ -24,13 +26,16 @@ typedef struct {
     int nr_spheres;
     int nr_boxes;
     int nr_cones;
+    int nr_toruses;
     
     Plane **planes;
     Octahedron **octahedrons;
     Sphere **spheres; 
     Box **boxes; 
     Cone **cones;
+    Torus **toruses;
 } Scene;
+
 typedef struct  
 {
     double min_dist;
@@ -39,11 +44,10 @@ typedef struct
     int intersected;
     Vec3 intersection_pt; // if intersected is 0, this shouldn't be used (TODO: maybe separate this?)
     double s;
-    
 } SDF_Info;
 
 SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info);
 
-Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, const char* name);
+Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, int nr_toruses, const char* name);
 
 #endif // SCENE_H_
