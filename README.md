@@ -1,6 +1,26 @@
-# Ray-Marcer-FNC-
+# Ray Marcher
 Implementation of a fast ray marcher.
 
-Compile using `make` in src directory.
-When new files are added modify the `makefile` accordingly.
 
+# How to compile and run
+### Compile
+First compile the project by running these commands from the root directory:
+```
+cd build
+make
+```
+
+A file called `raymarcher` will be created.
+
+### Run
+In the build folder run `./raymarcher`.
+After the execution the output will be placed into the `output` directory.
+
+# Authors:
+Nihat Isik
+
+Qais EL Okaili
+
+Alexandre Cavaleri
+
+David Graf
