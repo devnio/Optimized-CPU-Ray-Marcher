@@ -167,8 +167,13 @@ Vec3 trace(Vec3 o,
      * We assume that light is not in between objects. 
      * Otherwise should check only interval between light and sdf_info.intersection_pt. 
     */
-    SDF_Info sdf_shadow_info = ray_march(sdf_info.intersection_pt, L, scene, &sdf_info, 1);
-    sdf_shadow_info.s = clamp(sdf_shadow_info.s+0.5, 0, 1);
+   SDF_Info sdf_shadow_info;
+   sdf_shadow_info.s = 1;
+   if (scene.nr_geom_objs > 1)
+   {
+        sdf_shadow_info = ray_march(sdf_info.intersection_pt, L, scene, &sdf_info, 1);
+        sdf_shadow_info.s = clamp(sdf_shadow_info.s+0.5, 0, 1);
+   }
 
     // Lamber's cosine law
     double lambertian = max(vec_dot(N, L), 0.0);
