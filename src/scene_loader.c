@@ -13,19 +13,18 @@ Scene* scene_switch(){
 
     GeomtericObject* pl0 = (GeomtericObject*)malloc(sizeof(GeomtericObject));
     pl0->mat = new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0));
-    pl0->transform = new_transform(new_vector(2, 0, 0), new_vector(0, 0, 0));
-    double params[4];// = {0.0, 1.0, 0.0, 3.0};
+    pl0->transform = new_transform(new_vector(0, 0, 0), new_vector(0, 0, 0));
+    double* params = (double*)malloc(sizeof(double)*4);  // = {0.0, 1.0, 0.0, 3.0};
     params[0] = 0.0;
     params[1] = 1.0;
     params[2] = 0.0;
-    params[3] = 4.0;
+    params[3] = 3.0;
     pl0->params = params;
     pl0->sdf = &sdf_plane;
     scene->geometric_ojects[0] = pl0;
 
     return scene;
 }
-
 
 
 /*

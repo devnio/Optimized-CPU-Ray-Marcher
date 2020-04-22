@@ -35,8 +35,8 @@
 #define LIGHT_STR 1.5
 
 // SCREEN
-#define WIDTH 1280
-#define HEIGHT 720
+#define WIDTH 1
+#define HEIGHT 1
 
 // ANTI ALIASING
 #define AA 1
