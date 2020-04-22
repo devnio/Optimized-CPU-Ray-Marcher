@@ -140,8 +140,8 @@ Scene* scene_torus_test(){
 */
 void add_scenes(){
     // add_scene(&scene_baseline2);
-    // add_scene(&scene_baseline);
-    add_scene(&scene_torus_test);
+    add_scene(&scene_baseline);
+    // add_scene(&scene_torus_test);
     
 }
 

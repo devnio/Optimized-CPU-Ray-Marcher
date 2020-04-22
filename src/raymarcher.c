@@ -21,21 +21,8 @@
 #include "utility.h"
 #include "light.h"
 #include "scene_loader.h"
-
-
-// ===== BENCHMARKING =====
-#ifndef WIN32
- #include <sys/time.h>
-#endif
-#include <time.h>
-#include "benchmark/tsc_x86.h"
-#include "benchmark.c"
-
-#define NUM_RUNS 1
-#define CYCLES_REQUIRED 1e8
-#define FREQUENCY 2.7e9
-#define CALIBRATE
-#define NR_OF_SAMPLES 30
+// #include "benchmark/tsc_x86.h"
+#include "benchmark/benchmark.h"
 
 #define RUN_BENCHMARK 0
 
@@ -254,13 +241,10 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
  *
  *   returns: void
  */
-void render(Scene scene)
+void render(Scene scene, unsigned int width, unsigned int height)
 {
 
-    unsigned int width = WIDTH;
-    unsigned int height = HEIGHT;
     float fov = 30;
-
     Camera* camera = create_camera(fov, width, height);
 
     //Translation and rotation
@@ -271,7 +255,7 @@ void render(Scene scene)
     // debug
     printf("RENDERING... ");
     float progress = 0.;
-    float progress_step = 1./(WIDTH*HEIGHT);
+    float progress_step = 1./(width*height);
     progress += progress_step;
 
     double inv_AA = 1.0/AA;
@@ -344,10 +328,11 @@ void render(Scene scene)
  *
  *   returns: void
  */
-void render_all(SceneContainer scenes_container){
+void render_all(SceneContainer scenes_container)
+{
 
     for(int i=0;i<scenes_container.num_scenes;++i){
-        render(*(scenes_container.scenes)[i]);
+        render(*(scenes_container.scenes)[i], WIDTH, HEIGHT);
         destroy_scene(&(*(scenes_container.scenes)[i]));
     }
 }
@@ -361,8 +346,8 @@ int main()
     render_all(scenes_container);
 
 
-    // benchmark_func_shoot_ray(&shoot_ray);
-
+    // benchmark_add_render_func(&render, "asd", 0);
+    // run_benchmarking();
 
     return 0;
 }
