@@ -136,33 +136,7 @@ Vec3 trace(Vec3 o,
 
 
     // Shade intersected object    
-    Material mat;
-
-    // Find the object and take it's material
-    if (sdf_info.nearest_obj_type == T_Plane)
-    {
-        mat = (*(scene.planes)[sdf_info.nearest_obj_idx]).mat;
-    }
-    else if (sdf_info.nearest_obj_type == T_Cone)
-    {
-        mat = (*(scene.cones)[sdf_info.nearest_obj_idx]).mat;
-    }
-    else if (sdf_info.nearest_obj_type == T_Octahedron)
-    {
-        mat = (*(scene.octahedrons)[sdf_info.nearest_obj_idx]).mat;
-    }
-    else if (sdf_info.nearest_obj_type == T_Sphere)
-    {
-        mat = (*(scene.spheres)[sdf_info.nearest_obj_idx]).mat;
-    } 
-    else if (sdf_info.nearest_obj_type == T_Box)
-    {
-        mat = (*(scene.boxes)[sdf_info.nearest_obj_idx]).mat;
-    }    
-    else if (sdf_info.nearest_obj_type == T_TORUS)
-    {
-        mat = (*(scene.toruses)[sdf_info.nearest_obj_idx]).mat;
-    }
+    Material mat = *(scene.geometric_ojects[sdf_info.nearest_obj_idx]->mat);
 
     // Normal
     Vec3 N = compute_normal(sdf_info.intersection_pt, scene);
@@ -239,7 +213,6 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
  */
 void render(Scene scene, PointLight pLight)
 {
-
     unsigned int width = WIDTH;
     unsigned int height = HEIGHT;
     float fov = 30;
@@ -247,9 +220,9 @@ void render(Scene scene, PointLight pLight)
     Camera* camera = create_camera(fov, width, height);
 
     //Translation and rotation
-    Vec3 t = {0.0,5.0,-7};
-    move_camera(camera, t);
-    rotate_camera(camera, 20, 0);
+    // Vec3 t = {0.0,5.0,-7};
+    // move_camera(camera, t);
+    rotate_camera(camera, 5, 0);
 
     // debug
     printf("RENDERING... ");
@@ -323,16 +296,18 @@ void render(Scene scene, PointLight pLight)
  */
 void render_all(SceneContainer scenes_container, PointLight pLight){
 
-    for(int i=0;i<scenes_container.num_scenes;++i){
-        render(*(scenes_container.scenes)[i], pLight);
-        destroy_scene(&(*(scenes_container.scenes)[i]));
-    }
+    // for(int i=0;i<scenes_container.num_scenes;++i){
+        Scene s = *(scenes_container.scenes)[0];
+        // printf("Scene check 1... entry 3: %f",s.geometric_ojects[0]->params[3]);
+        render(*(scenes_container.scenes)[0], pLight);
+        // destroy_scene(&(*(scenes_container.scenes)[i]));
+    // }
 }
 
 int main()
 {
     SceneContainer scenes_container = build_scenes();
-
+ 
     // Lights (in future can be an array)
     PointLight pLight;
     pLight.c = new_vector(0, 100, 0);

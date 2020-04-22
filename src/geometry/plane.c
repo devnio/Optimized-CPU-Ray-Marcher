@@ -1,15 +1,9 @@
 #include "geometry/plane.h"
 #include "vec3.h"
 
-double sdf_plane(Vec3 p, Plane plane)
+// params[0..2]: normal of plane
+// params[3]: displacement of plane
+double sdf_plane(Vec3 p, Transform transform, double params[])
 {
-    return vec_dot(p, plane.n) + plane.d;
-}
-
-Plane* build_plane(Vec3 n, double d, Material mat){
-    Plane* p = (Plane*) malloc(sizeof(Plane));
-    p->d=d;
-    p->n = n;
-    p->mat = mat;
-    return p;
+    return (p.x*params[0] + p.y*params[1] + p.z*params[2]) + params[3];
 }

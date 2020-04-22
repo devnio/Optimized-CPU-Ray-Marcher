@@ -3,14 +3,8 @@
 
 #include "material.h"
 #include "vec3.h"
+#include "transform.h"
 
-typedef struct {
-    Vec3 n;
-    double d; 
-    Material mat;
-} Plane;
-
-double sdf_plane(Vec3 p, Plane plane);
-Plane* build_plane(Vec3 c, double x, Material mat);
+double sdf_plane(Vec3 p, Transform transform, double params[]);
 
 #endif // PLANE_H_
