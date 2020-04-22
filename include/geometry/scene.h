@@ -7,6 +7,7 @@
 #include "geometry/box.h"
 #include "geometry/cone.h"
 #include "geometry/torus.h"
+#include "light.h"
 
 typedef enum
 {
@@ -27,13 +28,17 @@ typedef struct {
     int nr_boxes;
     int nr_cones;
     int nr_toruses;
-    
+    int nr_lights;
+
     Plane **planes;
     Octahedron **octahedrons;
     Sphere **spheres; 
     Box **boxes; 
     Cone **cones;
     Torus **toruses;
+
+    PointLight plight;
+
 } Scene;
 
 typedef struct  
@@ -48,6 +53,6 @@ typedef struct
 
 SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info);
 
-Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, int nr_toruses, const char* name);
+Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, int nr_toruses, PointLight pl, const char* name);
 
 #endif // SCENE_H_

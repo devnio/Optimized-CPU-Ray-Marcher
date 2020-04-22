@@ -65,7 +65,13 @@ void add_torus(int nr, Torus** tos, ...){
 ////////////////////////////////  SCENES DEFINITION /////////////////////////////////////
 
 Scene* scene_baseline(){
-    Scene* scene = build_scene(1,4,1,3,1,0, "../output/baseline.png");
+
+    PointLight pLight;
+    pLight.c = new_vector(0, 100, 0);
+    double em = 2;
+    pLight.emissionColor = new_vector(em, em, em);
+
+    Scene* scene = build_scene(1,4,1,3,1,0, pLight, "../output/baseline.png");
   
     Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
     add_plane(scene->nr_planes, scene->planes,pl0);
@@ -87,7 +93,13 @@ Scene* scene_baseline(){
 }
 
 Scene* scene_baseline2(){
-    Scene* scene = build_scene(1,1,0,0,1,0, "../output/baseline2.png");
+
+    PointLight pLight;
+    pLight.c = new_vector(0, 100, 0);
+    double em = 2;
+    pLight.emissionColor = new_vector(em, em, em);
+
+    Scene* scene = build_scene(1,1,0,0,1,0, pLight, "../output/baseline2.png");
     
     Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
     add_plane(scene->nr_planes, scene->planes,pl0);
@@ -101,7 +113,13 @@ Scene* scene_baseline2(){
 
 
 Scene* scene_torus_test(){
-    Scene* scene = build_scene(1,1,0,0,0,1, "../output/torus_test.png");
+
+    PointLight pLight;
+    pLight.c = new_vector(0, 100, 0);
+    double em = 2;
+    pLight.emissionColor = new_vector(em, em, em);
+
+    Scene* scene = build_scene(1,1,0,0,0,1, pLight, "../output/torus_test.png");
     
     Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
     add_plane(scene->nr_planes, scene->planes,pl0);

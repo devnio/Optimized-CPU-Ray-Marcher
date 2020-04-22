@@ -22,6 +22,23 @@
 #include "light.h"
 #include "scene_loader.h"
 
+
+// ===== BENCHMARKING =====
+#ifndef WIN32
+ #include <sys/time.h>
+#endif
+#include <time.h>
+#include "benchmark/tsc_x86.h"
+#include "benchmark.c"
+
+#define NUM_RUNS 1
+#define CYCLES_REQUIRED 1e8
+#define FREQUENCY 2.7e9
+#define CALIBRATE
+#define NR_OF_SAMPLES 30
+
+#define RUN_BENCHMARK 0
+
 // ===== MACROS =====
 
 // RENDERING
@@ -119,7 +136,7 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info, int d
 Vec3 trace(Vec3 o, 
            Vec3 dir, 
            Scene scene, 
-           PointLight pLight, 
+        //    PointLight pLight, 
            int depth, 
            SDF_Info *prev_sdf_info)
 {
@@ -174,7 +191,7 @@ Vec3 trace(Vec3 o,
     }
 
     // Light dir
-    Vec3 L = vec_sub(pLight.c, sdf_info.intersection_pt);
+    Vec3 L = vec_sub(scene.plight.c, sdf_info.intersection_pt);
     L = vec_normalized(L);
 
     if ((depth < MAX_RAY_DEPTH) && (mat.refl > 0))
@@ -185,7 +202,7 @@ Vec3 trace(Vec3 o,
 
         // Compute reflected color
         double bias = 1e-4;
-        Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, vec_mult_scalar(N, bias)), reflDir, scene, pLight, depth + 1, &sdf_info);
+        Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, vec_mult_scalar(N, bias)), reflDir, scene, depth + 1, &sdf_info);
         finalColor = vec_mult_scalar(reflectedCol, mat.refl);
     }
 
@@ -212,7 +229,7 @@ Vec3 trace(Vec3 o,
 
     Vec3 diffuseColor = vec_mult_scalar(vec_mult_scalar(mat.surfCol, lambertian), sdf_shadow_info.s);
     Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
-    specularColor = vec_mult(pLight.emissionColor, vec_mult_scalar(specularColor, specular));
+    specularColor = vec_mult(scene.plight.emissionColor, vec_mult_scalar(specularColor, specular));
     finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
     return finalColor;
 }
@@ -237,7 +254,7 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
  *
  *   returns: void
  */
-void render(Scene scene, PointLight pLight)
+void render(Scene scene)
 {
 
     unsigned int width = WIDTH;
@@ -263,6 +280,11 @@ void render(Scene scene, PointLight pLight)
     // render
     size_t png_img_size = width * height * 4 * sizeof(unsigned char);
     unsigned char *img = (unsigned char *)malloc(png_img_size);
+
+    // myInt64 cycles;
+    // myInt64 start;
+    // start = start_tsc();
+
     for (unsigned y = 0; y < height; ++y)
     {
         for (unsigned x = 0; x < width; ++x)
@@ -278,14 +300,14 @@ void render(Scene scene, PointLight pLight)
                     double disp_x = (inv_AA*n - 0.5) + x;
                     double disp_y = (inv_AA*m - 0.5) + y;
                     Vec3 dir = shoot_ray(camera, disp_x, disp_y);
-                    Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
+                    Vec3 px_col = trace(camera->pos, dir, scene, 0, NULL);
                     tot_col = vec_add(tot_col, px_col);
                 }
             }
             Vec3 px_col = vec_mult_scalar(tot_col, 1.0/(AA*AA));
 #else
             Vec3 dir = shoot_ray(camera, x, y);
-            Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
+            Vec3 px_col = trace(camera->pos, dir, scene, 0, NULL);
 #endif
             
             // save colors computed by trace into current pixel
@@ -305,6 +327,9 @@ void render(Scene scene, PointLight pLight)
         }
     }
 
+    // cycles = stop_tsc(start);
+    // printf("\n%lld", cycles);
+
     encodeOneStep(scene.name, img, width, height);
     printf("\nImage rendered and saved in output folder\n");
     free(img);
@@ -317,14 +342,12 @@ void render(Scene scene, PointLight pLight)
  * ----------------------------
  *   Render all the different scenes and save it in ouput. 
  *
- *   pLight: point light 
- *
  *   returns: void
  */
-void render_all(SceneContainer scenes_container, PointLight pLight){
+void render_all(SceneContainer scenes_container){
 
     for(int i=0;i<scenes_container.num_scenes;++i){
-        render(*(scenes_container.scenes)[i], pLight);
+        render(*(scenes_container.scenes)[i]);
         destroy_scene(&(*(scenes_container.scenes)[i]));
     }
 }
@@ -333,14 +356,13 @@ int main()
 {
     SceneContainer scenes_container = build_scenes();
 
-    // Lights (in future can be an array)
-    PointLight pLight;
-    pLight.c = new_vector(0, 100, 0);
-    double em = 2;
-    pLight.emissionColor = new_vector(em, em, em);
 
     //render(*(scenes_container.scenes)[1], pLight);
-    render_all(scenes_container, pLight);
+    render_all(scenes_container);
+
+
+    // benchmark_func_shoot_ray(&shoot_ray);
+
 
     return 0;
 }

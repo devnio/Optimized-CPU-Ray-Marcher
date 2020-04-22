@@ -108,7 +108,7 @@ SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info)
     return sdf_info;
 }
 
-Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, int nr_toruses, const char* name){
+Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, int nr_toruses, PointLight pl, const char* name){
 
     Scene* scene = (Scene*) malloc(sizeof(Scene));
 
@@ -133,6 +133,7 @@ Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, in
     scene->cones = cones;
     scene->octahedrons = octahedrons;
     scene->toruses = toruses;
+    scene->plight = pl;
 
     return scene;
 
