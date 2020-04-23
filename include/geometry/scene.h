@@ -1,12 +1,8 @@
 #ifndef SCENE_H_
 #define SCENE_H_
 
-#include "geometry/plane.h"
-#include "geometry/octahedron.h"
-#include "geometry/sphere.h"
-#include "geometry/box.h"
-#include "geometry/cone.h"
-#include "geometry/torus.h"
+#include "material.h"
+#include "geometry/transform.h"
 
 typedef double (*sdf_func)(Vec3 p, Transform transform, double params[]);
 
@@ -36,6 +32,6 @@ typedef struct
 
 SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info);
 
-Scene* build_scene(int nr_sdfs, const char* name);
+Scene* build_scene(const char* name);
 
 #endif // SCENE_H_

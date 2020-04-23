@@ -32,11 +32,11 @@
 #define SPECULAR_COEFF 0.2
 
 #define EPSILON 0.001
-#define LIGHT_STR 1.5
+#define LIGHT_STR 3
 
-// SCREEN
-#define WIDTH 1
-#define HEIGHT 1
+// SCREEN 25, 19
+#define WIDTH 25
+#define HEIGHT 19
 
 // ANTI ALIASING
 #define AA 1
@@ -69,7 +69,7 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info, int d
 
     double t = 0;
     double s = 1.0;
-    float ph = 1e10;
+    double ph = 1e10;
 
     for (int i = 0; i < MARCH_COUNT; i++)
     {
@@ -92,7 +92,8 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info, int d
         if (doShadowSteps==1)
         {
             float mid = sdf_info.min_dist*sdf_info.min_dist;
-            float y = mid/(2.0*ph);
+            float y = (i==0) ? 0.0 : mid/(2.0*ph); 
+            // float y = mid/(2.0*ph);
             float d = sqrt(mid-y*y);
             s = min(s, LIGHT_STR*d/max(0.0,t-y));
             ph = sdf_info.min_dist;
@@ -171,8 +172,9 @@ Vec3 trace(Vec3 o,
    sdf_shadow_info.s = 1;
    if (scene.nr_geom_objs > 1)
    {
-        sdf_shadow_info = ray_march(sdf_info.intersection_pt, L, scene, &sdf_info, 1);
-        sdf_shadow_info.s = clamp(sdf_shadow_info.s+0.5, 0, 1);
+        sdf_shadow_info = ray_march(vec_add(sdf_info.intersection_pt, new_vector(EPSILON, EPSILON, EPSILON)), L, scene, &sdf_info, 1);
+        sdf_shadow_info.s = clamp(sdf_shadow_info.s, 0.0, 1.0);
+        // if (sdf_shadow_info.intersected == 1) return new_vector(0.0, 0.0, 0.0);
    }
 
     // Lamber's cosine law
@@ -263,7 +265,11 @@ void render(Scene scene, PointLight pLight)
             Vec3 px_col = vec_mult_scalar(tot_col, 1.0/(AA*AA));
 #else
             Vec3 dir = shoot_ray(camera, x, y);
-            Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
+            Vec3 px_col = new_vector(0.0, 0.0, 0.0);
+            if (y == 16 && (x == 12 || x == 11)) 
+            {
+                px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
+            }
 #endif
             
             // save colors computed by trace into current pixel

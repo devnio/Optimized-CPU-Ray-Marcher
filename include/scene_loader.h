@@ -1,6 +1,7 @@
-#ifndef SCENE_H_
-    #include "geometry/scene.h"
-#endif
+#ifndef SCENE_LOADER_H_
+#define SCENE_LOADER_H_
+
+#include "geometry/scene.h"
 
 typedef Scene*(*scene_builder)();
 
@@ -14,3 +15,5 @@ void add_scenes();
 SceneContainer build_scenes();
 Scene* scene_baseline();
 void destroy_scene(Scene* scene);
+
+#endif // SCENE_LOADER_H_
