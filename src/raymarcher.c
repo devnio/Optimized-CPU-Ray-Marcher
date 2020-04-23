@@ -39,8 +39,8 @@
 #define LIGHT_STR 1.5
 
 // SCREEN
-#define WIDTH 1280
-#define HEIGHT 720
+#define WIDTH 128
+#define HEIGHT 72
 
 // ANTI ALIASING
 #define AA 1
@@ -241,7 +241,7 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
  *
  *   returns: void
  */
-void render(Scene scene, unsigned int width, unsigned int height)
+void render(Scene scene, unsigned int width, unsigned int height, char* name)
 {
 
     float fov = 30;
@@ -314,11 +314,38 @@ void render(Scene scene, unsigned int width, unsigned int height)
     // cycles = stop_tsc(start);
     // printf("\n%lld", cycles);
 
-    encodeOneStep(scene.name, img, width, height);
-    printf("\nImage rendered and saved in output folder\n");
+    // if(RUN_BENCHMARK) {
+    //     encodeOneStep(filename, img, width, height);
+    // }else {
+    //     // save scene with scene.name
+
+    // }
+
+    if (RUN_BENCHMARK)
+    {
+        // encode image: filepath is build into name
+        encodeOneStep(name, img, width, height);
+        printf("\nImage rendered and saved in path folder %s \n", name);
+
+    } else {
+        // Build path-name
+        char* path = OUTPUT_PATH;
+        char* tmp = _concat(path, name); // Note: free up tmp!
+        char* filename = _concat(tmp, ".png"); // Note: free up filename!
+
+        // encode image
+        encodeOneStep(filename, img, width, height);
+        printf("\nImage rendered and saved in path folder %s \n", filename);
+
+        // Clean-up allocated strings
+        free(tmp);
+        free(filename);
+    }
+    
+    // Clean-up
     free(img);
     free_camera(camera);
-    
+
 }
 
 /*
@@ -332,7 +359,7 @@ void render_all(SceneContainer scenes_container)
 {
 
     for(int i=0;i<scenes_container.num_scenes;++i){
-        render(*(scenes_container.scenes)[i], WIDTH, HEIGHT);
+        render(*(scenes_container.scenes)[i], WIDTH, HEIGHT, (scenes_container.scenes)[i]->name);
         destroy_scene(&(*(scenes_container.scenes)[i]));
     }
 }
@@ -340,14 +367,11 @@ void render_all(SceneContainer scenes_container)
 int main()
 {
     SceneContainer scenes_container = build_scenes();
+    // render_all(scenes_container);
 
 
-    //render(*(scenes_container.scenes)[1], pLight);
-    render_all(scenes_container);
-
-
-    // benchmark_add_render_func(&render, "asd", 0);
-    // run_benchmarking();
+    benchmark_add_render_func(&render, "render_baseline_no_opt", 1); // benchmarks rendering functions of prototype render_func_prot
+    run_perf_benchmarking(scenes_container);
 
     return 0;
 }

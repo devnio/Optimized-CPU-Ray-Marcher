@@ -99,8 +99,9 @@ Scene* scene_baseline2(){
     double em = 2;
     pLight.emissionColor = new_vector(em, em, em);
 
-    Scene* scene = build_scene(1,1,0,0,1,0, pLight, "../output/baseline2.png");
-    
+    // Scene* scene = build_scene(1,1,0,0,1,0, pLight, "../output/baseline2.png");
+    Scene* scene = build_scene(1,1,0,0,1,0, pLight, "baseline2");
+
     Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
     add_plane(scene->nr_planes, scene->planes,pl0);
     Octahedron* oct0 = build_octahedron(new_vector(4, 0, 20),2,new_material(new_vector(0, 0.3, 0.6),0,15,new_vector(0, 0, 0)));
@@ -119,7 +120,7 @@ Scene* scene_torus_test(){
     double em = 2;
     pLight.emissionColor = new_vector(em, em, em);
 
-    Scene* scene = build_scene(1,1,0,0,0,1, pLight, "../output/torus_test.png");
+    Scene* scene = build_scene(1,1,0,0,0,1, pLight, "torus_test");
     
     Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
     add_plane(scene->nr_planes, scene->planes,pl0);
@@ -140,8 +141,8 @@ Scene* scene_torus_test(){
 */
 void add_scenes(){
     // add_scene(&scene_baseline2);
-    add_scene(&scene_baseline);
-    // add_scene(&scene_torus_test);
+    // add_scene(&scene_baseline);
+    add_scene(&scene_torus_test);
     
 }
 

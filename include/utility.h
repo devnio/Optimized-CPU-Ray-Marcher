@@ -5,6 +5,7 @@
 #include "vec3.h"
 #endif
 
+#define OUTPUT_PATH "../output/"
 
 double mix(double a, double b, double mix);
 double min(double a, double b);
@@ -17,5 +18,6 @@ double sign(double val);
 Vec3 vec_max(Vec3 v1, Vec3 v2);
 Vec3 rotate_point(Vec3 p, Vec3 angle);
 double to_radians(double degrees);
+char* _concat(const char *str1, const char *str2);
 
 #endif

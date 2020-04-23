@@ -9,14 +9,19 @@
  #include "geometry/scene.h"
 #endif
 
+#ifndef SCENE_LOADER_H_
+ #include "scene_loader.h"
+#endif
 
 
 /* Prototype of render function */
-typedef void(*render_func_prot)(Scene , unsigned int, unsigned int);
+typedef void(*render_func_prot)(Scene , unsigned int, unsigned int, char*);
 
-/*  */
-void benchmark_add_render_func(render_func_prot f, char* name, int flops);
+/* Adds rendering type functions to the benchmarker  */
+void benchmark_add_render_func(render_func_prot f, char* name, int flops) ;
 
-void run_benchmarking();
+/* Runs performance benchamrkin */
+void run_perf_benchmarking(SceneContainer sceneContainer);
 
-double perf_test(render_func_prot f, char* name, int flops);
+/* Performance tester for rendering fucntions */
+double perf_test(render_func_prot f, char* name, int flops, SceneContainer sceneContainer);

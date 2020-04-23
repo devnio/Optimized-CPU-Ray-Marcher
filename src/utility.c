@@ -1,5 +1,9 @@
 #include "utility.h"
 #include "math.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 
 /*
  * Function:  mix 
@@ -162,4 +166,18 @@ Vec3 rotate_point(Vec3 p, Vec3 angle)
 
 double to_radians(double degrees) {
     return degrees * (M_PI / 180.0);
+}
+
+
+char* _concat(const char *str1, const char *str2) { 
+    const size_t len1 = strlen(str1);
+    const size_t len2 = strlen(str2);
+    char *res = malloc(len1 + len2 + 1); // +1 for the null-terminator
+    // if (res == NULL)
+    // {
+    //     printf("Failed to allocate memory...\n");
+    // }
+    memcpy(res, str1, len1);
+    memcpy(res + len1, str2, len2 + 1); // +1 to copy the null-terminator
+    return res; // NOTE: your responsibility to free memory! 
 }
