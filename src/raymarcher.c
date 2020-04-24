@@ -14,6 +14,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "geometry/scene.h"
 #include "lodepng.h"
@@ -24,9 +27,10 @@
 // #include "benchmark/tsc_x86.h"
 #include "benchmark/benchmark.h"
 
-#define RUN_BENCHMARK 0
-
 // ===== MACROS =====
+
+// BENCHMARKING
+#define RUN_BENCHMARK 1 
 
 // RENDERING
 #define MAX_RAY_DEPTH 2    // max nr. bounces
@@ -368,11 +372,26 @@ void render_all(SceneContainer scenes_container)
 
 int main()
 {
+
+    //--- Check if output directory exists, create otherwise ---//
+    struct stat st = {0};
+    if (stat(OUTPUT_PATH, &st) == -1) {
+        mkdir(OUTPUT_PATH, 0700); // create directory 
+    } 
+
+
+    //--- Create Scenes and render ---//
     SceneContainer scenes_container = build_scenes();
-    // render_all(scenes_container);
+    if (!RUN_BENCHMARK)
+    {   
+        // TODO: create directory for non-benchmarking output, that is reused
+        render_all(scenes_container);
+    }
+    
 
-
-    benchmark_add_render_func(&render, "render_baseline_no_opt", 1); // benchmarks rendering functions of prototype render_func_prot
+    //--- BENCHMARKING ---//
+    benchmark_add_render_func(&render, "render_func_noOpt", 1); // benchmarks rendering functions of prototype render_func_prot
+    // benchmark_add_render_func(&render, "render_func_noOpt2", 1); // benchmarks rendering functions of prototype render_func_prot
     run_perf_benchmarking(scenes_container);
 
     return 0;

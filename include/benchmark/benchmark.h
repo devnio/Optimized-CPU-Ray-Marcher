@@ -24,4 +24,4 @@ void benchmark_add_render_func(render_func_prot f, char* name, int flops) ;
 void run_perf_benchmarking(SceneContainer sceneContainer);
 
 /* Performance tester for rendering fucntions */
-double perf_test(render_func_prot f, char* name, int flops, SceneContainer sceneContainer);
+double perf_test(render_func_prot f, char* name, int flops, SceneContainer sceneContainer, char* dirName);

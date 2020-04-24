@@ -139,8 +139,8 @@ Scene* scene_torus_test(){
 *   Note: If needed modify MAX_NR_SCENES
 */
 void add_scenes(){
-    // add_scene(&scene_baseline2);
-    // add_scene(&scene_baseline);
+    add_scene(&scene_baseline2);
+    add_scene(&scene_baseline);
     add_scene(&scene_torus_test);
     
 }
@@ -209,6 +209,7 @@ void destroy_scene(Scene* scene){
     free(scene->toruses);
     scene->toruses=0;
 
+    free(scene->name);
     free(scene);
     scene=0;
 
