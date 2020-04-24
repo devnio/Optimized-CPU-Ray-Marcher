@@ -35,6 +35,9 @@
 #define SHADOW_LIGHTNESS 0.1
 #define LIGHT_STR 3
 
+#define FOG 1
+#define FOG_COEFF -0.00002
+
 // PRECISION
 #define EPSILON 0.001
 
@@ -202,6 +205,12 @@ Vec3 trace(Vec3 o,
     Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
     specularColor = vec_mult(pLight.emissionColor, vec_mult_scalar(specularColor, specular));
     finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
+
+#if FOG == 1
+    double t = vec_norm(sdf_info.intersection_pt);
+    finalColor = vec_mult_scalar(finalColor, exp(FOG_COEFF * t * t * t));
+#endif
+
     return finalColor;
 }
 
