@@ -1,22 +1,15 @@
-#ifndef TORUS
-#define TORUS
+#ifndef TORUS_H_
+#define TORUS_H_
 
-#ifndef VEC_3
- #include "vec3.h"
-#endif
+#include "vec3.h"
 
-#include "material.h"
+/*
+Params are:  
+- params[0]: r1
+- params[1]: r2
+-> 2 parameter in total
+ */
+double sdf_torus(Vec3 p, double params[]);
+extern const int nr_torus_params;
 
-typedef struct
-{
-    Vec3 c; 
-    double r1; // inner radius of disk
-    double r2; // outer radous of the torus
-    Material mat;
-} Torus;
-
-double sdf_torus(Vec3 p, Torus c);
-
-Torus* build_torus(Vec3 c, double r1, double r2, Material mat);
-
-#endif
+#endif //TORUS_H_

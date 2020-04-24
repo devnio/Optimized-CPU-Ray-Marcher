@@ -8,7 +8,7 @@ Params for plane are:
 - params[3]: displacement of plane
 -> 4 parameters in total
  */
-double sdf_plane(Vec3 p, Transform transform, double params[])
+double sdf_plane(Vec3 p, double params[])
 {
     return (p.x*params[0] + p.y*params[1] + p.z*params[2]) + params[3];
 }

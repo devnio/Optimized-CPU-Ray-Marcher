@@ -319,9 +319,10 @@ void render_all(SceneContainer scenes_container, PointLight pLight){
     // for(int i=0;i<scenes_container.num_scenes;++i){
         Scene s = *(scenes_container.scenes)[0];
         // printf("Scene check 1... entry 3: %f",s.geometric_ojects[0]->params[3]);
-        render(*(scenes_container.scenes)[0], pLight);
-        // destroy_scene(&(*(scenes_container.scenes)[i]));
+        render(s, pLight);
+        destroy_scene(&s);
     // }
+    free((scenes_container.scenes)[0]);
 }
 
 int main()

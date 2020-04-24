@@ -1,22 +1,16 @@
 #ifndef CONE
 #define CONE
 
-#ifndef VEC_3
- #include "vec3.h"
-#endif
-#include "material.h"
+#include "vec3.h"
 
-typedef struct
-{
-    Vec3 c; //center
-    double r1; //radius down
-    double r2; //radium upper part
-    double h; //height
-    Material mat;
-} Cone;
-
-double sdf_cone(Vec3 p, Cone c);
-
-Cone* build_cone(Vec3 c, double r1, double r2, double h, Material mat);
+/*
+Params are:  
+- params[0]: r1
+- params[1]: r2
+- params[2]: h
+-> 3 parameters in total
+ */
+double sdf_cone(Vec3 p, double params[]);
+extern const int nr_cone_params;
 
 #endif

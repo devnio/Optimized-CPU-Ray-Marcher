@@ -1,21 +1,14 @@
 #ifndef OCTAHEDRON_H_
 #define OCTAHEDRON_H_
 
-#ifndef VEC_3
- #include "vec3.h"
-#endif
-#include "material.h"
+#include "vec3.h"
 
-
-typedef struct
-{
-    Vec3 c;
-    double s;
-    Material mat;
-} Octahedron;
-
-double sdf_octahedron(Vec3 p, Octahedron octahedron);
-Octahedron* build_octahedron(Vec3 c, double s, Material mat);
-
+/*
+Params are:  
+- params[0]: s
+-> 1 parameter in total
+ */
+double sdf_octahedron(Vec3 p, double params[]);
+extern const int nr_octahedron_params;
 
 #endif // OCTAHEDRON_H_

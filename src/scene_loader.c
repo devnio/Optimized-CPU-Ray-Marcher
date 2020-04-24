@@ -4,10 +4,10 @@
 
 #include "geometry/plane.h"
 #include "geometry/sphere.h"
-// #include "geometry/octahedron.h"
-// #include "geometry/box.h"
-// #include "geometry/cone.h"
-// #include "geometry/torus.h"
+#include "geometry/box.h"
+#include "geometry/cone.h"
+#include "geometry/octahedron.h"
+#include "geometry/torus.h"
 #include "scene_loader.h"
 
 #define MAX_NR_SCENES 10
@@ -19,7 +19,7 @@ scene_builder scenes_builder[MAX_NR_SCENES];
   - Specify the sdf function pointer: which defines the shape.
   - The material, transform and the rest of the parameters that the sdf takes.
 */
-void add_geom_obj_to_scene(Scene *scene, sdf_func sdf, Material *mat, Transform *transform, int nr_params, ...)
+void add_geom_obj_to_scene(Scene *scene, sdf_func sdf, const Material *mat, const Transform *transform, int nr_params, ...)
 {
     // Get params
     double *params = (double *)malloc(sizeof(double) * nr_params);
@@ -55,13 +55,25 @@ void add_geom_obj_to_scene(Scene *scene, sdf_func sdf, Material *mat, Transform 
 Scene *scene_switch()
 {
     Scene *scene = build_scene("../output/scene_switch.png");
-    Material *blue = new_material(new_vector(0, 0.1, 0.6), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
-    // Material *blue_refl = new_material(new_vector(0, 0.3, 0.6), 0.5, 15.0, new_vector(0.0, 0.0, 0.0));
-    Transform *identity = new_transform(new_vector(0.0, 0.0, 0.0), new_vector(0.0, 0.0, 0.0));
-    Transform *pos0 = new_transform(new_vector(0.0, 0.0, 15.0), new_vector(0.0, 0.0, 0.0));
+    const Material *white = new_material(new_vector(1.0, 1.0, 1.0), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
+    const Material *blue = new_material(new_vector(0, 0.1, 0.6), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
+    const Material *green = new_material(new_vector(0, 0.6, 0.1), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
+    const Material *yellow = new_material(new_vector(0.5, 0.5, 0.0), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
+    Material *refl = new_material(new_vector(0.3, 0.0, 0.0), 0.5, 15.0, new_vector(0.0, 0.0, 0.0));
+    const Transform *identity = new_transform(new_vector(0.0, 0.0, 0.0), new_vector(0.0, 0.0, 0.0));
+    double h = -1.5;
+    const Transform *pos_box = new_transform(new_vector(-4.0, h, 15.0), new_vector(0.0, 0.0, 0.0));
+    const Transform *pos_octahedron  = new_transform(new_vector(-1.5, h, 12.0), new_vector(0.0, 0.0, 0.0));
+    const Transform *pos_cone = new_transform(new_vector(1.5, h, 12.0), new_vector(0.0, 0.0, 0.0));
+    const Transform *pos_torus = new_transform(new_vector(4.0, h, 15.0), new_vector(0.0, 0.0, 0.0));
+    const Transform *pos_sp = new_transform(new_vector(0.0, h+1.5, 20.0), new_vector(0.0, 0.0, 0.0));
 
-    add_geom_obj_to_scene(scene, &sdf_plane, blue, identity, nr_plane_params, 0.0, 1.0, 0.0, 3.0);
-    add_geom_obj_to_scene(scene, &sdf_sphere, blue, pos0, nr_sphere_params, 2.0);
+    add_geom_obj_to_scene(scene, &sdf_plane, white, identity, nr_plane_params, 0.0, 1.0, 0.0, 3.0);  
+    add_geom_obj_to_scene(scene, &sdf_box, blue, pos_box, nr_box_params, 0.25, 0.5, 1.0);
+    add_geom_obj_to_scene(scene, &sdf_sphere, refl, pos_sp, nr_sphere_params, 3.0);  
+    add_geom_obj_to_scene(scene, &sdf_cone, blue, pos_cone, nr_cone_params, 1.0, 0.5, 1.0);
+    add_geom_obj_to_scene(scene, &sdf_torus, yellow, pos_torus, nr_torus_params, 1.0, 0.2);
+    add_geom_obj_to_scene(scene, &sdf_octahedron, green, pos_octahedron, nr_octahedron_params, 1.0);
     
     return scene;
 }
@@ -101,25 +113,21 @@ SceneContainer build_scenes()
 
 void destroy_scene(Scene *scene)
 {
-    for (int i = 0; i < scene->nr_geom_objs; ++i)
-    {
-        GeomtericObject *p = (scene->geometric_ojects)[i];
-        free(p->mat);
-        free(p->transform);
-        free(p->params);
-        free(p);
-    }
+    // TODO: make sure you free only once -> create an array in scene with the global transforms and materials and so on.
+    // for (int i = 0; i < scene->nr_geom_objs; ++i)
+    // {
+    //     GeomtericObject *p = (scene->geometric_ojects)[i];
+    //     free((Material*)p->mat);
+    //     p->mat = NULL;
+    //     free((Transform*)p->transform);
+    //     p->transform = NULL;
+    //     free(p->params);
+    //     p->params = NULL;
+    //     free(p);
+    //     p = NULL;
+    // }
     free(scene->geometric_ojects);
-    free(scene);
-    scene = 0;
+    free(scene->name);
+    // free(scene);
+    // scene = 0;
 }
-
-////////////////////////////////  JSON DEFINITION /////////////////////////////////////
-/*
-
-if (strcmp(obj_name, "Plane"))
-{
-
-}
-
-*/

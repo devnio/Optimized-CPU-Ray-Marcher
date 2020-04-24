@@ -2,30 +2,20 @@
 #include "vec3.h"
 #include "utility.h"
 
+const int nr_box_params = 3;
 
-float sdf_box(Vec3 p, Box box)
+/*
+Params are:  
+- params[0..2]: box extents, x, y, z
+-> 3 parameters in total
+ */
+double sdf_box(Vec3 p, double params[])
 {
-
-  Vec3 d = new_vector(0, -1, 6);
-  Vec3 t = vec_sub(p, d);
-
-  Vec3 m = rotate_point(t, new_vector(0, 45, 0));
-  m = rotate_point(m, new_vector(45, 0, 0));
-
   Vec3 q;
-  q.x = (m.x < 0) ? (m.x * -1 - box.b.x) : (m.x - box.b.x);
-  q.y = (m.y < 0) ? (m.y * -1 - box.b.y) : (m.y - box.b.y);
-  q.z = (m.z < 0) ? (m.z * -1 - box.b.z) : (m.z - box.b.z);
-  Vec3 zero; zero.x = 0; zero.y = 0; zero.z = 0;
-
-
-
+  q.x = (p.x < 0) ? (p.x * -1 - params[0]) : (p.x - params[0]);
+  q.y = (p.y < 0) ? (p.y * -1 - params[1]) : (p.y - params[1]);
+  q.z = (p.z < 0) ? (p.z * -1 - params[2]) : (p.z - params[2]);
+  
+  Vec3 zero = new_vector_one(0.0);
   return vec_norm(vec_max(q, zero)) + min(max(q.x,max(q.y,q.z)),0.0);
-}
-
-Box* build_box(Vec3 b, Material mat){
-    Box* box = (Box*) malloc(sizeof(Box));
-    box->b = b; 
-    box->mat = mat;
-    return box;
 }

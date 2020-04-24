@@ -2,7 +2,7 @@
 #define PLANE_H_
 
 #include "vec3.h"
-#include "transform.h"
+#include "geometry/transform.h"
 
 /*
 Params for plane are:  
@@ -10,7 +10,7 @@ Params for plane are:
 - params[3]: displacement of plane
 -> 4 parameters in total
  */
-double sdf_plane(Vec3 p, Transform transform, double params[]);
+double sdf_plane(Vec3 p, double params[]);
 
 /*
 For variables use extern keyword so that it only gets declared (NOT yet initialized).

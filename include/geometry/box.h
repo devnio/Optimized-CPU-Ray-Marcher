@@ -1,16 +1,14 @@
 #ifndef BOX_H_
 #define BOX_H_
 
-#include "material.h"
 #include "vec3.h"
-#include "utility.h"
 
-typedef struct {
-    Vec3 b;
-    Material mat;
-} Box;
-
-float sdf_box(Vec3 p, Box box);
-Box* build_box(Vec3 b, Material mat);
+/*
+Params are:  
+- params[0..2]: box extents, x, y, z
+-> 3 parameters in total
+ */
+double sdf_box(Vec3 p, double params[]);
+extern const int nr_box_params;
 
 #endif // BOX_H_

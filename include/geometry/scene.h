@@ -4,14 +4,14 @@
 #include "material.h"
 #include "geometry/transform.h"
 
-typedef double (*sdf_func)(Vec3 p, Transform transform, double params[]);
+typedef double (*sdf_func)(Vec3 p, double params[]);
 
 typedef struct 
 {
     sdf_func sdf;
     double* params;
-    Material* mat;
-    Transform* transform;
+    const Material* mat;
+    const Transform* transform;
 
 } GeomtericObject;
 
@@ -33,5 +33,7 @@ typedef struct
 void sdf(Vec3 p, Scene scene, SDF_Info* sdf_info_out);
 
 Scene* build_scene(const char* name);
+
+Vec3 apply_transform(Vec3 p, const Transform*transform);
 
 #endif // SCENE_H_
