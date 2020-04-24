@@ -327,8 +327,6 @@ void render(Scene scene, unsigned int width, unsigned int height, char* name)
 
     if (RUN_BENCHMARK)
     {   
-        // TODO: have possibility of not encoding png file
-        
         // encode image: filepath is built into name
         encodeOneStep(name, img, width, height);
         printf("\nImage rendered and saved in path folder %s \n", name);

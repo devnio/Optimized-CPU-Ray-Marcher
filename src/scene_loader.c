@@ -139,9 +139,9 @@ Scene* scene_torus_test(){
 *   Note: If needed modify MAX_NR_SCENES
 */
 void add_scenes(){
-    add_scene(&scene_baseline2);
+    // add_scene(&scene_baseline2);
     add_scene(&scene_baseline);
-    add_scene(&scene_torus_test);
+    // add_scene(&scene_torus_test);
     
 }
 

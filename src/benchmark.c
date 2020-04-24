@@ -47,17 +47,11 @@ void benchmark_add_render_func(render_func_prot f, char* name, int flops) {
 
 void run_perf_benchmarking(SceneContainer sceneContainer) {
 
-  // TODO create directory for each benchmarking
-  // char *pathName = malloc(length + 1); 
-
-
   // build current date and time to append to path name
   char date_[100];
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
   strftime(date_, sizeof(date_)-1, "benchmark_%d_%m_%Y_%H_%M_%S", t); 
-
-  // int ret = chdir(OUTPUT_PATH);
   
   char dirName[200] = OUTPUT_PATH;
   strcat(dirName, date_);
@@ -131,36 +125,91 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
       mkdir(newDirName, 0700); // create directory 
     }  
 
+    
+
     // printf("\nDirectory Name: %s", newDirName);
 
 
     // TODO: create different path to new subdirectiory for different scenes
 
     // Create txt file for parameters
-    // FILE *fparam = NULL;
-    // char fileName[100];
-    // sprintf(fileName, "%s%s", OUTPUT_PATH, "parameters.txt");
-    // printf("Parameter filename: %s", fileName);
-    // fparam = fopen(fileName ,"w");
-    // if (fparam != NULL)
-    // {
-    //   char str1[100] = 
-    //   strcat(str1, (sceneContainer.scenes)[i]->name);
-    //   fputs(str1, fparam);
-    //   fclose(fparam);
-    // } else
-    // {
-    //   printf("WARNING: could not open/create .txt file for writing parameters.");
-    // }
+    char time_[100];
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    strftime(time_, sizeof(time_)-1, "%d.%m.%Y %H:%M", t);
+    FILE *fparam = NULL;
+    char param_fileName[100];
+    sprintf(param_fileName, "%s%s", dirName, "/parameters.txt");
+    fparam = fopen(param_fileName ,"w");
+    if (fparam != NULL)
+    {
+      char tmp[100];
+      char out_text[500] = "Scene name: ";
+      strcat(out_text, (sceneContainer.scenes)[i]->name);
+      strcat(out_text, "\nDate: ");
+      strcat(out_text, time_);
 
-    // char text[100];
-    // time_t now = time(NULL);
-    // struct tm *t = localtime(&now);
-    // strftime(text, sizeof(text)-1, "%d %m %Y %H:%M", t);
-    // printf("Current Date: %s", text);
+      strcat(out_text, "\nCYCLES_REQUIRED: ");
+      sprintf(tmp, "%f", CYCLES_REQUIRED); 
+      strcat(out_text, tmp);
+
+      strcat(out_text, "\nREPETITIONS: ");
+      sprintf(tmp, "%d", REPETITIONS); 
+      strcat(out_text, tmp);
+
+      strcat(out_text, "\nNUM_RUNS: ");
+      sprintf(tmp, "%d", NUM_RUNS); 
+      strcat(out_text, tmp);
+
+      strcat(out_text, "\nNR_OF_SAMPLES: ");
+      sprintf(tmp, "%d", NR_OF_SAMPLES); 
+      strcat(out_text, tmp);
+
+      strcat(out_text, "\nSTART_W_RESOLUTION: ");
+      sprintf(tmp, "%d", START_W_RESOLUTION); 
+      strcat(out_text, tmp);
+
+      strcat(out_text, "\nEND_W_RESOLUTION: ");
+      sprintf(tmp, "%d", END_W_RESOLUTION); 
+      strcat(out_text, tmp);
+
+      strcat(out_text, "\nRESOLUTION_STEPS: ");
+      sprintf(tmp, "%d", RESOLUTION_STEPS); 
+      strcat(out_text, tmp);
+
+      strcat(out_text, "\nSCALE_RATIO: ");
+      sprintf(tmp, "%f", SCALE_RATIO); 
+      strcat(out_text, tmp);
+
+      fputs(out_text, fparam);
+      fclose(fparam);
+    } else
+    {
+      printf("WARNING: could not open/create .txt file for writing parameters.");
+    }
 
     // create txt file for performance timings
+    char* path = _concat(newDirName, "/"); // free
+    char* add_ = "benchmark_";
+    char* str1 = _concat(path, add_); // Note: free up str1!
+    char* str2 = _concat(str1, (sceneContainer.scenes)[i]->name); // Note: free up str2!
 
+    // Create txt file for performance measurements
+    FILE *fmeasurem = NULL;
+    char measurem_fileName[100];
+    sprintf(measurem_fileName, "%s%s", newDirName, "/measurements.txt");
+    printf("\nParameter filename: %s", measurem_fileName);
+    fmeasurem = fopen(measurem_fileName ,"w");
+    if (fmeasurem == NULL) {
+      printf("%s", "Warning: Failed to create measurements.txt file");
+    }
+    char txt_measur[100];
+    char temp_text[100] = "Scene name: ";
+    strcat(temp_text, (sceneContainer.scenes)[i]->name);
+    strcat(temp_text, "\nDate: ");
+    strcat(temp_text, time_);
+    fputs(temp_text, fmeasurem);
+  
     // do performance testing on scene i with given parameters
     for (unsigned int n = START_W_RESOLUTION; n <= END_W_RESOLUTION; n += RESOLUTION_STEPS)
     {
@@ -168,16 +217,9 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
       double height_ = n;
       double width_ = n * SCALE_RATIO; 
 
-      // build index name
-      char str_res[100]; // Note: maybe too long/short
-      sprintf(str_res, "_%d_%d", (int) height_, (int) width_);
-
-      // build path name with index        
-      char* path = _concat(newDirName, "/"); // free
-      printf("\nNew Path Name: %s", path);
-      char* add_ = "benchmark_";
-      char* str1 = _concat(path, add_); // Note: free up str1!
-      char* str2 = _concat(str1, (sceneContainer.scenes)[i]->name); // Note: free up str2!
+      // build index and add to path    
+      char str_res[200]; // Note: maybe too short
+      sprintf(str_res, "_%d_%d", (int) height_, (int) width_); 
       char* str3 = _concat(str2, str_res); // Note: free up str3!
       char* filename = _concat(str3, ".png"); // Note: free up filename!
 
@@ -194,81 +236,36 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
       end = stop_tsc(start); // end timer
 
       cycles = ((double)end) / REPETITIONS;
-      perf = flops / cycles;
+      perf = flops / cycles; // TODO
 
-      // TODO: create cycles list and performance list and add timings or create txt file
+      // update measurement.txt file with new measurements
+      char idx[100];
+      txt_measur[0] = '\0';
+      strcat(txt_measur, "\nn = ");
+      sprintf(idx, "%d", n); 
+      strcat(txt_measur, idx);
+      strcat(txt_measur, " | Cycles = ");
+      sprintf(idx, "%f", cycles);
+      strcat(txt_measur, idx);
+      strcat(txt_measur, " | Perf = ");
+      sprintf(idx, "%f", perf);
+      strcat(txt_measur, idx);
+      fputs(txt_measur, fmeasurem);
 
       // Clean-up allocated strings and handlers
-      free(path);
-      free(str1);
-      free(str2);
       free(str3);
       free(filename);
 
     }
 
+    fclose(fmeasurem);
+    free(str1);
+    free(str2);
+    free(path);
     free(newDirName);
     free(new_subdir_name_);
     free(new_subdir_name);
   }
+
   return cycles;
 }
-
-// double perf_test(comp_func_1 f, char* describtion, int flops)
-// {
-//   double cycles = 0.;
-//   double perf = 0.0;
-//   long num_runs = 16;
-//   double multiplier = 1;
-//   myInt64 start, end;
-
-//   double *w, *x, *y, *z;
-//   int n = 1000;
-
-//   build(&w, n);
-//   build_x(&x, n, n);
-//   build(&y, n*n);
-//   build(&z, n);
-
-//   // Warm-up phase: we determine a number of executions that allows
-//   // the code to be executed for at least CYCLES_REQUIRED cycles.
-//   // This helps excluding timing overhead when measuring small runtimes.
-//   do {
-//     num_runs = num_runs * multiplier;
-//     start = start_tsc();
-//     for (size_t i = 0; i < num_runs; i++) {
-//       f(w,x,y,z,n);      
-//     }
-//     end = stop_tsc(start);
-
-//     cycles = (double)end;
-//     multiplier = (CYCLES_REQUIRED) / (cycles);
-    
-//   } while (multiplier > 2);
-
-//   list< double > cyclesList, perfList;
-
-//   // Actual performance measurements repeated REP times.
-//   // We simply store all results and compute medians during post-processing.
-//   for (size_t j = 0; j < REP; j++) {
-
-//     start = start_tsc();
-//     for (size_t i = 0; i < num_runs; ++i) {
-//       f(w,x,y,z,n);
-//     }
-//     end = stop_tsc(start);
-
-//     cycles = ((double)end) / num_runs;
-
-//     cyclesList.push_back(cycles);
-//     perfList.push_back(FLOPS / cycles);
-//   }
-
-//   destroy(w);
-//   destroy(x);
-//   destroy(y);
-//   destroy(z);
-//   cyclesList.sort();
-//   cycles = cyclesList.front();  
-//   return  cycles;
-// }
