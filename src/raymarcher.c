@@ -28,18 +28,25 @@
 #define MAX_RAY_DEPTH 2    // max nr. bounces
 #define MARCH_COUNT 3000   // max marching steps
 #define BBOX_AXES 100     // bounding box size
+#define INTERSECT_THRESHOLD 0.00001 // careful with this -> should be low enoguh for shadow to work
 
+// SHADING
 #define SPECULAR_COEFF 0.2
-
-#define EPSILON 0.001
+#define SHADOW_LIGHTNESS 0.1
 #define LIGHT_STR 3
 
-// SCREEN 25, 19
-#define WIDTH 25
-#define HEIGHT 19
+// PRECISION
+#define EPSILON 0.001
+
+// RESOLUTION
+#define WIDTH 1280
+#define HEIGHT 720
 
 // ANTI ALIASING
 #define AA 1
+
+// GAMMA CORRECTION
+#define GAMMA_CORR 1
 
 // DEBUG
 #define DEBUG_MODE 1
@@ -50,11 +57,14 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     Vec3 p1 = vec_add(p, new_vector(0, EPSILON, 0));
     Vec3 p2 = vec_add(p, new_vector(0, 0, EPSILON));
     
-    Vec3 c = new_vector_one(sdf(p, scene, NULL).min_dist); 
+    SDF_Info sdf_info;
+    sdf(p, scene, &sdf_info);
+    Vec3 c = new_vector_one(sdf_info.min_dist); 
+    
     Vec3 ch;
-    ch.x = sdf(p0, scene, NULL).min_dist;
-    ch.y = sdf(p1, scene, NULL).min_dist;
-    ch.z = sdf(p2, scene, NULL).min_dist;
+    sdf(p0, scene, &sdf_info); ch.x = sdf_info.min_dist;
+    sdf(p1, scene, &sdf_info); ch.y = sdf_info.min_dist;
+    sdf(p2, scene, &sdf_info); ch.z = sdf_info.min_dist;
     
     // Vec3 n = vec_mult_scalar(vec_sub(ch, c), 1.0/EPSILON);
     // return n;
@@ -62,22 +72,22 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     return vec_normalized(n);
 }
 
-SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info, int doShadowSteps)
+SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
 {
     SDF_Info sdf_info;
     Vec3 march_pt = p;
 
-    double t = 0;
-    double s = 1.0;
-    double ph = 1e10;
+    double t = EPSILON;
+    double ph = 1e20;
+    sdf_info.s = 1.0;
 
     for (int i = 0; i < MARCH_COUNT; i++)
     {
-        sdf_info = sdf(march_pt, scene, prev_sdf_info);
+        sdf(march_pt, scene, &sdf_info);
         march_pt = vec_add(march_pt, vec_mult_scalar(dir, sdf_info.min_dist));
 
         // TOL
-        if (sdf_info.min_dist < 0.0001)
+        if (sdf_info.min_dist < INTERSECT_THRESHOLD)
         {
             sdf_info.intersected = 1;
             sdf_info.intersection_pt = march_pt;
@@ -86,22 +96,21 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, SDF_Info* prev_sdf_info, int d
         // BBOX CHECK
         if (vec_norm(march_pt) > BBOX_AXES)
         {
+            sdf_info.intersected = 0;
             break;
         }
 
         if (doShadowSteps==1)
         {
             float mid = sdf_info.min_dist*sdf_info.min_dist;
-            float y = (i==0) ? 0.0 : mid/(2.0*ph); 
-            // float y = mid/(2.0*ph);
-            float d = sqrt(mid-y*y);
-            s = min(s, LIGHT_STR*d/max(0.0,t-y));
+            double y = mid/(2.0*ph); 
+            double d = sqrt(mid-y*y);
+            sdf_info.s = min(sdf_info.s, LIGHT_STR*d/max(0.0,t-y));
             ph = sdf_info.min_dist;
             t += sdf_info.min_dist;
         }
     }
     
-    sdf_info.s = s;
     return sdf_info;
 }
 
@@ -121,15 +130,14 @@ Vec3 trace(Vec3 o,
            Vec3 dir, 
            Scene scene, 
            PointLight pLight, 
-           int depth, 
-           SDF_Info *prev_sdf_info)
+           int depth)
 {
     // SOME GLOBAL VARIABLES
     Vec3 ambientColor = new_vector(0, 0, 0);
     Vec3 finalColor = new_vector(0, 0, 0);
 
     // CHECK INTERSECTION WITH SCENE
-    SDF_Info sdf_info = ray_march(o, dir, scene, prev_sdf_info, 0);
+    SDF_Info sdf_info = ray_march(o, dir, scene, 0);
 
     // No intersection case (return black)
     if (sdf_info.intersected != 1)
@@ -159,8 +167,7 @@ Vec3 trace(Vec3 o,
         reflDir = vec_normalized(reflDir);
 
         // Compute reflected color
-        double bias = 1e-4;
-        Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, vec_mult_scalar(N, bias)), reflDir, scene, pLight, depth + 1, &sdf_info);
+        Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, vec_mult_scalar(N, EPSILON)), reflDir, scene, pLight, depth + 1);
         finalColor = vec_mult_scalar(reflectedCol, mat.refl);
     }
 
@@ -169,11 +176,11 @@ Vec3 trace(Vec3 o,
      * Otherwise should check only interval between light and sdf_info.intersection_pt. 
     */
    SDF_Info sdf_shadow_info;
-   sdf_shadow_info.s = 1;
+   sdf_shadow_info.s = 1.0;
    if (scene.nr_geom_objs > 1)
    {
-        sdf_shadow_info = ray_march(vec_add(sdf_info.intersection_pt, new_vector(EPSILON, EPSILON, EPSILON)), L, scene, &sdf_info, 1);
-        sdf_shadow_info.s = clamp(sdf_shadow_info.s, 0.0, 1.0);
+        sdf_shadow_info = ray_march(vec_add(sdf_info.intersection_pt, vec_mult_scalar(L, EPSILON)), L, scene, 1);
+        sdf_shadow_info.s = clamp(sdf_shadow_info.s, SHADOW_LIGHTNESS, 1.0);
         // if (sdf_shadow_info.intersected == 1) return new_vector(0.0, 0.0, 0.0);
    }
 
@@ -265,26 +272,28 @@ void render(Scene scene, PointLight pLight)
             Vec3 px_col = vec_mult_scalar(tot_col, 1.0/(AA*AA));
 #else
             Vec3 dir = shoot_ray(camera, x, y);
-            Vec3 px_col = new_vector(0.0, 0.0, 0.0);
-            if (y == 16 && (x == 12 || x == 11)) 
-            {
-                px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
-            }
+            Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0);
+
+                
 #endif
             
+#if GAMMA_CORR == 1
+            px_col = vec_pow( px_col, 0.4545 );
+#endif
             // save colors computed by trace into current pixel
             img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
             img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
             img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
             img[y * width * 4 + x * 4 + 3] = 255;
 
-            if (DEBUG_MODE)
-            {
-                progress += progress_step;
-                fflush(stdout);
-                printf(" %.2f\b\b\b\b\b", progress);
-                fflush(stdout);
-            }
+#if DEBUG_MODE == 1
+            
+            progress += progress_step;
+            fflush(stdout);
+            printf(" %.2f\b\b\b\b\b", progress);
+            fflush(stdout);
+#endif
+            
 
         }
     }

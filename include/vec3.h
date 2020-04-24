@@ -15,6 +15,8 @@ Vec3 new_vector_one(double xyz);
 
 Vec3 vec_mult(Vec3 v1, Vec3 v2);
 
+Vec3 vec_pow(Vec3 v1, double p);
+
 Vec3 vec_mult_scalar(Vec3 v, double m);
 
 Vec3 vec_add(Vec3 v1, Vec3 v2);

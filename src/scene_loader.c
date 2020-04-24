@@ -55,10 +55,10 @@ void add_geom_obj_to_scene(Scene *scene, sdf_func sdf, Material *mat, Transform 
 Scene *scene_switch()
 {
     Scene *scene = build_scene("../output/scene_switch.png");
-    Material *blue = new_material(new_vector(0, 0.3, 0.6), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
+    Material *blue = new_material(new_vector(0, 0.1, 0.6), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
     // Material *blue_refl = new_material(new_vector(0, 0.3, 0.6), 0.5, 15.0, new_vector(0.0, 0.0, 0.0));
     Transform *identity = new_transform(new_vector(0.0, 0.0, 0.0), new_vector(0.0, 0.0, 0.0));
-    Transform *pos0 = new_transform(new_vector(0.0, 0.0, 10.0), new_vector(0.0, 0.0, 0.0));
+    Transform *pos0 = new_transform(new_vector(0.0, 0.0, 15.0), new_vector(0.0, 0.0, 0.0));
 
     add_geom_obj_to_scene(scene, &sdf_plane, blue, identity, nr_plane_params, 0.0, 1.0, 0.0, 3.0);
     add_geom_obj_to_scene(scene, &sdf_sphere, blue, pos0, nr_sphere_params, 2.0);

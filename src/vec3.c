@@ -55,6 +55,22 @@ Vec3 vec_mult(Vec3 v1, Vec3 v2)
 
 
 /*
+ * Function: vec_pow
+ * ----------------------------
+ *   Returns a new vector
+ *
+ *   v1: of type Vec3 
+ *   p: power value
+ *
+ *   returns: vector elementwise power of p
+ */
+Vec3 vec_pow(Vec3 v1, double p)
+{
+    return new_vector(pow(v1.x, p), pow(v1.y, p), pow(v1.z, p));
+}
+
+
+/*
  * Function: vec_mult_scalar
  * ----------------------------
  *   Returns a new vector
