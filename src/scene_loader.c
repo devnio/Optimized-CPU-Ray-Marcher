@@ -71,7 +71,7 @@ Scene* scene_baseline(){
     double em = 2;
     pLight.emissionColor = new_vector(em, em, em);
 
-    Scene* scene = build_scene(1,4,1,3,1,0, pLight, "../output/baseline.png");
+    Scene* scene = build_scene(1,4,1,3,1,0, pLight, "baseline");
   
     Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
     add_plane(scene->nr_planes, scene->planes,pl0);
@@ -99,7 +99,6 @@ Scene* scene_baseline2(){
     double em = 2;
     pLight.emissionColor = new_vector(em, em, em);
 
-    // Scene* scene = build_scene(1,1,0,0,1,0, pLight, "../output/baseline2.png");
     Scene* scene = build_scene(1,1,0,0,1,0, pLight, "baseline2");
 
     Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
