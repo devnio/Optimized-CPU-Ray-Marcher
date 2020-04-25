@@ -1,0 +1,76 @@
+================ LOG PARSING SCENE ==============
+Creating scene path from scene_name: "scene0" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene0.json
+Amount of needed tokes are: 156
+
+CAMERA
++-- parsing 3 elements of camera.
++-- fov: 30.300000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+LIGHT
++-- parsing 2 elements of light.
++-- power: 10.500000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+TRANSFORMS
++-- parsing 4 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 2
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 3
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+MATERIALS
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.300000
+   +-- shininess: 15.400000
+   +-- surface, size: 3
+       +-- vector: x: 0.600000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 30.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+GEOMETRIC OBJECTS
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane
+   +-- transform_idx: 2.000000
+   +-- material_idx: 4.000000
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.300000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.000000, 
++-- object 1
+   +-- name: sphere
+   +-- transform_idx: 2.000000
+   +-- material_idx: 4.000000
+    +-- parsing 1 params (array).
+        +-- p[0]: 0.300000, 

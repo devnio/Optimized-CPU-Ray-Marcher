@@ -10,7 +10,7 @@ typedef struct {
     Scene **scenes;
 } SceneContainer;
 
-Scene* create_scene(char* json_scene_path);
+Scene* create_scene(char* scene_name);
 void add_scene(scene_builder builder);
 void add_scenes();
 SceneContainer build_scenes();

@@ -335,7 +335,7 @@ void render_all(SceneContainer scenes_container, PointLight pLight){
 }
 
 int main()
-{   create_scene("../scenes/scene0.json");
+{   create_scene("scene0");
     // SceneContainer scenes_container = build_scenes();
  
     // Lights (in future can be an array)

@@ -90,27 +90,24 @@
       }
     }
   ],
-  "objects": [
+  "geometric_objects": [
     {
-      "transform_idx": 0,
-      "material_idx": 0,
       "name": "plane",
+      "transform_idx": 2,
+      "material_idx": 4,
       "params": [
-        0,
+        0.3,
         1,
         0,
         -3
       ]
     },
     {
-      "transform_idx": 0,
-      "material_idx": 0,
-      "name": "plane",
+      "name": "sphere",
+      "transform_idx": 2,
+      "material_idx": 4,
       "params": [
-        0,
-        1,
-        0,
-        -3
+        0.3
       ]
     }
   ]
