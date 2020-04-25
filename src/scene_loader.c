@@ -178,7 +178,7 @@ Input:
 */
 static Vec3 parse_vec3(char* json_str, jsmntok_t* tokens, int idx)
 {   
-    printf("==========VECTOR\n");
+    printf("       +-- vector: ");
     Vec3 v;
     int j = 1;
     for (int step=0; step < tokens[idx].size; step++)
@@ -186,12 +186,12 @@ static Vec3 parse_vec3(char* json_str, jsmntok_t* tokens, int idx)
         if(jsoneq(json_str, &tokens[idx+j], "x") == 0)
         {
             v.x = get_double(json_str, &tokens[idx + j + 1]);
-            printf("x: %f\n", v.x);
+            printf("x: %f, ", v.x);
         }
         else if(jsoneq(json_str, &tokens[idx+j], "y") == 0)
         {
             v.y = get_double(json_str, &tokens[idx + j + 1]);
-            printf("y: %f\n", v.y);
+            printf("y: %f, ", v.y);
         }
         else if(jsoneq(json_str, &tokens[idx+j], "z") == 0)
         {
@@ -219,8 +219,8 @@ Output:
 */
 int create_cam(char* json_str, jsmntok_t* tokens, int idx_camera_properties)
 {
-    printf("==========\nCAMERA\n");
-    printf("Parsing %d elements of camera.\n", tokens[idx_camera_properties].size);
+    printf("\nCAMERA\n");
+    printf("+-- parsing %d elements of camera.\n", tokens[idx_camera_properties].size);
     // we start with 2 because we have to step inside the tokens of camera 
     // (0: the whole camera block, 1: fov, 2: value of fox, 3: position, 4:value and so on...)
     int j = 1;
@@ -229,18 +229,18 @@ int create_cam(char* json_str, jsmntok_t* tokens, int idx_camera_properties)
         if(jsoneq(json_str, &tokens[idx_camera_properties+j], "fov") == 0)
         {
             double nr = strtod(json_str + tokens[idx_camera_properties + j + 1].start, NULL);
-            printf("fov: %f\n", nr);
+            printf("+-- fov: %f\n", nr);
             j+=tokens[idx_camera_properties+j].size+1;
         }
         else if(jsoneq(json_str, &tokens[idx_camera_properties+j], "position") == 0)
         {
-            printf("- position, size: %d\n",tokens[idx_camera_properties+j+1].size);
+            printf("+-- position, size: %d\n",tokens[idx_camera_properties+j+1].size);
             parse_vec3(json_str, tokens, idx_camera_properties+j+1);
             j+=tokens[idx_camera_properties+j+1].size*2+2;
         }
         else if(jsoneq(json_str, &tokens[idx_camera_properties+j], "rotation") == 0)
         {
-            printf("- rotation, size: %d\n",tokens[idx_camera_properties+j+1].size);
+            printf("+-- rotation, size: %d\n",tokens[idx_camera_properties+j+1].size);
             parse_vec3(json_str, tokens, idx_camera_properties+j+1);
             j+=tokens[idx_camera_properties+j+1].size*2+2;
         }
@@ -248,6 +248,108 @@ int create_cam(char* json_str, jsmntok_t* tokens, int idx_camera_properties)
     return j;
 }
 
+/*
+Input:
+ - json string file
+ - tokens: set of descriptors containing properties of the json file
+ - idx: index for accessing the token containing info about light (light block info)
+Output:
+ - how many tokens we moved (this is used then by the main loop to proceed to the next fields)
+*/
+int create_light(char* json_str, jsmntok_t* tokens, int idx)
+{
+    printf("\nLIGHT\n");
+    printf("+-- parsing %d elements of light.\n", tokens[idx].size);
+    int j = 1;
+    for(int step=0; step < tokens[idx].size; step++)
+    {
+        if(jsoneq(json_str, &tokens[idx+j], "power") == 0)
+        {
+            double nr = strtod(json_str + tokens[idx + j + 1].start, NULL);
+            printf("+-- power: %f\n", nr);
+            j+=tokens[idx+j].size+1;
+        }
+        else if(jsoneq(json_str, &tokens[idx+j], "position") == 0)
+        {
+            printf("+-- position, size: %d\n",tokens[idx+j+1].size);
+            parse_vec3(json_str, tokens, idx+j+1);
+            j+=tokens[idx+j+1].size*2+2;
+        }
+    }
+    return j;
+}
+
+/*
+Input:
+ - json string file
+ - tokens: set of descriptors containing properties of the json file
+ - idx: index for accessing the token containing info about transforms (block info)
+Output:
+ - how many tokens we moved (this is used then by the main loop to proceed to the next fields)
+*/
+int create_transforms(char* json_str, jsmntok_t* tokens, int idx)
+{
+    printf("\nTRANSFORMS\n");
+    printf("+-- parsing %d transforms.\n", tokens[idx].size);
+    int j = 2;
+    for(int step=0; step < tokens[idx].size; step++)
+    {
+        // parse position and rotation immediately in 1 iteration (we know how a transform is composed)
+        printf("\n+--transform %d\n", step);
+        if(jsoneq(json_str, &tokens[idx+j], "position") == 0)
+        {
+            printf("   +-- position, size: %d\n",tokens[idx+j+1].size);
+            parse_vec3(json_str, tokens, idx+j+1);
+            j+=tokens[idx+j+1].size*2+2;
+        }
+        if(jsoneq(json_str, &tokens[idx+j], "rotation") == 0)
+        {
+            printf("   +-- rotation, size: %d\n",tokens[idx+j+1].size);
+            parse_vec3(json_str, tokens, idx+j+1);
+            j+=tokens[idx+j+1].size*2+3;
+        }
+    }
+    return j-1;
+}
+
+/*
+Input:
+ - json string file
+ - tokens: set of descriptors containing properties of the json file
+ - idx: index for accessing the token containing info about materials (block info)
+Output:
+ - how many tokens we moved (this is used then by the main loop to proceed to the next fields)
+*/
+int create_materials(char* json_str, jsmntok_t* tokens, int idx)
+{
+    printf("\nMATERIALS\n");
+    printf("+-- parsing %d materials.\n", tokens[idx].size);
+    int j = 2;
+    for(int step=0; step < tokens[idx].size; step++)
+    {
+        // parse refl, shininess, surface immediately in 1 iteration (we know how a transform is composed)
+        printf("+-- material %d\n", step);
+        if(jsoneq(json_str, &tokens[idx+j], "reflection") == 0)
+        {
+            double refl = get_double(json_str, &tokens[idx+j+1]);
+            printf("   +-- reflection: %f\n", refl);
+            j+=2;
+        }
+        if(jsoneq(json_str, &tokens[idx+j], "shininess") == 0)
+        {
+            double shininess = get_double(json_str, &tokens[idx+j+1]);
+            printf("   +-- shininess: %f\n", shininess);
+            j+=2;
+        }
+        if(jsoneq(json_str, &tokens[idx+j], "surface") == 0)
+        {
+            printf("   +-- surface, size: %d\n",tokens[idx+j+1].size);
+            parse_vec3(json_str, tokens, idx+j+1);
+            j+=tokens[idx+j+1].size*2+3;
+        }
+    }
+    return j-1;
+}
 
 //================================================
 // JSON PARSING
@@ -316,8 +418,6 @@ Scene* create_scene(char* json_scene_path)
         printf("Object expected, probably forgot outer brackets. Return error r:%d\n", r);
     }
 
-
-
     // FILE WAS PARSED SUCCESSFULLY
     // Create scene
     // Scene* scene = 
@@ -329,10 +429,24 @@ Scene* create_scene(char* json_scene_path)
             // debug_token(json_str, &tokens[i+1], "camera");
             i += create_cam(json_str, tokens, i+1) + 1;
         }
-        // if (jsoneq(json_str, &tokens[i], "camera") == 0) {    
-        //     // debug_token(json_str, &tokens[i+1], "camera");
-        //     i += create_cam(json_str, tokens, i+1);
-        // }
+        if(jsoneq(json_str, &tokens[i], "pointlight") == 0)
+        {
+            i += create_light(json_str, tokens, i+1) + 1;
+        }
+        if(jsoneq(json_str, &tokens[i], "transforms") == 0)
+        {
+            i += create_transforms(json_str, tokens, i+1) + 1;
+        }
+        if(jsoneq(json_str, &tokens[i], "materials") == 0)
+        {
+            i += create_materials(json_str, tokens, i+1) + 1;
+            debug_token(json_str, &tokens[i], "next");
+        }
+        if(jsoneq(json_str, &tokens[i], "materials") == 0)
+        {
+            i += create_materials(json_str, tokens, i+1) + 1;
+            debug_token(json_str, &tokens[i], "next");
+        }
     }
 
     return NULL;

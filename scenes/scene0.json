@@ -56,25 +56,37 @@
         "y": 0,
         "z": 0
       }
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
     }
   ],
   "materials": [
     {
-      "reflection": 0,
-      "shininess": 0,
+      "reflection": 0.3,
+      "shininess": 15.4,
       "surface": {
-        "x": 0,
+        "x": 0.6,
         "y": 0,
         "z": 0
       }
     },
     {
-      "reflection": 0,
-      "shininess": 0,
+      "reflection": 0.0,
+      "shininess": 30.0,
       "surface": {
         "x": 0,
         "y": 0,
-        "z": 0
+        "z": 0.3
       }
     }
   ],
