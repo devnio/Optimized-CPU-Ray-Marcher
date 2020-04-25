@@ -1,5 +1,6 @@
 #include <string.h>
 #include "geometry/scene.h"
+#include "camera.h"
 
 void sdf(Vec3 p, Scene scene, SDF_Info* sdf_info_out)
 {

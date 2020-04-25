@@ -1,8 +1,10 @@
 #ifndef SCENE_H_
 #define SCENE_H_
 
+#include "camera.h"
 #include "material.h"
 #include "geometry/transform.h"
+#include "light.h"
 
 typedef double (*sdf_func)(Vec3 p, double params[]);
 
@@ -17,6 +19,10 @@ typedef struct
 
 typedef struct {
     char* name;
+    Camera* camera;
+    PointLight light;
+    Material* materials;
+    Transform* transforms;
     int nr_geom_objs;
     GeomtericObject** geometric_ojects;
 } Scene;

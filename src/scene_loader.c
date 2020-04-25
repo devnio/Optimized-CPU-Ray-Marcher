@@ -1,6 +1,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdio.h>
+
+#include "vec3.h"
+#include "camera.h"
+#include "material.h"
 
 #include "geometry/plane.h"
 #include "geometry/sphere.h"
@@ -9,6 +14,8 @@
 #include "geometry/octahedron.h"
 #include "geometry/torus.h"
 #include "scene_loader.h"
+
+#include "jsmn.h"
 
 #define MAX_NR_SCENES 10
 int num_scenes = 0;
@@ -78,6 +85,7 @@ Scene *scene_switch()
     return scene;
 }
 
+
 /*
 *   TODO: here you can add the scenes that have to be added
 *   Note: If needed modify MAX_NR_SCENES
@@ -125,9 +133,209 @@ void destroy_scene(Scene *scene)
     //     p->params = NULL;
     //     free(p);
     //     p = NULL;
-    // }
+    // } 
     free(scene->geometric_ojects);
     free(scene->name);
     // free(scene);
     // scene = 0;
 }
+
+//================================================
+// JSON UTILITY
+//================================================
+void debug_token(char* json_str, jsmntok_t* tok, char* name_of_field) {
+    printf("- %s: %.*s\n", name_of_field, tok->end - tok->start, json_str + tok->start);
+}
+
+/* 
+Perform equality on token string and input s (for parsing).
+*/
+static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
+  if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
+      strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
+    return 0;
+  }
+  return -1;
+}
+
+/*
+Parses a double.
+Input: 
+   - json string.
+   - token containing double.
+*/
+static double get_double(const char *json_str, jsmntok_t *tok)
+{
+    return strtod(json_str + tok->start, NULL);
+}
+
+/*
+Parses a vector.
+Input: 
+   - json string.
+   - tokens.
+   - index where the vector is (the block, not x).
+*/
+static Vec3 parse_vec3(char* json_str, jsmntok_t* tokens, int idx)
+{   
+    printf("==========VECTOR\n");
+    Vec3 v;
+    int j = 1;
+    for (int step=0; step < tokens[idx].size; step++)
+    {
+        if(jsoneq(json_str, &tokens[idx+j], "x") == 0)
+        {
+            v.x = get_double(json_str, &tokens[idx + j + 1]);
+            printf("x: %f\n", v.x);
+        }
+        else if(jsoneq(json_str, &tokens[idx+j], "y") == 0)
+        {
+            v.y = get_double(json_str, &tokens[idx + j + 1]);
+            printf("y: %f\n", v.y);
+        }
+        else if(jsoneq(json_str, &tokens[idx+j], "z") == 0)
+        {
+            v.z = get_double(json_str, &tokens[idx + j + 1]);
+            printf("z: %f\n", v.z);
+        }
+
+        // jump onto next token holdin info at this hierarchy level
+        j+=2;
+    }
+
+    return v;
+}
+
+//================================================
+// SCENE CREATION
+//================================================
+/*
+Input:
+ - json string file
+ - tokens: set of descriptors containing properties of the json file
+ - idx: index for accessing the token containing info about camera (camera block info)
+Output:
+ - how many tokens we moved (this is used then by the main loop to proceed to the next fields)
+*/
+int create_cam(char* json_str, jsmntok_t* tokens, int idx_camera_properties)
+{
+    printf("==========\nCAMERA\n");
+    printf("Parsing %d elements of camera.\n", tokens[idx_camera_properties].size);
+    // we start with 2 because we have to step inside the tokens of camera 
+    // (0: the whole camera block, 1: fov, 2: value of fox, 3: position, 4:value and so on...)
+    int j = 1;
+    for(int step=0; step < tokens[idx_camera_properties].size; step++)
+    {
+        if(jsoneq(json_str, &tokens[idx_camera_properties+j], "fov") == 0)
+        {
+            double nr = strtod(json_str + tokens[idx_camera_properties + j + 1].start, NULL);
+            printf("fov: %f\n", nr);
+            j+=tokens[idx_camera_properties+j].size+1;
+        }
+        else if(jsoneq(json_str, &tokens[idx_camera_properties+j], "position") == 0)
+        {
+            printf("- position, size: %d\n",tokens[idx_camera_properties+j+1].size);
+            parse_vec3(json_str, tokens, idx_camera_properties+j+1);
+            j+=tokens[idx_camera_properties+j+1].size*2+2;
+        }
+        else if(jsoneq(json_str, &tokens[idx_camera_properties+j], "rotation") == 0)
+        {
+            printf("- rotation, size: %d\n",tokens[idx_camera_properties+j+1].size);
+            parse_vec3(json_str, tokens, idx_camera_properties+j+1);
+            j+=tokens[idx_camera_properties+j+1].size*2+2;
+        }
+    }
+    return j;
+}
+
+
+//================================================
+// JSON PARSING
+//================================================
+/*
+Read json file and allocate the entire string in memory.
+Make sure to free the buffer after using.
+*/
+static char* read_json(char* json_scene_path) {
+    char * buffer = 0;
+    long length;
+    FILE * f = fopen (json_scene_path, "rb");
+
+    if (f)
+    {
+        fseek (f, 0, SEEK_END);
+        length = ftell (f);
+        fseek (f, 0, SEEK_SET);
+        buffer = malloc(length);
+        if (buffer)
+        {
+            fread(buffer, 1, length, f);
+        }
+        fclose (f);
+    }
+
+    if (buffer)
+    {
+    // start to process your data / extract strings here...
+        return buffer;
+    }
+    return NULL;
+}
+
+Scene* create_scene(char* json_scene_path)
+{
+    printf("\n=======================\nJSON PARSING STARTED\n");
+    printf("Parsing file at: %s\n", json_scene_path);
+    // read json file into string
+    char* json_str = read_json(json_scene_path);
+    if (json_str == NULL)
+    {
+        printf("Couldn't read file at: %s\n", json_scene_path);
+    }
+
+    // initialize json parser
+    jsmn_parser parser;
+    jsmn_init(&parser);
+
+    // get needed tokens 
+    int needed_tokens = jsmn_parse(&parser, json_str, strlen(json_str), NULL, -1);
+    printf("Amount of needed tokes are: %d\n", needed_tokens);
+    
+    // parse with newly created tokens
+    jsmntok_t tokens[needed_tokens]; /* We expect no more than needed_tokens JSON tokens */
+    jsmn_init(&parser);
+    int r = jsmn_parse(&parser, json_str, strlen(json_str), tokens, needed_tokens);
+
+    // check that json is in right format
+    if (r < 0) {
+        printf("Failed to parse JSON: Return error r:%d\n", r);
+    }
+
+    // check that the top-level element is an object 
+    if (r < 1 || tokens[0].type != JSMN_OBJECT) {
+        printf("Object expected, probably forgot outer brackets. Return error r:%d\n", r);
+    }
+
+
+
+    // FILE WAS PARSED SUCCESSFULLY
+    // Create scene
+    // Scene* scene = 
+
+    // Now go through the objects and populate the scene
+    for (int i = 1; i < r; i++) 
+    {
+        if (jsoneq(json_str, &tokens[i], "camera") == 0) {    
+            // debug_token(json_str, &tokens[i+1], "camera");
+            i += create_cam(json_str, tokens, i+1) + 1;
+        }
+        // if (jsoneq(json_str, &tokens[i], "camera") == 0) {    
+        //     // debug_token(json_str, &tokens[i+1], "camera");
+        //     i += create_cam(json_str, tokens, i+1);
+        // }
+    }
+
+    return NULL;
+}
+
+

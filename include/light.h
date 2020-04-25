@@ -1,9 +1,7 @@
 #ifndef LIGHT
 #define LIGHT
 
-#ifndef VEC_3
- #include "vec3.h"
-#endif
+#include "vec3.h"
 
 typedef struct
 {

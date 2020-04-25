@@ -1,0 +1,105 @@
+{
+  "camera": {
+    "fov": 30.3,
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "rotation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "pointlight": {
+    "power": 10.5,
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "transforms": [
+    {
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    }
+  ],
+  "materials": [
+    {
+      "reflection": 0,
+      "shininess": 0,
+      "surface": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "reflection": 0,
+      "shininess": 0,
+      "surface": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    }
+  ],
+  "objects": [
+    {
+      "transform_idx": 0,
+      "material_idx": 0,
+      "name": "plane",
+      "params": [
+        0,
+        1,
+        0,
+        -3
+      ]
+    },
+    {
+      "transform_idx": 0,
+      "material_idx": 0,
+      "name": "plane",
+      "params": [
+        0,
+        1,
+        0,
+        -3
+      ]
+    }
+  ]
+}

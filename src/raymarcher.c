@@ -335,8 +335,8 @@ void render_all(SceneContainer scenes_container, PointLight pLight){
 }
 
 int main()
-{
-    SceneContainer scenes_container = build_scenes();
+{   create_scene("../scenes/scene0.json");
+    // SceneContainer scenes_container = build_scenes();
  
     // Lights (in future can be an array)
     PointLight pLight;
@@ -345,7 +345,7 @@ int main()
     pLight.emissionColor = new_vector(em, em, em);
 
     //render(*(scenes_container.scenes)[1], pLight);
-    render_all(scenes_container, pLight);
+    // render_all(scenes_container, pLight);
 
     return 0;
 }
