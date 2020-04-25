@@ -62,9 +62,6 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
   {
       printf("\nToo fast...directory already exists:  %s", dirName);
   }
-  
-  printf("\n%s", dirName);
-  // ret = chdir(dirName);
 
   for (unsigned int i = 0; i < nrOfFuncs; i++) {
 
@@ -75,19 +72,14 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
     char* new_subdir_name_ = _concat("/", new_subdir_name); 
     char* newDirName = _concat(dirName, new_subdir_name_);
     struct stat st = {0};
-    if (stat(newDirName, &st) == -1) { // create subdirectory for function i
-      mkdir(newDirName, 0700); // create directory 
+    if (stat(newDirName, &st) == -1) { 
+      mkdir(newDirName, 0700); // create subdirectory for function i
     }    
 
-
-    printf("\n%s", newDirName);
-
-    // strcat(dirName, indx);
-    // printf("\n%s", dirName);
-
+    // Start benchmark on registered functions
     printf("\n|Starting benchmark for function %s", func_names[i]);
     double perf = perf_test(functions[i], func_names[i], func_flops[i], sceneContainer, newDirName);
-    printf("\nPerformance: %f cycles\n", perf);
+    printf("\n||Performance: %f cycles\n", perf);
 
     free(new_subdir_name);
     free(new_subdir_name_);
@@ -102,7 +94,7 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
 }
 
 double perf_test(render_func_prot f, char* name, int flops, SceneContainer sceneContainer, char* dirName) {
-  printf("\n||Performance testing...");
+  printf("\n||Performance testing:");
 
   double cycles, perf;
 
@@ -112,25 +104,13 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
     // create sub-directory for each scene
     char indx[10];
     sprintf(indx, "_%d", i);
-    printf("\nindex: %s", indx);
-    printf("\nScene name: %s", (sceneContainer.scenes)[i]->name);
     char* new_subdir_name = _concat((sceneContainer.scenes)[i]->name, indx); // free
-    printf("\nnew_subdir_name: %s", new_subdir_name);
     char* new_subdir_name_ = _concat("/", new_subdir_name);  // free
-    printf("\nnew_subdir_name_: %s", new_subdir_name_);
     char* newDirName = _concat(dirName, new_subdir_name_); // free
-    printf("\nnewDirName: %s", newDirName);
     struct stat st = {0};
     if (stat(newDirName, &st) == -1) { // create subdirectory for function i
       mkdir(newDirName, 0700); // create directory 
     }  
-
-    
-
-    // printf("\nDirectory Name: %s", newDirName);
-
-
-    // TODO: create different path to new subdirectiory for different scenes
 
     // Create txt file for parameters
     char time_[100];
@@ -185,7 +165,7 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
       fclose(fparam);
     } else
     {
-      printf("WARNING: could not open/create .txt file for writing parameters.");
+      printf("WARNING: Failed to create parameters.txt file");
     }
 
     // create txt file for performance timings
@@ -198,10 +178,9 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
     FILE *fmeasurem = NULL;
     char measurem_fileName[100];
     sprintf(measurem_fileName, "%s%s", newDirName, "/measurements.txt");
-    printf("\nParameter filename: %s", measurem_fileName);
     fmeasurem = fopen(measurem_fileName ,"w");
     if (fmeasurem == NULL) {
-      printf("%s", "Warning: Failed to create measurements.txt file");
+      printf("WARNING: Failed to create measurements.txt file");
     }
     char txt_measur[100];
     char temp_text[100] = "Scene name: ";
@@ -223,7 +202,7 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
       char* str3 = _concat(str2, str_res); // Note: free up str3!
       char* filename = _concat(str3, ".png"); // Note: free up filename!
 
-      printf("\n|||Starting performance on n = %d with resolution: %d x %d", n, (int) height_, (int)  width_);
+      printf("\n|||Starting performance on n = %d with resolution: %d x %d \n||||", n, (int) height_, (int)  width_);
 
       // TODO: Warm-up phase
 

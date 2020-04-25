@@ -30,7 +30,7 @@
 // ===== MACROS =====
 
 // BENCHMARKING
-#define RUN_BENCHMARK 1 
+#define RUN_BENCHMARK 0
 
 // RENDERING
 #define MAX_RAY_DEPTH 2    // max nr. bounces
@@ -329,11 +329,11 @@ void render(Scene scene, unsigned int width, unsigned int height, char* name)
     {   
         // encode image: filepath is built into name
         encodeOneStep(name, img, width, height);
-        printf("\nImage rendered and saved in path folder %s \n", name);
+        // printf("\nImage rendered and saved in path folder %s \n", name);
 
     } else {
         // Build path-name
-        char* path = OUTPUT_PATH;
+        char* path = RENDER_OUT;
         char* tmp = _concat(path, name); // Note: free up tmp!
         char* filename = _concat(tmp, ".png"); // Note: free up filename!
 
@@ -382,15 +382,23 @@ int main()
     SceneContainer scenes_container = build_scenes();
     if (!RUN_BENCHMARK)
     {   
-        // TODO: create directory for non-benchmarking output, that is reused
+        // Check if render_out directory exists, create otherwise
+        if (stat(RENDER_OUT, &st) == -1) {
+            mkdir(RENDER_OUT, 0700); // create directory 
+        } 
         render_all(scenes_container);
+    } else
+    {
+        //--- BENCHMARKING ---//
+        int flops = 1;
+        benchmark_add_render_func(&render, "render_func_noOpt", flops); // benchmarks rendering functions of prototype render_func_prot
+        benchmark_add_render_func(&render, "render_func_noOpt2", 1); // benchmarks rendering functions of prototype render_func_prot
+        run_perf_benchmarking(scenes_container);
     }
     
+    
 
-    //--- BENCHMARKING ---//
-    benchmark_add_render_func(&render, "render_func_noOpt", 1); // benchmarks rendering functions of prototype render_func_prot
-    // benchmark_add_render_func(&render, "render_func_noOpt2", 1); // benchmarks rendering functions of prototype render_func_prot
-    run_perf_benchmarking(scenes_container);
+
 
     return 0;
 }

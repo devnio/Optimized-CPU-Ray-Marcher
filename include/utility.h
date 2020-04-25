@@ -6,6 +6,7 @@
 #endif
 
 #define OUTPUT_PATH "../output/"
+#define RENDER_OUT "../output/render_out/"
 
 double mix(double a, double b, double mix);
 double min(double a, double b);
