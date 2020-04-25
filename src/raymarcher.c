@@ -30,7 +30,7 @@
 // ===== MACROS =====
 
 // BENCHMARKING
-#define RUN_BENCHMARK 0
+#define RUN_BENCHMARK 1
 
 // RENDERING
 #define MAX_RAY_DEPTH 2    // max nr. bounces

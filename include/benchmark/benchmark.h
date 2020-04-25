@@ -17,6 +17,9 @@
 /* Prototype of render function */
 typedef void(*render_func_prot)(Scene , unsigned int, unsigned int, char*);
 
+/* Prototype of trace function */
+typedef void(*trace_func_prot)(Vec3 , Scene, int, SDF_Info *);
+
 /* Adds rendering type functions to the benchmarker  */
 void benchmark_add_render_func(render_func_prot f, char* name, int flops) ;
 

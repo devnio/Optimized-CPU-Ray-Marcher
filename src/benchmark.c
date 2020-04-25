@@ -66,7 +66,8 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
   for (unsigned int i = 0; i < nrOfFuncs; i++) {
 
     // create subdirectory for each function i
-    char indx[10];
+    if(i > 100) printf("WARNING: indx string length for nrOfFuncs reaching limit.");
+    char indx[4];
     sprintf(indx, "_%d", i);
     char* new_subdir_name = _concat(func_names[i], indx); 
     char* new_subdir_name_ = _concat("/", new_subdir_name); 
@@ -79,7 +80,7 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
     // Start benchmark on registered functions
     printf("\n|Starting benchmark for function %s", func_names[i]);
     double perf = perf_test(functions[i], func_names[i], func_flops[i], sceneContainer, newDirName);
-    printf("\n||Performance: %f cycles\n", perf);
+    printf("\n|Done.\n");
 
     free(new_subdir_name);
     free(new_subdir_name_);
@@ -165,7 +166,7 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
       fclose(fparam);
     } else
     {
-      printf("WARNING: Failed to create parameters.txt file");
+      printf("ERROR: Failed to create parameters.txt file");
     }
 
     // create txt file for performance timings
@@ -180,7 +181,7 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
     sprintf(measurem_fileName, "%s%s", newDirName, "/measurements.txt");
     fmeasurem = fopen(measurem_fileName ,"w");
     if (fmeasurem == NULL) {
-      printf("WARNING: Failed to create measurements.txt file");
+      printf("ERROR: Failed to create measurements.txt file");
     }
     char txt_measur[100];
     char temp_text[100] = "Scene name: ";
@@ -197,8 +198,8 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
       double width_ = n * SCALE_RATIO; 
 
       // build index and add to path    
-      char str_res[200]; // Note: maybe too short
-      sprintf(str_res, "_%d_%d", (int) height_, (int) width_); 
+      char str_res[100]; 
+      sprintf(str_res, "_%d_%d", (unsigned int) height_, (unsigned int) width_); 
       char* str3 = _concat(str2, str_res); // Note: free up str3!
       char* filename = _concat(str3, ".png"); // Note: free up filename!
 
@@ -214,11 +215,11 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
       }
       end = stop_tsc(start); // end timer
 
-      cycles = ((double)end) / REPETITIONS;
-      perf = flops / cycles; // TODO
+      cycles = ((double)end) / REPETITIONS; 
+      perf = flops / cycles; // performance in flops/cycle
 
       // update measurement.txt file with new measurements
-      char idx[100];
+      char idx[20];
       txt_measur[0] = '\0';
       strcat(txt_measur, "\nn = ");
       sprintf(idx, "%d", n); 
@@ -237,6 +238,7 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
 
     }
 
+    // Clean-up allocated strings and handlers
     fclose(fmeasurem);
     free(str1);
     free(str2);
