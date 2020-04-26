@@ -27,10 +27,10 @@
 // ===== MACROS =====
 
 // RENDERING
-#define MAX_RAY_DEPTH 2             // max nr. bounces
-#define MARCH_COUNT 3000            // max marching steps
-#define BBOX_AXES 100               // bounding box size
-#define INTERSECT_THRESHOLD 0.00001 // careful with this -> should be low enoguh for shadow to work
+#define MAX_RAY_DEPTH 2    // max nr. bounces
+#define MARCH_COUNT 3000   // max marching steps
+#define BBOX_AXES 100     // bounding box size
+#define INTERSECT_THRESHOLD 0.000001 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING
 #define SPECULAR_COEFF 0.2
@@ -42,6 +42,7 @@
 
 // PRECISION
 #define EPSILON 0.001
+#define EPSILON_NORMALS 0.0001
 
 // RESOLUTION
 #define WIDTH 1280
@@ -58,10 +59,10 @@
 
 Vec3 compute_normal(Vec3 p, Scene scene)
 {
-    Vec3 p0 = vec_add(p, new_vector(EPSILON, 0, 0));
-    Vec3 p1 = vec_add(p, new_vector(0, EPSILON, 0));
-    Vec3 p2 = vec_add(p, new_vector(0, 0, EPSILON));
-
+    Vec3 p0 = vec_add(p, new_vector(EPSILON_NORMALS, 0, 0));
+    Vec3 p1 = vec_add(p, new_vector(0, EPSILON_NORMALS, 0));
+    Vec3 p2 = vec_add(p, new_vector(0, 0, EPSILON_NORMALS));
+    
     SDF_Info sdf_info;
     sdf(p, scene, &sdf_info);
     Vec3 c = new_vector_one(sdf_info.min_dist);
@@ -110,10 +111,10 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
 
         if (doShadowSteps == 1)
         {
-            float mid = sdf_info.min_dist * sdf_info.min_dist;
-            double y = mid / (2.0 * ph);
-            double d = sqrt(mid - y * y);
-            sdf_info.s = min(sdf_info.s, LIGHT_STR * d / max(0.0, t - y));
+            double mid = sdf_info.min_dist*sdf_info.min_dist;
+            double y = mid/(2.0*ph); 
+            double d = sqrt(mid-y*y);
+            sdf_info.s = min(sdf_info.s, LIGHT_STR*d/max(0.0,t-y));
             ph = sdf_info.min_dist;
             t += sdf_info.min_dist;
         }
@@ -298,7 +299,7 @@ void render(Scene scene)
 
     // TODO: make better! prepare output name
     char *out = malloc(sizeof(char) * 300);
-    strcat(out, "../output/");
+    strcpy(out, "../output/");
     strcat(out, scene.name);
     strcat(out, ".png");
     encodeOneStep(out, scene.img, width, height);
