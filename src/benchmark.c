@@ -23,24 +23,34 @@
 #define NR_OF_SAMPLES 30
 
 #define START_W_RESOLUTION 10 // width resolution with which we want to start with
-#define END_W_RESOLUTION 40 // width resolution we want to reach
+#define END_W_RESOLUTION 100 // width resolution we want to reach
 #define RESOLUTION_STEPS 10
 #define SCALE_RATIO 1.77777778f // scale ratio width to height of image
 
 #define MAX_NR_OF_FUNCS 32
 #define MAX_STRING_SIZE 100
 
-render_func_prot functions[MAX_NR_OF_FUNCS]; // array of function pointers
-char func_names[MAX_NR_OF_FUNCS][MAX_STRING_SIZE];
-int func_flops[MAX_NR_OF_FUNCS];
+// render function definitions
+render_func_prot renderFuncs[MAX_NR_OF_FUNCS]; // array of function pointers
+char renderFuncsNames[MAX_NR_OF_FUNCS][MAX_STRING_SIZE];
+int renderFuncsFLops[MAX_NR_OF_FUNCS];
+
+// trace function definitions
+trace_func_prot traceFunc[MAX_NR_OF_FUNCS];
+
 
 int nrOfFuncs = 0; // nr. of functions
 
 
+void benchmark_add_func(func_pointer f, char* name, int flops) {
+  
+}
+
 void benchmark_add_render_func(render_func_prot f, char* name, int flops) {
-  functions[nrOfFuncs] = f;
-  strcpy(func_names[nrOfFuncs], name);
-  func_flops[nrOfFuncs] = flops;
+  
+  renderFuncs[nrOfFuncs] = f;
+  strcpy(renderFuncsNames[nrOfFuncs], name);
+  renderFuncsFLops[nrOfFuncs] = flops;
   nrOfFuncs++;
 }
 
@@ -66,10 +76,9 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
   for (unsigned int i = 0; i < nrOfFuncs; i++) {
 
     // create subdirectory for each function i
-    if(i > 100) printf("WARNING: indx string length for nrOfFuncs reaching limit.");
-    char indx[4];
+    char indx[10];
     sprintf(indx, "_%d", i);
-    char* new_subdir_name = _concat(func_names[i], indx); 
+    char* new_subdir_name = _concat(renderFuncsNames[i], indx); 
     char* new_subdir_name_ = _concat("/", new_subdir_name); 
     char* newDirName = _concat(dirName, new_subdir_name_);
     struct stat st = {0};
@@ -78,8 +87,8 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
     }    
 
     // Start benchmark on registered functions
-    printf("\n|Starting benchmark for function %s", func_names[i]);
-    double perf = perf_test(functions[i], func_names[i], func_flops[i], sceneContainer, newDirName);
+    printf("\n|Starting benchmark for function %s", renderFuncsNames[i]);
+    double perf = perf_test(renderFuncs[i], renderFuncsNames[i], renderFuncsFLops[i], sceneContainer, newDirName);
     printf("\n|Done.\n");
 
     free(new_subdir_name);
@@ -209,6 +218,7 @@ double perf_test(render_func_prot f, char* name, int flops, SceneContainer scene
 
       myInt64 start, end;
       start = start_tsc(); // start timer
+
       for (unsigned int j = 0; j < REPETITIONS; j++)
       {
         f(*(sceneContainer.scenes)[i], (unsigned int) width_, (unsigned int) height_, filename);
