@@ -49,23 +49,25 @@
 // }
 
 ////////////////////////////////  END SCENES DEFINITION /////////////////////////////////////
-SceneContainer build_scenes(int nr_scenes, ...)
+/*
+Creates a scene container containing and empty array of nr_scenes scenes.
+*/
+SceneContainer create_scene_container(int nr_scenes)
 {
     Scene **scenes = (Scene **)malloc(sizeof(Scene *) * nr_scenes);
     
-    va_list args;
-    va_start(args, nr_scenes);
-    for (int i = 0; i < nr_scenes; i++)
-    {
-        scenes[i] = create_scene_from_json(va_arg(args, char*));
-    }
-    va_end(args);
-
     SceneContainer scene_container;
     scene_container.num_scenes = nr_scenes;
-    scene_container.scenes = scenes;
 
     return scene_container;
+}
+
+/*
+Adds a scene created from the scene file named scene_name,json into idx of the scene container 
+*/
+void add_scene(SceneContainer* scene_container, char* scene_name, int idx)
+{
+    scene_container->scenes[idx] = create_scene_from_json(scene_name);
 }
 
 void destroy_scene(Scene *scene)

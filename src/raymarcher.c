@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <string.h>
+#include <dirent.h>
 
 #include "geometry/scene.h"
 #include "lodepng.h"
@@ -27,9 +28,9 @@
 
 // RENDERING
 #define MAX_RAY_DEPTH 2    // max nr. bounces
-#define MARCH_COUNT 800   // max marching steps
+#define MARCH_COUNT 3000   // max marching steps
 #define BBOX_AXES 100     // bounding box size
-#define INTERSECT_THRESHOLD 0.001 // careful with this -> should be low enoguh for shadow to work
+#define INTERSECT_THRESHOLD 0.00001 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING
 #define SPECULAR_COEFF 0.2
@@ -302,8 +303,8 @@ void render(Scene scene)
     strcat(out, scene.name);
     strcat(out, ".png");
     encodeOneStep(out, scene.img, width, height);
+    printf("\nImage \"%s.png\" rendered and saved in output folder %s.\n", scene.name, out);
     free(out);
-    printf("\nImage \"%s.png\" rendered and saved in output folder\n", scene.name);
 }
 
 /*
@@ -317,19 +318,31 @@ void render(Scene scene)
  */
 void render_all(SceneContainer scenes_container){
 
-    // for(int i=0;i<scenes_container.num_scenes;++i){
-        Scene s = *(scenes_container.scenes)[0];
+    for(int i=0;i<scenes_container.num_scenes;++i){
+        Scene s = *(scenes_container.scenes)[i];
         render(s);
         destroy_scene(&s);
-    // }
-    free((scenes_container.scenes)[0]);
+        free((scenes_container.scenes)[i]);
+    }
 }
 
-int main()
-{   
-    // create_scene_from_json("scene0");
-    // SceneContainer scenes_container = build_scenes(1, "scene0");
-    SceneContainer scenes_container = build_scenes(1, "scene1");
+int main(int argc, char **argv)
+{
+    SceneContainer scenes_container;
+    if (argc == 1) {
+        scenes_container = create_scene_container(1);
+        add_scene(&scenes_container, "scene0", 0);    
+    }
+    else
+    {
+        scenes_container = create_scene_container(argc-1);
+        for (int i = 1; i < argc; i++)
+        {
+            printf("Add scene %s into index %d.\n", argv[i], i-1);
+            add_scene(&scenes_container, argv[i], i-1);    
+        }   
+    }
+    
     render_all(scenes_container);
 
     return 0;

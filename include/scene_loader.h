@@ -9,7 +9,8 @@ typedef struct {
 } SceneContainer;
 
 Scene *create_scene_from_json(char *scene_name);
-SceneContainer build_scenes(int nr_scenes, ...);
+SceneContainer create_scene_container(int nr_scenes);
+void add_scene(SceneContainer* scene_container, char* scene_name, int idx);
 void destroy_scene(Scene* scene);
 
 #endif // SCENE_LOADER_H_
