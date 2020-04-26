@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "vec3.h"
 #include "camera.h"
@@ -17,6 +20,7 @@
 #include "geometry/torus.h"
 #include "scene_loader.h"
 
+#define JSMN_STRICT
 #include "jsmn.h"
 
 #define SCENES_PATH "../scenes/"
@@ -486,19 +490,22 @@ Make sure to free the buffer after using.
 static char *read_json(FILE *logFile, char *json_scene_path)
 {
     char *buffer = 0;
-    long length;
+    size_t length;
     FILE *f = fopen(json_scene_path, "rb");
 
     if (f)
     {
         fseek(f, 0, SEEK_END);
-        length = ftell(f);
+        length = ftell(f)+1;
         fseek(f, 0, SEEK_SET);
         buffer = (char*)malloc(length);
+
         if (buffer)
         {
-            if (fread(buffer, 1, length, f) == length) {
+            size_t r = fread(buffer, sizeof(char), length-1, f);
+            if (r == length-1) {
                 fprintf(logFile, "Successful read of json file \"%s\" into string variable.\n", json_scene_path);
+                buffer[r] = '\0';
             } else {
                 fprintf(logFile, "ERROR: couldn't read json file \"%s\" into string variable.\n", json_scene_path);
             }
@@ -506,18 +513,13 @@ static char *read_json(FILE *logFile, char *json_scene_path)
         fclose(f);
     }
 
-    if (buffer)
-    {
-        // start to process your data / extract strings here...
-        return buffer;
-    }
-    return NULL;
+    return buffer;
 }
 
 Scene *create_scene_from_json(char *scene_name)
 {
     // open log file to write the process of loading current scene
-    FILE *logFile = fopen(JSON_PARSER_LOG_PATH, "a");
+    FILE *logFile = fopen(JSON_PARSER_LOG_PATH, "w");
     if (logFile == NULL)
     {
         // unable to open file hence exit
@@ -552,6 +554,10 @@ Scene *create_scene_from_json(char *scene_name)
         fprintf(logFile, "ERROR: Parser couldn't read file at: %s\n", json_scene_path);
         exit(EXIT_FAILURE);
     }
+
+    // DEBUG
+    fprintf(logFile, "Read file contains: \n_________________________\n%s\n_________________________\n", json_str);
+    // DEBUG
 
     // initialize json parser
     jsmn_parser parser;
