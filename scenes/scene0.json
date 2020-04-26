@@ -66,7 +66,7 @@
   "geometric_objects": [
     {
       "name": "plane",
-      "transform_idx": 0,
+      "transform_idx":0 ,
       "material_idx": 0,
       "params": [ 0.0, 1.0, 0.0, 3.0 ]
     },

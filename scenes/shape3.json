@@ -43,7 +43,7 @@
       "name": "torus",
       "transform_idx": 1,
       "material_idx": 1,
-      "params": [  1.0, 0.5, 1.0  ]
+      "params": [ 1.0, 0.5, 1.0 ]
     }
   ]
 }

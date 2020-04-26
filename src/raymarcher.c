@@ -330,7 +330,7 @@ int main(int argc, char **argv)
 {
     SceneContainer scenes_container;
     if (argc == 1) {
-        scenes_container = create_scene_container(1);
+        scenes_container = create_scene_container(1);        
         add_scene(&scenes_container, "scene0", 0);    
     }
     else

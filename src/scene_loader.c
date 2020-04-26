@@ -22,42 +22,17 @@
 #define SCENES_PATH "../scenes/"
 #define JSON_PARSER_LOG_PATH "../scenes/log_parser.txt"
 
-// Scene *scene_switch()
-// {
-//     Scene *scene = build_scene("../output/scene_switch.png");
-//     // const Material *white = new_material(new_vector(1.0, 1.0, 1.0), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
-//     // const Material *blue = new_material(new_vector(0, 0.1, 0.6), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
-//     // const Material *green = new_material(new_vector(0, 0.6, 0.1), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
-//     // const Material *yellow = new_material(new_vector(0.5, 0.5, 0.0), 0.0, 15.0, new_vector(0.0, 0.0, 0.0));
-//     // Material *refl = new_material(new_vector(0.3, 0.0, 0.0), 0.5, 15.0, new_vector(0.0, 0.0, 0.0));
-//     // const Transform *identity = new_transform(new_vector(0.0, 0.0, 0.0), new_vector(0.0, 0.0, 0.0));
-//     // double h = -1.5;
-//     // const Transform *pos_box = new_transform(new_vector(-4.0, h, 15.0), new_vector(0.0, 0.0, 0.0));
-//     // const Transform *pos_octahedron  = new_transform(new_vector(-1.5, h, 12.0), new_vector(0.0, 0.0, 0.0));
-//     // const Transform *pos_cone = new_transform(new_vector(1.5, h, 12.0), new_vector(0.0, 0.0, 0.0));
-//     // const Transform *pos_torus = new_transform(new_vector(4.0, h, 15.0), new_vector(0.0, 0.0, 0.0));
-//     // const Transform *pos_sp = new_transform(new_vector(0.0, h+1.5, 20.0), new_vector(0.0, 0.0, 0.0));
 
-//     // add_geom_obj_to_scene(scene, &sdf_plane, white, identity, nr_plane_params, 0.0, 1.0, 0.0, 3.0);
-//     // add_geom_obj_to_scene(scene, &sdf_box, blue, pos_box, nr_box_params, 0.25, 0.5, 1.0);
-//     // add_geom_obj_to_scene(scene, &sdf_sphere, refl, pos_sp, nr_sphere_params, 3.0);
-//     // add_geom_obj_to_scene(scene, &sdf_cone, blue, pos_cone, nr_cone_params, 1.0, 0.5, 1.0);
-//     // add_geom_obj_to_scene(scene, &sdf_torus, yellow, pos_torus, nr_torus_params, 1.0, 0.2);
-//     // add_geom_obj_to_scene(scene, &sdf_octahedron, green, pos_octahedron, nr_octahedron_params, 1.0);
-
-//     return scene;
-// }
-
-////////////////////////////////  END SCENES DEFINITION /////////////////////////////////////
 /*
 Creates a scene container containing and empty array of nr_scenes scenes.
 */
 SceneContainer create_scene_container(int nr_scenes)
 {
-    Scene **scenes = (Scene **)malloc(sizeof(Scene *) * nr_scenes);
+    Scene **scenes = (Scene**)malloc(sizeof(Scene*)*nr_scenes);
     
     SceneContainer scene_container;
     scene_container.num_scenes = nr_scenes;
+    scene_container.scenes = scenes;
 
     return scene_container;
 }
@@ -508,7 +483,7 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
 Read json file and allocate the entire string in memory.
 Make sure to free the buffer after using.
 */
-static char *read_json(char *json_scene_path)
+static char *read_json(FILE *logFile, char *json_scene_path)
 {
     char *buffer = 0;
     long length;
@@ -522,7 +497,11 @@ static char *read_json(char *json_scene_path)
         buffer = (char*)malloc(length);
         if (buffer)
         {
-            fread(buffer, 1, length, f);
+            if (fread(buffer, 1, length, f) == length) {
+                fprintf(logFile, "Successful read of json file \"%s\" into string variable.\n", json_scene_path);
+            } else {
+                fprintf(logFile, "ERROR: couldn't read json file \"%s\" into string variable.\n", json_scene_path);
+            }
         }
         fclose(f);
     }
@@ -559,14 +538,14 @@ Scene *create_scene_from_json(char *scene_name)
     // create scene path from name
     fprintf(logFile, "Creating scene path from scene_name: \"%s\" and scenes_path: \"%s\" .\n", scene_name, SCENES_PATH);
     char *json_scene_path = (char*)malloc(sizeof(char) * 300);
-    strcat(json_scene_path, SCENES_PATH);
+    strcpy(json_scene_path, SCENES_PATH);
     strcat(json_scene_path, scene_name);
     strcat(json_scene_path, ".json");
 
     fprintf(logFile, "Parsing file path: %s\n", json_scene_path);
 
     // read json file into string
-    char *json_str = read_json(json_scene_path);
+    char *json_str = read_json(logFile, json_scene_path);
     if (json_str == NULL)
     {
         printf("ERROR: Parser couldn't read file at: %s\n", json_scene_path);
@@ -604,6 +583,7 @@ Scene *create_scene_from_json(char *scene_name)
     }
 
     // FILE WAS PARSED SUCCESSFULLY
+    fprintf(logFile, "PARSING STATUS: SUCCESS!\n");
     Scene *scene = (Scene *)malloc(sizeof(Scene));
     scene->name = strdup(scene_name);
 
@@ -633,11 +613,12 @@ Scene *create_scene_from_json(char *scene_name)
     }
 
     // close
-    fprintf(logFile, "\n\n\n\n\n\n");
+    fprintf(logFile, "\n===================== END =======================\n\n\n\n\n\n");
     fclose(logFile);
 
     // free
     free(json_scene_path);
+    free(json_str);
 
     return scene;
 }
