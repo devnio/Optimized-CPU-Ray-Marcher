@@ -1,10 +1,7 @@
-#ifndef UTILITY
-#define UTILITY
+#ifndef UTILITY_H_
+#define UTILITY_H_
 
-#ifndef VEC_3
 #include "vec3.h"
-#endif
-
 
 double mix(double a, double b, double mix);
 double min(double a, double b);

@@ -1,6 +1,5 @@
 #include "vec3.h"
 
-
 /*
  * Function: new_vector
  * ----------------------------
@@ -15,7 +14,9 @@
 Vec3 new_vector(double x, double y, double z)
 {
     Vec3 v;
-    v.x = x; v.y = y; v.z = z;
+    v.x = x;
+    v.y = y;
+    v.z = z;
     return v;
 }
 
@@ -33,10 +34,11 @@ Vec3 new_vector(double x, double y, double z)
 Vec3 new_vector_one(double xyz)
 {
     Vec3 v;
-    v.x = xyz; v.y = xyz; v.z = xyz;
+    v.x = xyz;
+    v.y = xyz;
+    v.z = xyz;
     return v;
 }
-
 
 /*
  * Function: vec_mult
@@ -53,6 +55,20 @@ Vec3 vec_mult(Vec3 v1, Vec3 v2)
     return new_vector(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
 }
 
+/*
+ * Function: vec_pow
+ * ----------------------------
+ *   Returns a new vector
+ *
+ *   v1: of type Vec3 
+ *   p: power value
+ *
+ *   returns: vector elementwise power of p
+ */
+Vec3 vec_pow(Vec3 v1, double p)
+{
+    return new_vector(pow(v1.x, p), pow(v1.y, p), pow(v1.z, p));
+}
 
 /*
  * Function: vec_mult_scalar
@@ -114,7 +130,6 @@ Vec3 vec_sub(Vec3 v1, Vec3 v2)
     return new_vector(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
 }
 
-
 /*
  * Function: vec_norm
  * ----------------------------
@@ -129,7 +144,6 @@ double vec_norm(Vec3 v)
     return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
-
 /*
  * Function: vec_norm
  * ----------------------------
@@ -142,10 +156,10 @@ double vec_norm(Vec3 v)
 Vec3 vec_normalized(Vec3 v)
 {
     double norm = vec_norm(v);
-    if(norm == 0.0 || norm == NAN) return v;
-    return vec_mult_scalar(v, 1/norm);
+    if (norm == 0.0 || norm == NAN)
+        return v;
+    return vec_mult_scalar(v, 1 / norm);
 }
-
 
 /*
  * Function: vec_dot
@@ -162,7 +176,6 @@ double vec_dot(Vec3 v1, Vec3 v2)
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-
 /*
  * Function: vec_cross
  * ----------------------------
@@ -173,14 +186,14 @@ double vec_dot(Vec3 v1, Vec3 v2)
  *
  *   returns: new vector that is the cross product between u and v
  */
-Vec3 vec_cross(Vec3 u, Vec3 v){
-    Vec3 result = {0,0,0};
-    result.x = u.y*v.z-v.y*u.z;
-    result.y = u.z*v.x-v.z*u.x;
-    result.z = u.x*v.y-v.x*u.y;
+Vec3 vec_cross(Vec3 u, Vec3 v)
+{
+    Vec3 result = {0, 0, 0};
+    result.x = u.y * v.z - v.y * u.z;
+    result.y = u.z * v.x - v.z * u.x;
+    result.z = u.x * v.y - v.x * u.y;
     return result;
 }
-
 
 /*
  * Function: vec_reflect
@@ -225,8 +238,8 @@ Vec3 vec_rotate(Vec3 v, Vec3 k, double theta)
 {
     //based on Euler rodrigues formula
     double cosTheta = cos(theta);
-    Vec3 first =  vec_mult_scalar(v, cosTheta);
+    Vec3 first = vec_mult_scalar(v, cosTheta);
     Vec3 second = vec_mult_scalar(vec_cross(k, v), sin(theta));
-    Vec3 third = vec_mult_scalar(k, vec_dot(k, v)*(1-cosTheta));
+    Vec3 third = vec_mult_scalar(k, vec_dot(k, v) * (1 - cosTheta));
     return vec_add(first, vec_add(second, third));
 }

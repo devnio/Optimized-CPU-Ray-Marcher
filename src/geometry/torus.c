@@ -1,19 +1,16 @@
 #include "geometry/torus.h"
 
+const int nr_torus_params = 2;
 
-double sdf_torus(Vec3 p, Torus torus){
-    p = vec_sub(p, torus.c);
+/*
+Params are:  
+- params[0]: r1
+- params[1]: r2
+-> 2 parameter in total
+ */
+double sdf_torus(Vec3 p, double params[])
+{
     double length = sqrt(p.x * p.x + p.z * p.z);
-    Vec3 q = new_vector(length - torus.r1, p.y, 0.0);
-    return sqrt(q.x * q.x + q.y * q.y) - torus.r2; 
-
-}
-
-Torus* build_torus(Vec3 c, double r1, double r2, Material mat){
-    Torus* torus = (Torus*) malloc(sizeof(Torus));
-    torus->c = c;
-    torus->r1 = r1;
-    torus->r2 = r2;
-    torus->mat = mat;
-    return torus;
+    Vec3 q = new_vector(length - params[0], p.y, 0.0);
+    return sqrt(q.x * q.x + q.y * q.y) - params[1];
 }

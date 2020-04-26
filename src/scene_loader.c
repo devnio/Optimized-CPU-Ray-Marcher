@@ -1,198 +1,629 @@
-#include "scene_loader.h"
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
+#include <stdio.h>
+#include <time.h>
 
-#define MAX_NR_SCENES 10
-int num_scenes = 0;
-scene_builder scenes_builder[MAX_NR_SCENES];
+#include "vec3.h"
+#include "camera.h"
+#include "light.h"
+#include "material.h"
 
-void add_plane(int nr, Plane** sps, ...){
-    va_list arguments;                     
-    va_start ( arguments, sps);           
-    for ( int x = 0; x < nr; x++ )        
-    {
-        sps[x] = va_arg ( arguments, Plane* ); 
-    }
-    va_end ( arguments );  
-}
-void add_spheres(int nr, Sphere** sps, ...){
-    va_list arguments;                     
-    va_start ( arguments, sps);           
-    for ( int x = 0; x < nr; x++ )        
-    {
-        sps[x] = va_arg ( arguments, Sphere* ); 
-    }
-    va_end ( arguments );  
-}
-void add_octahedrons(int nr, Octahedron** sps, ...){
-    va_list arguments;                     
-    va_start ( arguments, sps);           
-    for ( int x = 0; x < nr; x++ )        
-    {
-        sps[x] = va_arg ( arguments, Octahedron* ); 
-    }
-    va_end ( arguments );  
-}
-void add_boxes(int nr, Box** sps, ...){
-    va_list arguments;                     
-    va_start ( arguments, sps);           
-    for ( int x = 0; x < nr; x++ )        
-    {
-        sps[x] = va_arg ( arguments, Box* ); 
-    }
-    va_end ( arguments );  
-}
-void add_cones(int nr, Cone** sps, ...){
-    va_list arguments;                     
-    va_start ( arguments, sps);           
-    for ( int x = 0; x < nr; x++ )        
-    {
-        sps[x] = va_arg ( arguments, Cone* ); 
-    }
-    va_end ( arguments );  
+#include "geometry/plane.h"
+#include "geometry/sphere.h"
+#include "geometry/box.h"
+#include "geometry/cone.h"
+#include "geometry/octahedron.h"
+#include "geometry/torus.h"
+#include "scene_loader.h"
 
-}
-void add_torus(int nr, Torus** tos, ...){
-    va_list arguments;                     
-    va_start ( arguments, tos);           
-    for ( int x = 0; x < nr; x++ )        
-    {
-        tos[x] = va_arg ( arguments, Torus* ); 
-    }
-    va_end ( arguments );  
+#define JSMN_STRICT
+#include "jsmn.h"
 
-}
-////////////////////////////////  SCENES DEFINITION /////////////////////////////////////
-
-Scene* scene_baseline(){
-    Scene* scene = build_scene(1,4,1,3,1,0, "../output/baseline.png");
-  
-    Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
-    add_plane(scene->nr_planes, scene->planes,pl0);
-    Octahedron* oct0 = build_octahedron(new_vector(4, 0, 20),2,new_material(new_vector(0, 0.3, 0.6),0,15,new_vector(0, 0, 0)));
-    add_octahedrons(scene->nr_octahedrons, scene->octahedrons, oct0);
-    Sphere* sp0 = build_sphere(new_vector(50, 0, 100),50,new_material(new_vector(0.6, 0.6, 0),0,15,new_vector(0, 0, 0)));
-    Sphere* sp1 = build_sphere(new_vector(4, 0, 25),3,new_material(new_vector(0.8, 0.1, 0), 0.3, 5, new_vector(0, 0, 0)));  
-    Sphere* sp2 = build_sphere(new_vector(-4, 0, 15),3,new_material(new_vector(0.3, 1, 0.36),0,105,new_vector(0, 0, 0)));   
-    Sphere* sp3 = build_sphere(new_vector(0, 0, 40),3, new_material(new_vector(0.2, 0.2, 0.97),0.1,15,new_vector(0, 0, 0)));
-    add_spheres(scene->nr_spheres, scene->spheres, sp0, sp1, sp2, sp3);
-    Box* box0 = build_box(new_vector(1.0,1.0,1.0), new_material(new_vector(0.3, 1, 0.36),0,105,new_vector(0, 0, 0)));
-    add_boxes(scene->nr_boxes, scene->boxes, box0);
-    Cone* cone0 = build_cone(new_vector(4, 3, 25),3,0.01,3,new_material(new_vector(0.8, 0.1, 0),0.1,5,new_vector(0, 0, 0)));
-    Cone* cone1 = build_cone(new_vector(-4, 3, 15),3,0.01,3,new_material(new_vector(0.3, 1, 0.36),0.1,105,new_vector(0, 0, 0)));
-    Cone* cone2 = build_cone(new_vector(0, 3, 40),3,0.01,3,new_material(new_vector(0.2, 0.2, 0.97),0.1,15,new_vector(0, 0, 0)));
-    add_cones(scene->nr_cones, scene->cones,cone0, cone1, cone2);
-
-    return scene;
-}
-
-Scene* scene_baseline2(){
-    Scene* scene = build_scene(1,1,0,0,1,0, "../output/baseline2.png");
-    
-    Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
-    add_plane(scene->nr_planes, scene->planes,pl0);
-    Octahedron* oct0 = build_octahedron(new_vector(4, 0, 20),2,new_material(new_vector(0, 0.3, 0.6),0,15,new_vector(0, 0, 0)));
-    add_octahedrons(scene->nr_octahedrons, scene->octahedrons, oct0);
-    Sphere* sp0 = build_sphere(new_vector(50, 0, 100),50,new_material(new_vector(0.6, 0.6, 0),0,15,new_vector(0, 0, 0)));
-    add_spheres(scene->nr_spheres, scene->spheres, sp0);
-
-    return scene;
-}
-
-
-Scene* scene_torus_test(){
-    Scene* scene = build_scene(1,1,0,0,0,1, "../output/torus_test.png");
-    
-    Plane* pl0 = build_plane(new_vector(0,1,0), 3, new_material(new_vector(0, 0.3, 0.6), 0, 15, new_vector(0, 0, 0)));
-    add_plane(scene->nr_planes, scene->planes,pl0);
-
-    Torus* torus0 = build_torus(new_vector(0, 0, 6), 3.2, 0.7, new_material(new_vector(0.65, 0.2, 0.3),0,15,new_vector(0, 0, 0)));
-    add_torus(scene->nr_toruses, scene->toruses, torus0);
-    
-    Sphere* sp0 = build_sphere(new_vector(50, 0, 100),50,new_material(new_vector(0.6, 0.6, 0),0,15,new_vector(0, 0, 0)));
-    add_spheres(scene->nr_spheres, scene->spheres, sp0);
-
-    return scene;
-}
-
+#define SCENES_PATH "../scenes/"
+#define JSON_PARSER_LOG_PATH "../scenes/log_parser.txt"
 
 /*
-*   TODO: here you can add the scenes that have to be added
-*   Note: If needed modify MAX_NR_SCENES
+Creates a scene container containing and empty array of nr_scenes scenes.
 */
-void add_scenes(){
-    // add_scene(&scene_baseline2);
-    // add_scene(&scene_baseline);
-    add_scene(&scene_torus_test);
-    
-}
+SceneContainer create_scene_container(int nr_scenes)
+{
+    Scene **scenes = (Scene **)malloc(sizeof(Scene *) * nr_scenes);
 
-////////////////////////////////  END SCENES DEFINITION /////////////////////////////////////
-
-void add_scene(scene_builder builder){
-    scenes_builder[num_scenes] = builder;
-    num_scenes++;
-}
-
-SceneContainer build_scenes(){
-    add_scenes();
-    Scene** scenes = (Scene**) malloc(sizeof(Scene*)*num_scenes);
-    
-    for(int i=0; i<num_scenes; ++i){
-        scenes[i] = scenes_builder[i]();
-    }
     SceneContainer scene_container;
-    scene_container.num_scenes=num_scenes;
-    scene_container.scenes=scenes;
+    scene_container.num_scenes = nr_scenes;
+    scene_container.scenes = scenes;
 
     return scene_container;
 }
 
-void destroy_scene(Scene* scene){
-    for(int i=0; i<scene->nr_planes;++i){
-        Plane* p = (scene->planes)[i];
-        free(p);
-    }
-    free(scene->planes);
-    scene->planes=0;
-
-    for(int i=0; i<scene->nr_spheres;++i){
-        Sphere* s = (scene->spheres)[i];
-        free(s);
-    }
-    free(scene->spheres);
-    scene->spheres=0;
-
-    for(int i=0; i<scene->nr_octahedrons;++i){
-        Octahedron* o = (scene->octahedrons)[i];
-        free(o);
-    }
-    free(scene->octahedrons);
-    scene->octahedrons=0;
-
-    for(int i=0; i<scene->nr_boxes;++i){
-        Box* b = (scene->boxes)[i];
-        free(b);
-    }
-    free(scene->boxes);
-    scene->boxes=0;
-
-    for(int i=0; i<scene->nr_cones;++i){
-        Cone* c = (scene->cones)[i];
-        free(c);
-    }
-    free(scene->cones);
-    scene->cones=0;
-
-    for(int i=0; i<scene->nr_toruses;++i){
-        Torus* t = (scene->toruses)[i];
-        free(t);
-    }
-    free(scene->toruses);
-    scene->toruses=0;
-
-    free(scene);
-    scene=0;
-
+/*
+Adds a scene created from the scene file named scene_name,json into idx of the scene container 
+*/
+void add_scene(SceneContainer *scene_container, char *scene_name, int idx)
+{
+    scene_container->scenes[idx] = create_scene_from_json(scene_name);
 }
 
+void destroy_scene(Scene *scene)
+{
+    free(scene->name);
+    free(scene->img);
+    free(scene->camera);
+    free(scene->light);
+
+    // free materials
+    for (int i = 0; i < scene->nr_materials; i++)
+    {
+        free(scene->materials[i]);
+    }
+    free(scene->materials);
+
+    // free transforms
+    for (int i = 0; i < scene->nr_transforms; i++)
+    {
+        free(scene->transforms[i]);
+    }
+    free(scene->transforms);
+
+    // free geometric objects
+    for (int i = 0; i < scene->nr_geom_objs; i++)
+    {
+        free(scene->geometric_ojects[i]->params);
+        free(scene->geometric_ojects[i]);
+    }
+    free(scene->geometric_ojects);
+}
+
+//================================================
+// JSON UTILITY
+//================================================
+/*
+Prints the content of a token.
+*/
+void debug_token(char *json_str, jsmntok_t *tok, char *name_of_field)
+{
+    printf("[DEBUG TOKEN] %s: %.*s\n", name_of_field, tok->end - tok->start, json_str + tok->start);
+}
+
+/* 
+Perform equality on token string and input s (for parsing).
+*/
+static int jsoneq(const char *json, jsmntok_t *tok, const char *s)
+{
+    if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
+        strncmp(json + tok->start, s, tok->end - tok->start) == 0)
+    {
+        return 0;
+    }
+    return -1;
+}
+
+/*
+Parses an int.
+Input: 
+   - json string.
+   - token containing int.
+*/
+static int get_int(const char *json_str, jsmntok_t *tok)
+{
+    return strtol(json_str + tok->start, NULL, 10);
+}
+
+/*
+Parses a double.
+Input: 
+   - json string.
+   - token containing double.
+*/
+static double get_double(const char *json_str, jsmntok_t *tok)
+{
+    return strtod(json_str + tok->start, NULL);
+}
+
+/*
+Parses a vector.
+Input: 
+   - logFile: pointer to logFile used to store information abount parsed scene
+   - json string.
+   - tokens.
+   - index where the vector is (the block, not x).
+*/
+static Vec3 parse_vec3(FILE *logFile, char *json_str, jsmntok_t *tokens, int idx)
+{
+    fprintf(logFile, "       +-- vector: ");
+    Vec3 v;
+    int j = 1;
+    for (int step = 0; step < tokens[idx].size; step++)
+    {
+        if (jsoneq(json_str, &tokens[idx + j], "x") == 0)
+        {
+            v.x = get_double(json_str, &tokens[idx + j + 1]);
+            fprintf(logFile, "x: %f, ", v.x);
+        }
+        else if (jsoneq(json_str, &tokens[idx + j], "y") == 0)
+        {
+            v.y = get_double(json_str, &tokens[idx + j + 1]);
+            fprintf(logFile, "y: %f, ", v.y);
+        }
+        else if (jsoneq(json_str, &tokens[idx + j], "z") == 0)
+        {
+            v.z = get_double(json_str, &tokens[idx + j + 1]);
+            fprintf(logFile, "z: %f\n", v.z);
+        }
+
+        // jump onto next token holdin info at this hierarchy level
+        j += 2;
+    }
+
+    return v;
+}
+
+//================================================
+// SCENE CREATION
+//================================================
+/*
+Input:
+ - scene: scene we are creating
+ - logFile: pointer to logFile used to store information abount parsed scene
+ - json string file
+ - tokens: set of descriptors containing properties of the json file
+ - idx: index for accessing the token containing info about camera (camera block info)
+Output:
+ - creates a camera and adds it to the scene, mallocs also the output image
+ - how many tokens we moved (this is used then by the main loop to proceed to the next fields)
+*/
+int create_cam(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx_camera_properties)
+{
+    fprintf(logFile, "\n===================== CAMERA ====================\n");
+    fprintf(logFile, "+-- parsing %d elements of camera.\n", tokens[idx_camera_properties].size);
+    // we start with 1 because we have to step inside the tokens of camera
+    // (0: the whole camera block, 1: fov, 2: value of fox, 3: position, 4:value and so on...)
+    int width, height;
+    double fov;
+    Vec3 position;
+    Vec3 rotation;
+    int j = 1;
+    if (jsoneq(json_str, &tokens[idx_camera_properties + j], "width") == 0)
+    {
+        width = get_int(json_str, &tokens[idx_camera_properties + j + 1]);
+        fprintf(logFile, "+-- width: %d\n", width);
+        j += tokens[idx_camera_properties + j].size + 1;
+    }
+    if (jsoneq(json_str, &tokens[idx_camera_properties + j], "height") == 0)
+    {
+        height = get_int(json_str, &tokens[idx_camera_properties + j + 1]);
+        fprintf(logFile, "+-- height: %d\n", height);
+        j += tokens[idx_camera_properties + j].size + 1;
+    }
+    if (jsoneq(json_str, &tokens[idx_camera_properties + j], "fov") == 0)
+    {
+        fov = get_double(json_str, &tokens[idx_camera_properties + j + 1]);
+        fprintf(logFile, "+-- fov: %f\n", fov);
+        j += tokens[idx_camera_properties + j].size + 1;
+    }
+    if (jsoneq(json_str, &tokens[idx_camera_properties + j], "position") == 0)
+    {
+        fprintf(logFile, "+-- position, size: %d\n", tokens[idx_camera_properties + j + 1].size);
+        position = parse_vec3(logFile, json_str, tokens, idx_camera_properties + j + 1);
+        j += tokens[idx_camera_properties + j + 1].size * 2 + 2;
+    }
+    if (jsoneq(json_str, &tokens[idx_camera_properties + j], "rotation") == 0)
+    {
+        fprintf(logFile, "+-- rotation, size: %d\n", tokens[idx_camera_properties + j + 1].size);
+        rotation = parse_vec3(logFile, json_str, tokens, idx_camera_properties + j + 1);
+        j += tokens[idx_camera_properties + j + 1].size * 2 + 2;
+    }
+
+    Camera *camera = create_camera(fov, width, height);
+    move_camera(camera, position);
+    rotate_camera(camera, rotation.x, rotation.y);
+
+    scene->camera = camera;
+
+    size_t png_img_size = width * height * 4 * sizeof(unsigned char);
+    scene->img = (unsigned char *)malloc(png_img_size);
+
+    return j;
+}
+
+/*
+Input:
+ - scene: scene we are creating
+ - logFile: pointer to logFile used to store information abount parsed scene
+ - json string file
+ - tokens: set of descriptors containing properties of the json file
+ - idx: index for accessing the token containing info about light (light block info)
+Output:
+ - how many tokens we moved (this is used then by the main loop to proceed to the next fields)
+*/
+int create_light(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx)
+{
+    fprintf(logFile, "\n===================== LIGHT =====================\n");
+    fprintf(logFile, "+-- parsing %d elements of light.\n", tokens[idx].size);
+    Vec3 center;
+    Vec3 emission;
+    int j = 1;
+
+    if (jsoneq(json_str, &tokens[idx + j], "position") == 0)
+    {
+        fprintf(logFile, "+-- position, size: %d\n", tokens[idx + j + 1].size);
+        center = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+        j += tokens[idx + j + 1].size * 2 + 2;
+    }
+    if (jsoneq(json_str, &tokens[idx + j], "emission") == 0)
+    {
+        fprintf(logFile, "+-- emission, size: %d\n", tokens[idx + j + 1].size);
+        emission = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+        j += tokens[idx + j + 1].size * 2 + 2;
+    }
+
+    scene->light = create_pointlight(center, emission);
+
+    return j;
+}
+
+/*
+Input:
+ - scene: scene we are creating
+ - logFile: pointer to logFile used to store information abount parsed scene
+ - json string file
+ - tokens: set of descriptors containing properties of the json file
+ - idx: index for accessing the token containing info about transforms (block info)
+Output:
+ - how many tokens we moved (this is used then by the main loop to proceed to the next fields)
+*/
+int create_transforms(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx)
+{
+    fprintf(logFile, "\n=================== TRANSFORMS ==================\n");
+    fprintf(logFile, "+-- parsing %d transforms.\n", tokens[idx].size);
+
+    scene->nr_transforms = tokens[idx].size;
+    scene->transforms = (Transform **)malloc(sizeof(Transform *) * scene->nr_transforms);
+
+    Vec3 pos;
+    Vec3 rot;
+    int j = 2;
+    for (int step = 0; step < tokens[idx].size; step++)
+    {
+        // parse position and rotation immediately in 1 iteration (we know how a transform is composed)
+        fprintf(logFile, "\n+--transform %d\n", step);
+        if (jsoneq(json_str, &tokens[idx + j], "position") == 0)
+        {
+            fprintf(logFile, "   +-- position, size: %d\n", tokens[idx + j + 1].size);
+            pos = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+            j += tokens[idx + j + 1].size * 2 + 2;
+        }
+        if (jsoneq(json_str, &tokens[idx + j], "rotation") == 0)
+        {
+            fprintf(logFile, "   +-- rotation, size: %d\n", tokens[idx + j + 1].size);
+            rot = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+            j += tokens[idx + j + 1].size * 2 + 3;
+        }
+
+        scene->transforms[step] = new_transform(pos, rot);
+    }
+    return j - 1;
+}
+
+/*
+Input:
+ - scene: scene we are creating
+ - logFile: pointer to logFile used to store information abount parsed scene
+ - json string file
+ - tokens: set of descriptors containing properties of the json file
+ - idx: index for accessing the token containing info about materials (block info)
+Output:
+ - how many tokens we moved (this is used then by the main loop to proceed to the next fields)
+*/
+int create_materials(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx)
+{
+    fprintf(logFile, "\n=================== MATERIALS ===================\n");
+    fprintf(logFile, "+-- parsing %d materials.\n", tokens[idx].size);
+
+    scene->nr_materials = tokens[idx].size;
+    scene->materials = (Material **)malloc(sizeof(Material *) * scene->nr_materials);
+
+    double refl;
+    double shininess;
+    Vec3 surfaceCol;
+    int j = 2;
+    for (int step = 0; step < tokens[idx].size; step++)
+    {
+        // parse refl, shininess, surface immediately in 1 iteration (we know how a transform is composed)
+        fprintf(logFile, "\n+-- material %d\n", step);
+        if (jsoneq(json_str, &tokens[idx + j], "reflection") == 0)
+        {
+            refl = get_double(json_str, &tokens[idx + j + 1]);
+            fprintf(logFile, "   +-- reflection: %f\n", refl);
+            j += 2;
+        }
+        if (jsoneq(json_str, &tokens[idx + j], "shininess") == 0)
+        {
+            shininess = get_double(json_str, &tokens[idx + j + 1]);
+            fprintf(logFile, "   +-- shininess: %f\n", shininess);
+            j += 2;
+        }
+        if (jsoneq(json_str, &tokens[idx + j], "surface") == 0)
+        {
+            fprintf(logFile, "   +-- surface, size: %d\n", tokens[idx + j + 1].size);
+            surfaceCol = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+            j += tokens[idx + j + 1].size * 2 + 3;
+        }
+
+        scene->materials[step] = new_material(surfaceCol, refl, shininess);
+    }
+    return j - 1;
+}
+
+/*
+Parses an array of doubles and saves into the input array.
+Input: 
+   - scene: scene we are creating
+   - logFile: pointer to logFile used to store information abount parsed scene
+   - json string.
+   - tokens.
+   - index where the vector is (the block, not x).
+   - pointer to double array that is going to be filled.
+*/
+int create_params_array(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx, double *params)
+{
+    fprintf(logFile, "    +-- parsing %d params (array).\n", tokens[idx].size);
+    int j = 1;
+    fprintf(logFile, "        +-- ");
+    for (int step = 0; step < tokens[idx].size; step++)
+    {
+        if (tokens[idx + j].type == JSMN_PRIMITIVE)
+        {
+            params[step] = get_double(json_str, &tokens[idx + j]);
+            fprintf(logFile, "p[%d]: %f, ", step, params[step]);
+        }
+        j++;
+    }
+
+    return j + 1;
+}
+
+/*
+Input:
+ - scene: scene we are creating
+ - logFile: pointer to logFile used to store information abount parsed scene
+ - json string file
+ - tokens: set of descriptors containing properties of the json file
+ - idx: index for accessing the token containing info about geometric objects (block info)
+Output:
+ - how many tokens we moved (this is used then by the main loop to proceed to the next fields)
+*/
+int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx)
+{
+    fprintf(logFile, "\n============== GEOMETRIC OBJECTS ================\n");
+    fprintf(logFile, "+-- parsing %d geometric objects.\n", tokens[idx].size);
+
+    scene->nr_geom_objs = tokens[idx].size;
+    scene->geometric_ojects = (GeomtericObject **)malloc(sizeof(GeomtericObject *) * scene->nr_geom_objs);
+
+    int j = 2;
+    for (int step = 0; step < tokens[idx].size; step++)
+    {
+        GeomtericObject *geom_obj = (GeomtericObject *)malloc(sizeof(GeomtericObject));
+
+        // parse refl, shininess, surface immediately in 1 iteration (we know how a transform is composed)
+        fprintf(logFile, "\n+-- object %d\n", step);
+        if (jsoneq(json_str, &tokens[idx + j], "name") == 0)
+        {
+            char name[50];
+            sprintf(name, "%.*s", tokens[idx + j + 1].end - tokens[idx + j + 1].start, json_str + tokens[idx + j + 1].start);
+            fprintf(logFile, "   +-- %s: %s", "name", name);
+
+            if (strcmp(name, "plane") == 0)
+            {
+                geom_obj->sdf = &sdf_plane;
+                fprintf(logFile, " => assigned sdf of %s\n", "plane");
+            }
+            else if (strcmp(name, "sphere") == 0)
+            {
+                geom_obj->sdf = &sdf_sphere;
+                fprintf(logFile, " => assigned sdf of %s\n", "sphere");
+            }
+            else if (strcmp(name, "box") == 0)
+            {
+                geom_obj->sdf = &sdf_box;
+                fprintf(logFile, " => assigned sdf of %s\n", "box");
+            }
+            else if (strcmp(name, "cone") == 0)
+            {
+                geom_obj->sdf = &sdf_cone;
+                fprintf(logFile, " => assigned sdf of %s\n", "cone");
+            }
+            else if (strcmp(name, "octahedron") == 0)
+            {
+                geom_obj->sdf = &sdf_octahedron;
+                fprintf(logFile, " => assigned sdf of %s\n", "octahedron");
+            }
+            else if (strcmp(name, "torus") == 0)
+            {
+                geom_obj->sdf = &sdf_torus;
+                fprintf(logFile, " => assigned sdf of %s\n", "torus");
+            }
+
+            j += 2;
+        }
+        if (jsoneq(json_str, &tokens[idx + j], "transform_idx") == 0)
+        {
+            int transf_idx = get_int(json_str, &tokens[idx + j + 1]);
+            geom_obj->transform = scene->transforms[transf_idx];
+
+            fprintf(logFile, "   +-- transform_idx: %d\n", transf_idx);
+            j += 2;
+        }
+        if (jsoneq(json_str, &tokens[idx + j], "material_idx") == 0)
+        {
+            int mat_idx = get_int(json_str, &tokens[idx + j + 1]);
+            geom_obj->mat = scene->materials[mat_idx];
+
+            fprintf(logFile, "   +-- material_idx: %d\n", mat_idx);
+            j += 2;
+        }
+        if (jsoneq(json_str, &tokens[idx + j], "params") == 0)
+        {
+            double *params = (double *)malloc(sizeof(double) * tokens[idx + j + 1].size);
+            j += create_params_array(scene, logFile, json_str, tokens, idx + j + 1, params) + 1;
+            geom_obj->params = params;
+        }
+
+        scene->geometric_ojects[step] = geom_obj;
+    }
+    return j - 1;
+}
+
+//================================================
+// JSON PARSING
+//================================================
+/*
+Read json file and allocate the entire string in memory.
+Make sure to free the buffer after using.
+*/
+static char *read_json(FILE *logFile, char *json_scene_path)
+{
+    char *buffer = 0;
+    size_t length;
+    FILE *f = fopen(json_scene_path, "rb");
+
+    if (f)
+    {
+        fseek(f, 0, SEEK_END);
+        length = ftell(f) + 1;
+        fseek(f, 0, SEEK_SET);
+        buffer = (char *)malloc(length);
+
+        if (buffer)
+        {
+            size_t r = fread(buffer, sizeof(char), length - 1, f);
+            if (r == length - 1)
+            {
+                fprintf(logFile, "Successful read of json file \"%s\" into string variable.\n", json_scene_path);
+                buffer[r] = '\0';
+            }
+            else
+            {
+                fprintf(logFile, "ERROR: couldn't read json file \"%s\" into string variable.\n", json_scene_path);
+            }
+        }
+        fclose(f);
+    }
+
+    return buffer;
+}
+
+Scene *create_scene_from_json(char *scene_name)
+{
+    // open log file to write the process of loading current scene
+    FILE *logFile = fopen(JSON_PARSER_LOG_PATH, "w");
+    if (logFile == NULL)
+    {
+        // unable to open file hence exit
+        printf("\nERROR: Unable to open parser log file '%s' file.\n", JSON_PARSER_LOG_PATH);
+        printf("Please check whether file exists and you have write privilege.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(logFile, "=================================================\n");
+    fprintf(logFile, "================ LOG PARSING SCENE ==============\n");
+    // build current date and time to append to log file
+    char date_[100];
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    strftime(date_, sizeof(date_) - 1, "========  [Date: %d.%m.%Y - %H:%M:%S]  ========", t);
+    fprintf(logFile, "%s \n", date_);
+
+    // create scene path from name
+    fprintf(logFile, "Creating scene path from scene_name: \"%s\" and scenes_path: \"%s\" .\n", scene_name, SCENES_PATH);
+    char *json_scene_path = (char *)malloc(sizeof(char) * 300);
+    strcpy(json_scene_path, SCENES_PATH);
+    strcat(json_scene_path, scene_name);
+    strcat(json_scene_path, ".json");
+
+    fprintf(logFile, "Parsing file path: %s\n", json_scene_path);
+
+    // read json file into string
+    char *json_str = read_json(logFile, json_scene_path);
+    if (json_str == NULL)
+    {
+        printf("ERROR: Parser couldn't read file at: %s\n", json_scene_path);
+        fprintf(logFile, "ERROR: Parser couldn't read file at: %s\n", json_scene_path);
+        exit(EXIT_FAILURE);
+    }
+
+    // DEBUG
+    fprintf(logFile, "Read file contains: \n_________________________\n%s\n_________________________\n", json_str);
+    // DEBUG
+
+    // initialize json parser
+    jsmn_parser parser;
+    jsmn_init(&parser);
+
+    // get needed tokens
+    int needed_tokens = jsmn_parse(&parser, json_str, strlen(json_str), NULL, -1);
+    fprintf(logFile, "Amount of needed tokes are: %d\n", needed_tokens);
+
+    // parse with newly created tokens
+    jsmntok_t tokens[needed_tokens]; /* We expect no more than needed_tokens JSON tokens */
+    jsmn_init(&parser);
+    int r = jsmn_parse(&parser, json_str, strlen(json_str), tokens, needed_tokens);
+
+    // check that json is in right format
+    if (r < 0)
+    {
+        printf("ERROR: Parser failed to parse JSON: Return error r:%d\n", r);
+        fprintf(logFile, "ERROR: Parser to parse JSON: Return error r:%d\n", r);
+        exit(EXIT_FAILURE);
+    }
+
+    // check that the top-level element is an object
+    if (r < 1 || tokens[0].type != JSMN_OBJECT)
+    {
+        printf("ERROR: Parser expected and object at root, probably forgot outer brackets. Return error r:%d\n", r);
+        fprintf(logFile, "ERROR: Parser expected and object at root, probably forgot outer brackets. Return error r:%d\n", r);
+        exit(EXIT_FAILURE);
+    }
+
+    // FILE WAS PARSED SUCCESSFULLY
+    fprintf(logFile, "PARSING STATUS: SUCCESS!\n");
+    Scene *scene = (Scene *)malloc(sizeof(Scene));
+    scene->name = strdup(scene_name);
+
+    // Now go through the objects and populate the scene
+    for (int i = 1; i < r; i++)
+    {
+        if (jsoneq(json_str, &tokens[i], "camera") == 0)
+        {
+            i += create_cam(scene, logFile, json_str, tokens, i + 1) + 1;
+        }
+        if (jsoneq(json_str, &tokens[i], "pointlight") == 0)
+        {
+            i += create_light(scene, logFile, json_str, tokens, i + 1) + 1;
+        }
+        if (jsoneq(json_str, &tokens[i], "transforms") == 0)
+        {
+            i += create_transforms(scene, logFile, json_str, tokens, i + 1) + 1;
+        }
+        if (jsoneq(json_str, &tokens[i], "materials") == 0)
+        {
+            i += create_materials(scene, logFile, json_str, tokens, i + 1) + 1;
+        }
+        if (jsoneq(json_str, &tokens[i], "geometric_objects") == 0)
+        {
+            i += create_geom_objects(scene, logFile, json_str, tokens, i + 1) + 1;
+        }
+    }
+
+    // close
+    fprintf(logFile, "\n===================== END =======================\n\n\n\n\n\n");
+    fclose(logFile);
+
+    // free
+    free(json_scene_path);
+    free(json_str);
+
+    return scene;
+}
