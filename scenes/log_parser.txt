@@ -1,9 +1,9 @@
 =================================================
 ================ LOG PARSING SCENE ==============
-========  [Date: 26.04.2020 - 22:54:46]  ======== 
-Creating scene path from scene_name: "shape4" and scenes_path: "../scenes/" .
-Parsing file path: ../scenes/shape4.json
-Successful read of json file "../scenes/shape4.json" into string variable.
+========  [Date: 26.04.2020 - 22:58:33]  ======== 
+Creating scene path from scene_name: "shape0" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/shape0.json
+Successful read of json file "../scenes/shape0.json" into string variable.
 Read file contains: 
 _________________________
 {
@@ -48,7 +48,7 @@ _________________________
       "params": [ 0.0, 1.0, 0.0, 3.0 ]
     },
     {
-      "name": "octahedron",
+      "name": "sphere",
       "transform_idx": 1,
       "material_idx": 1,
       "params": [ 3.0 ]
@@ -116,7 +116,7 @@ PARSING STATUS: SUCCESS!
     +-- parsing 4 params (array).
         +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: 3.000000, 
 +-- object 1
-   +-- name: octahedron => assigned sdf of octahedron
+   +-- name: sphere => assigned sdf of sphere
    +-- transform_idx: 1
    +-- material_idx: 1
     +-- parsing 1 params (array).
