@@ -9,5 +9,6 @@ typedef struct
     Vec3 emissionColor;
 } PointLight;
 
+PointLight *create_pointlight(Vec3 center, Vec3 emissionColor);
 
 #endif

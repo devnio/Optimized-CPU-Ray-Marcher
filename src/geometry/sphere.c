@@ -1,3 +1,4 @@
+#include "stdio.h"
 #include "geometry/sphere.h"
 
 const int nr_sphere_params = 1;

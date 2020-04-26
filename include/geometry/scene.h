@@ -19,10 +19,18 @@ typedef struct
 
 typedef struct {
     char* name;
+    
+    unsigned char* img;
+
     Camera* camera;
-    PointLight light;
-    Material* materials;
-    Transform* transforms;
+    PointLight* light;
+    
+    int nr_materials;
+    Material** materials;
+    
+    int nr_transforms;
+    Transform** transforms;
+    
     int nr_geom_objs;
     GeomtericObject** geometric_ojects;
 } Scene;

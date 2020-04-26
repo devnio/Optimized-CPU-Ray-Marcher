@@ -1,28 +1,1029 @@
+=================================================
 ================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:10:38]  ======== 
 Creating scene path from scene_name: "scene0" and scenes_path: "../scenes/" .
 Parsing file path: ../scenes/scene0.json
-Amount of needed tokes are: 156
+Amount of needed tokes are: 92
 
-CAMERA
-+-- parsing 3 elements of camera.
-+-- fov: 30.300000
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 50
++-- height: 50
++-- fov: 30.000000
 +-- position, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
 +-- rotation, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
 
-LIGHT
+===================== LIGHT =====================
 +-- parsing 2 elements of light.
-+-- power: 10.500000
 +-- position, size: 3
-       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+       +-- vector: x: 0.000000, y: 100.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
 
-TRANSFORMS
-+-- parsing 4 transforms.
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
 
 +--transform 0
    +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 10.000000
+   +-- rotation, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 1 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 1 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:10:38]  ======== 
+Creating scene path from scene_name: "scene0" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene0.json
+Amount of needed tokes are: 92
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 50
++-- height: 50
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 100.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 10.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 1 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 1 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:11:45]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 100.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 10.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 30.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 1.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:13:52]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 100.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 30.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 30.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 1.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:15:18]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 100.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 30.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 30.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 1.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:15:36]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 100.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 30.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 30.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 1.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:16:47]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 100.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 30.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 1000.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 1.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:17:10]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 100.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 200.000000, y: 200.000000, z: 200.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 30.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 1.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:17:23]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 200.000000, y: 200.000000, z: 200.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 30.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 1.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:17:41]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 30.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 1.500000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:18:20]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 30.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:18:36]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:18:59]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 20.000000, y: 20.000000, z: 20.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:19:16]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 20.000000, y: 20.000000, z: 20.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:19:31]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 115
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 1 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:21:31]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 10.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 0.000000
    +-- rotation, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
 
@@ -32,45 +1033,1962 @@ TRANSFORMS
    +-- rotation, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
 
-+--transform 2
-   +-- position, size: 3
-       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
-   +-- rotation, size: 3
-       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
-
-+--transform 3
-   +-- position, size: 3
-       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
-   +-- rotation, size: 3
-       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
-
-MATERIALS
+=================== MATERIALS ===================
 +-- parsing 2 materials.
 
 +-- material 0
-   +-- reflection: 0.300000
-   +-- shininess: 15.400000
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
    +-- surface, size: 3
-       +-- vector: x: 0.600000, y: 0.000000, z: 0.000000
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
 
 +-- material 1
-   +-- reflection: 0.000000
-   +-- shininess: 30.000000
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
    +-- surface, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
 
-GEOMETRIC OBJECTS
+============== GEOMETRIC OBJECTS ================
 +-- parsing 2 geometric objects.
 
 +-- object 0
-   +-- name: plane
-   +-- transform_idx: 2.000000
-   +-- material_idx: 4.000000
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
     +-- parsing 4 params (array).
-        +-- p[0]: 0.300000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.000000, 
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
 +-- object 1
-   +-- name: sphere
-   +-- transform_idx: 2.000000
-   +-- material_idx: 4.000000
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 0
     +-- parsing 1 params (array).
-        +-- p[0]: 0.300000, 
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:22:34]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 4.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:22:57]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 4.000000, y: 90.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:23:12]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 4.000000, y: 180.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:23:21]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 4.000000, y: 270.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:23:43]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 4.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:23:51]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:25:06]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:26:26]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:26:43]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:27:35]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.300000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.300000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:28:04]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:30:27]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:32:50]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:34:11]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 30.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: -10.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:38:56]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 50.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:39:26]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 50.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:39:33]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 50.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:39:47]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 5.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:39:58]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 10.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:40:06]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 20.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:40:14]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 1
+    +-- parsing 1 params (array).
+        +-- p[0]: 30.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:40:45]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 1 params (array).
+        +-- p[0]: 30.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:41:12]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 133
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: torus => assigned sdf of torus
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 2 params (array).
+        +-- p[0]: 30.000000, p[1]: 1.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:41:20]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 133
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: torus => assigned sdf of torus
+   +-- transform_idx: 1
+   +-- material_idx: 0
+    +-- parsing 2 params (array).
+        +-- p[0]: 30.000000, p[1]: 1.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:42:40]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 133
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.500000, 
++-- object 1
+   +-- name: torus => assigned sdf of torus
+   +-- transform_idx: 1
+   +-- material_idx: 0
+    +-- parsing 2 params (array).
+        +-- p[0]: 30.000000, p[1]: 1.000000, 
+
+
+
+
+
+=================================================
+================ LOG PARSING SCENE ==============
+========  [Date: 26.04.2020 - 02:52:04]  ======== 
+Creating scene path from scene_name: "scene1" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene1.json
+Amount of needed tokes are: 132
+
+===================== CAMERA ====================
++-- parsing 5 elements of camera.
++-- width: 1280
++-- height: 720
++-- fov: 90.000000
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
++-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+===================== LIGHT =====================
++-- parsing 2 elements of light.
++-- position, size: 3
+       +-- vector: x: 0.000000, y: 10.000000, z: 0.000000
++-- emission, size: 3
+       +-- vector: x: 2.000000, y: 2.000000, z: 2.000000
+
+=================== TRANSFORMS ==================
++-- parsing 2 transforms.
+
++--transform 0
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 1
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 5.000000, z: 20.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
+=================== MATERIALS ===================
++-- parsing 2 materials.
+
++-- material 0
+   +-- reflection: 0.000000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
+
++-- material 1
+   +-- reflection: 0.000000
+   +-- shininess: 10.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.600000
+
+============== GEOMETRIC OBJECTS ================
++-- parsing 2 geometric objects.
+
++-- object 0
+   +-- name: plane => assigned sdf of plane
+   +-- transform_idx: 0
+   +-- material_idx: 0
+    +-- parsing 4 params (array).
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: 3.000000, 
++-- object 1
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 1
+   +-- material_idx: 0
+    +-- parsing 1 params (array).
+        +-- p[0]: 3.000000, 
+
+
+
+
+

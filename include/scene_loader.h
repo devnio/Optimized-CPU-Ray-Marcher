@@ -3,18 +3,13 @@
 
 #include "geometry/scene.h"
 
-typedef Scene*(*scene_builder)();
-
 typedef struct {
     int num_scenes;
     Scene **scenes;
 } SceneContainer;
 
-Scene* create_scene(char* scene_name);
-void add_scene(scene_builder builder);
-void add_scenes();
-SceneContainer build_scenes();
-Scene* scene_baseline();
+Scene *create_scene_from_json(char *scene_name);
+SceneContainer build_scenes(int nr_scenes, ...);
 void destroy_scene(Scene* scene);
 
 #endif // SCENE_LOADER_H_

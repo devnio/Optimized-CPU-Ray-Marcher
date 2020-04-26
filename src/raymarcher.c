@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
+#include <string.h>
 
 #include "geometry/scene.h"
 #include "lodepng.h"
@@ -26,16 +27,16 @@
 
 // RENDERING
 #define MAX_RAY_DEPTH 2    // max nr. bounces
-#define MARCH_COUNT 3000   // max marching steps
+#define MARCH_COUNT 800   // max marching steps
 #define BBOX_AXES 100     // bounding box size
-#define INTERSECT_THRESHOLD 0.00001 // careful with this -> should be low enoguh for shadow to work
+#define INTERSECT_THRESHOLD 0.001 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING
 #define SPECULAR_COEFF 0.2
 #define SHADOW_LIGHTNESS 0.1
 #define LIGHT_STR 3
 
-#define FOG 1
+#define FOG 0
 #define FOG_COEFF -0.00002
 
 // PRECISION
@@ -132,7 +133,6 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
 Vec3 trace(Vec3 o, 
            Vec3 dir, 
            Scene scene, 
-           PointLight pLight, 
            int depth)
 {
     // SOME GLOBAL VARIABLES
@@ -160,7 +160,7 @@ Vec3 trace(Vec3 o,
     }
 
     // Light dir
-    Vec3 L = vec_sub(pLight.c, sdf_info.intersection_pt);
+    Vec3 L = vec_sub(scene.light->c, sdf_info.intersection_pt);
     L = vec_normalized(L);
 
     if ((depth < MAX_RAY_DEPTH) && (mat.refl > 0))
@@ -170,7 +170,7 @@ Vec3 trace(Vec3 o,
         reflDir = vec_normalized(reflDir);
 
         // Compute reflected color
-        Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, vec_mult_scalar(N, EPSILON)), reflDir, scene, pLight, depth + 1);
+        Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, vec_mult_scalar(N, EPSILON)), reflDir, scene, depth + 1);
         finalColor = vec_mult_scalar(reflectedCol, mat.refl);
     }
 
@@ -203,7 +203,7 @@ Vec3 trace(Vec3 o,
 
     Vec3 diffuseColor = vec_mult_scalar(vec_mult_scalar(mat.surfCol, lambertian), sdf_shadow_info.s);
     Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
-    specularColor = vec_mult(pLight.emissionColor, vec_mult_scalar(specularColor, specular));
+    specularColor = vec_mult(scene.light->emissionColor, vec_mult_scalar(specularColor, specular));
     finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
 
 #if FOG == 1
@@ -234,31 +234,21 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
  *
  *   returns: void
  */
-void render(Scene scene, PointLight pLight)
+void render(Scene scene)
 {
-    unsigned int width = WIDTH;
-    unsigned int height = HEIGHT;
-    float fov = 30;
-
-    Camera* camera = create_camera(fov, width, height);
-
-    //Translation and rotation
-    // Vec3 t = {0.0,5.0,-7};
-    // move_camera(camera, t);
-    rotate_camera(camera, 5, 0);
-
-    // debug
+#if DEBUG_MODE == 1
     printf("RENDERING... ");
     float progress = 0.;
     float progress_step = 1./(WIDTH*HEIGHT);
     progress += progress_step;
+#endif
 
     double inv_AA = 1.0/AA;
     Vec3 tot_col;
 
-    // render
-    size_t png_img_size = width * height * 4 * sizeof(unsigned char);
-    unsigned char *img = (unsigned char *)malloc(png_img_size);
+    int width = scene.camera->widthPx;
+    int height = scene.camera->heightPx;
+
     for (unsigned y = 0; y < height; ++y)
     {
         for (unsigned x = 0; x < width; ++x)
@@ -274,14 +264,14 @@ void render(Scene scene, PointLight pLight)
                     double disp_x = (inv_AA*n - 0.5) + x;
                     double disp_y = (inv_AA*m - 0.5) + y;
                     Vec3 dir = shoot_ray(camera, disp_x, disp_y);
-                    Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0, NULL);
+                    Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
                     tot_col = vec_add(tot_col, px_col);
                 }
             }
             Vec3 px_col = vec_mult_scalar(tot_col, 1.0/(AA*AA));
 #else
-            Vec3 dir = shoot_ray(camera, x, y);
-            Vec3 px_col = trace(camera->pos, dir, scene, pLight, 0);
+            Vec3 dir = shoot_ray(scene.camera, x, y);
+            Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
 
                 
 #endif
@@ -290,13 +280,12 @@ void render(Scene scene, PointLight pLight)
             px_col = vec_pow( px_col, 0.4545 );
 #endif
             // save colors computed by trace into current pixel
-            img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
-            img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
-            img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
-            img[y * width * 4 + x * 4 + 3] = 255;
+            scene.img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
+            scene.img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
+            scene.img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
+            scene.img[y * width * 4 + x * 4 + 3] = 255;
 
 #if DEBUG_MODE == 1
-            
             progress += progress_step;
             fflush(stdout);
             printf(" %.2f\b\b\b\b\b", progress);
@@ -307,11 +296,14 @@ void render(Scene scene, PointLight pLight)
         }
     }
 
-    encodeOneStep(scene.name, img, width, height);
-    printf("\nImage rendered and saved in output folder\n");
-    free(img);
-    free_camera(camera);
-    
+    // prepare output name
+    char* out = malloc(sizeof(char) * 300);
+    strcat(out, "../output/");
+    strcat(out, scene.name);
+    strcat(out, ".png");
+    encodeOneStep(out, scene.img, width, height);
+    free(out);
+    printf("\nImage \"%s.png\" rendered and saved in output folder\n", scene.name);
 }
 
 /*
@@ -323,29 +315,22 @@ void render(Scene scene, PointLight pLight)
  *
  *   returns: void
  */
-void render_all(SceneContainer scenes_container, PointLight pLight){
+void render_all(SceneContainer scenes_container){
 
     // for(int i=0;i<scenes_container.num_scenes;++i){
         Scene s = *(scenes_container.scenes)[0];
-        // printf("Scene check 1... entry 3: %f",s.geometric_ojects[0]->params[3]);
-        render(s, pLight);
+        render(s);
         destroy_scene(&s);
     // }
     free((scenes_container.scenes)[0]);
 }
 
 int main()
-{   create_scene("scene0");
-    // SceneContainer scenes_container = build_scenes();
- 
-    // Lights (in future can be an array)
-    PointLight pLight;
-    pLight.c = new_vector(0, 100, 0);
-    double em = 2;
-    pLight.emissionColor = new_vector(em, em, em);
-
-    //render(*(scenes_container.scenes)[1], pLight);
-    // render_all(scenes_container, pLight);
+{   
+    // create_scene_from_json("scene0");
+    // SceneContainer scenes_container = build_scenes(1, "scene0");
+    SceneContainer scenes_container = build_scenes(1, "scene1");
+    render_all(scenes_container);
 
     return 0;
 }
