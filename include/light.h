@@ -1,5 +1,5 @@
-#ifndef LIGHT
-#define LIGHT
+#ifndef LIGHT_H_
+#define LIGHT_H_
 
 #include "vec3.h"
 

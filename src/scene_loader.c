@@ -3,9 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 #include "vec3.h"
 #include "camera.h"
@@ -26,14 +23,13 @@
 #define SCENES_PATH "../scenes/"
 #define JSON_PARSER_LOG_PATH "../scenes/log_parser.txt"
 
-
 /*
 Creates a scene container containing and empty array of nr_scenes scenes.
 */
 SceneContainer create_scene_container(int nr_scenes)
 {
-    Scene **scenes = (Scene**)malloc(sizeof(Scene*)*nr_scenes);
-    
+    Scene **scenes = (Scene **)malloc(sizeof(Scene *) * nr_scenes);
+
     SceneContainer scene_container;
     scene_container.num_scenes = nr_scenes;
     scene_container.scenes = scenes;
@@ -44,7 +40,7 @@ SceneContainer create_scene_container(int nr_scenes)
 /*
 Adds a scene created from the scene file named scene_name,json into idx of the scene container 
 */
-void add_scene(SceneContainer* scene_container, char* scene_name, int idx)
+void add_scene(SceneContainer *scene_container, char *scene_name, int idx)
 {
     scene_container->scenes[idx] = create_scene_from_json(scene_name);
 }
@@ -496,17 +492,20 @@ static char *read_json(FILE *logFile, char *json_scene_path)
     if (f)
     {
         fseek(f, 0, SEEK_END);
-        length = ftell(f)+1;
+        length = ftell(f) + 1;
         fseek(f, 0, SEEK_SET);
-        buffer = (char*)malloc(length);
+        buffer = (char *)malloc(length);
 
         if (buffer)
         {
-            size_t r = fread(buffer, sizeof(char), length-1, f);
-            if (r == length-1) {
+            size_t r = fread(buffer, sizeof(char), length - 1, f);
+            if (r == length - 1)
+            {
                 fprintf(logFile, "Successful read of json file \"%s\" into string variable.\n", json_scene_path);
                 buffer[r] = '\0';
-            } else {
+            }
+            else
+            {
                 fprintf(logFile, "ERROR: couldn't read json file \"%s\" into string variable.\n", json_scene_path);
             }
         }
@@ -539,7 +538,7 @@ Scene *create_scene_from_json(char *scene_name)
 
     // create scene path from name
     fprintf(logFile, "Creating scene path from scene_name: \"%s\" and scenes_path: \"%s\" .\n", scene_name, SCENES_PATH);
-    char *json_scene_path = (char*)malloc(sizeof(char) * 300);
+    char *json_scene_path = (char *)malloc(sizeof(char) * 300);
     strcpy(json_scene_path, SCENES_PATH);
     strcat(json_scene_path, scene_name);
     strcat(json_scene_path, ".json");

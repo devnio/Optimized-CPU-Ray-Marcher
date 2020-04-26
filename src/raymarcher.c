@@ -27,9 +27,9 @@
 // ===== MACROS =====
 
 // RENDERING
-#define MAX_RAY_DEPTH 2    // max nr. bounces
-#define MARCH_COUNT 3000   // max marching steps
-#define BBOX_AXES 100     // bounding box size
+#define MAX_RAY_DEPTH 2             // max nr. bounces
+#define MARCH_COUNT 3000            // max marching steps
+#define BBOX_AXES 100               // bounding box size
 #define INTERSECT_THRESHOLD 0.00001 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING
@@ -61,16 +61,19 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     Vec3 p0 = vec_add(p, new_vector(EPSILON, 0, 0));
     Vec3 p1 = vec_add(p, new_vector(0, EPSILON, 0));
     Vec3 p2 = vec_add(p, new_vector(0, 0, EPSILON));
-    
+
     SDF_Info sdf_info;
     sdf(p, scene, &sdf_info);
-    Vec3 c = new_vector_one(sdf_info.min_dist); 
-    
+    Vec3 c = new_vector_one(sdf_info.min_dist);
+
     Vec3 ch;
-    sdf(p0, scene, &sdf_info); ch.x = sdf_info.min_dist;
-    sdf(p1, scene, &sdf_info); ch.y = sdf_info.min_dist;
-    sdf(p2, scene, &sdf_info); ch.z = sdf_info.min_dist;
-    
+    sdf(p0, scene, &sdf_info);
+    ch.x = sdf_info.min_dist;
+    sdf(p1, scene, &sdf_info);
+    ch.y = sdf_info.min_dist;
+    sdf(p2, scene, &sdf_info);
+    ch.z = sdf_info.min_dist;
+
     // Vec3 n = vec_mult_scalar(vec_sub(ch, c), 1.0/EPSILON);
     // return n;
     Vec3 n = vec_sub(ch, c);
@@ -105,17 +108,17 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
             break;
         }
 
-        if (doShadowSteps==1)
+        if (doShadowSteps == 1)
         {
-            float mid = sdf_info.min_dist*sdf_info.min_dist;
-            double y = mid/(2.0*ph); 
-            double d = sqrt(mid-y*y);
-            sdf_info.s = min(sdf_info.s, LIGHT_STR*d/max(0.0,t-y));
+            float mid = sdf_info.min_dist * sdf_info.min_dist;
+            double y = mid / (2.0 * ph);
+            double d = sqrt(mid - y * y);
+            sdf_info.s = min(sdf_info.s, LIGHT_STR * d / max(0.0, t - y));
             ph = sdf_info.min_dist;
             t += sdf_info.min_dist;
         }
     }
-    
+
     return sdf_info;
 }
 
@@ -131,9 +134,9 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
  *
  *   returns: the color of the pixel that generated the direction
  */
-Vec3 trace(Vec3 o, 
-           Vec3 dir, 
-           Scene scene, 
+Vec3 trace(Vec3 o,
+           Vec3 dir,
+           Scene scene,
            int depth)
 {
     // SOME GLOBAL VARIABLES
@@ -147,8 +150,7 @@ Vec3 trace(Vec3 o,
     if (sdf_info.intersected != 1)
         return ambientColor;
 
-
-    // Shade intersected object    
+    // Shade intersected object
     Material mat = *(scene.geometric_ojects[sdf_info.nearest_obj_idx]->mat);
 
     // Normal
@@ -179,14 +181,14 @@ Vec3 trace(Vec3 o,
      * We assume that light is not in between objects. 
      * Otherwise should check only interval between light and sdf_info.intersection_pt. 
     */
-   SDF_Info sdf_shadow_info;
-   sdf_shadow_info.s = 1.0;
-   if (scene.nr_geom_objs > 1)
-   {
+    SDF_Info sdf_shadow_info;
+    sdf_shadow_info.s = 1.0;
+    if (scene.nr_geom_objs > 1)
+    {
         sdf_shadow_info = ray_march(vec_add(sdf_info.intersection_pt, vec_mult_scalar(L, EPSILON)), L, scene, 1);
         sdf_shadow_info.s = clamp(sdf_shadow_info.s, SHADOW_LIGHTNESS, 1.0);
         // if (sdf_shadow_info.intersected == 1) return new_vector(0.0, 0.0, 0.0);
-   }
+    }
 
     // Lamber's cosine law
     double lambertian = max(vec_dot(N, L), 0.0);
@@ -240,11 +242,11 @@ void render(Scene scene)
 #if DEBUG_MODE == 1
     printf("RENDERING... ");
     float progress = 0.;
-    float progress_step = 1./(WIDTH*HEIGHT);
+    float progress_step = 1. / (WIDTH * HEIGHT);
     progress += progress_step;
 #endif
 
-    double inv_AA = 1.0/AA;
+    double inv_AA = 1.0 / AA;
     Vec3 tot_col;
 
     int width = scene.camera->widthPx;
@@ -255,30 +257,29 @@ void render(Scene scene)
         for (unsigned x = 0; x < width; ++x)
         {
 
-#if AA>1
-            tot_col = new_vector(0,0,0);
-            for( int m=0; m<AA; m++ )
+#if AA > 1
+            tot_col = new_vector(0, 0, 0);
+            for (int m = 0; m < AA; m++)
             {
-                for( int n=0; n<AA; n++ )
+                for (int n = 0; n < AA; n++)
                 {
                     // pixel coordinates
-                    double disp_x = (inv_AA*n - 0.5) + x;
-                    double disp_y = (inv_AA*m - 0.5) + y;
+                    double disp_x = (inv_AA * n - 0.5) + x;
+                    double disp_y = (inv_AA * m - 0.5) + y;
                     Vec3 dir = shoot_ray(camera, disp_x, disp_y);
                     Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
                     tot_col = vec_add(tot_col, px_col);
                 }
             }
-            Vec3 px_col = vec_mult_scalar(tot_col, 1.0/(AA*AA));
+            Vec3 px_col = vec_mult_scalar(tot_col, 1.0 / (AA * AA));
 #else
             Vec3 dir = shoot_ray(scene.camera, x, y);
             Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
 
-                
 #endif
-            
+
 #if GAMMA_CORR == 1
-            px_col = vec_pow( px_col, 0.4545 );
+            px_col = vec_pow(px_col, 0.4545);
 #endif
             // save colors computed by trace into current pixel
             scene.img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
@@ -292,13 +293,11 @@ void render(Scene scene)
             printf(" %.2f\b\b\b\b\b", progress);
             fflush(stdout);
 #endif
-            
-
         }
     }
 
-    // prepare output name
-    char* out = malloc(sizeof(char) * 300);
+    // TODO: make better! prepare output name
+    char *out = malloc(sizeof(char) * 300);
     strcat(out, "../output/");
     strcat(out, scene.name);
     strcat(out, ".png");
@@ -316,9 +315,11 @@ void render(Scene scene)
  *
  *   returns: void
  */
-void render_all(SceneContainer scenes_container){
+void render_all(SceneContainer scenes_container)
+{
 
-    for(int i=0;i<scenes_container.num_scenes;++i){
+    for (int i = 0; i < scenes_container.num_scenes; ++i)
+    {
         Scene s = *(scenes_container.scenes)[i];
         render(s);
         destroy_scene(&s);
@@ -329,23 +330,22 @@ void render_all(SceneContainer scenes_container){
 int main(int argc, char **argv)
 {
     SceneContainer scenes_container;
-    if (argc == 1) {
-        scenes_container = create_scene_container(1);        
-        add_scene(&scenes_container, "scene0", 0);    
+    if (argc == 1)
+    {
+        scenes_container = create_scene_container(1);
+        add_scene(&scenes_container, "scene0", 0);
     }
     else
     {
-        scenes_container = create_scene_container(argc-1);
+        scenes_container = create_scene_container(argc - 1);
         for (int i = 1; i < argc; i++)
         {
-            printf("Add scene %s into index %d.\n", argv[i], i-1);
-            add_scene(&scenes_container, argv[i], i-1);    
-        }   
+            printf("Add scene %s into index %d.\n", argv[i], i - 1);
+            add_scene(&scenes_container, argv[i], i - 1);
+        }
     }
-    
+
     render_all(scenes_container);
 
     return 0;
 }
-
-

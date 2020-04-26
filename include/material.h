@@ -10,6 +10,6 @@ typedef struct
     float shininess;
 } Material;
 
-Material* new_material(Vec3 surfCol, double refl, float shininess);
+Material *new_material(Vec3 surfCol, double refl, float shininess);
 
 #endif // MATERIAL_H_

@@ -12,4 +12,3 @@ double sdf_sphere(Vec3 p, double params[])
 {
     return vec_norm(p) - params[0];
 }
-

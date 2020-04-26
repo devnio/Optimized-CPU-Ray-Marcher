@@ -10,5 +10,5 @@ Params for plane are:
  */
 double sdf_plane(Vec3 p, double params[])
 {
-    return (p.x*params[0] + p.y*params[1] + p.z*params[2]) + params[3];
+    return (p.x * params[0] + p.y * params[1] + p.z * params[2]) + params[3];
 }

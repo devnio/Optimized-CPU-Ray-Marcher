@@ -8,34 +8,35 @@
 
 typedef double (*sdf_func)(Vec3 p, double params[]);
 
-typedef struct 
+typedef struct
 {
     sdf_func sdf;
-    double* params;
-    const Material* mat;
-    const Transform* transform;
+    double *params;
+    const Material *mat;
+    const Transform *transform;
 
 } GeomtericObject;
 
-typedef struct {
-    char* name;
-    
-    unsigned char* img;
+typedef struct
+{
+    char *name;
 
-    Camera* camera;
-    PointLight* light;
-    
+    unsigned char *img;
+
+    Camera *camera;
+    PointLight *light;
+
     int nr_materials;
-    Material** materials;
-    
+    Material **materials;
+
     int nr_transforms;
-    Transform** transforms;
-    
+    Transform **transforms;
+
     int nr_geom_objs;
-    GeomtericObject** geometric_ojects;
+    GeomtericObject **geometric_ojects;
 } Scene;
 
-typedef struct  
+typedef struct
 {
     double min_dist;
     int nearest_obj_idx;
@@ -44,10 +45,10 @@ typedef struct
     double s;
 } SDF_Info;
 
-void sdf(Vec3 p, Scene scene, SDF_Info* sdf_info_out);
+void sdf(Vec3 p, Scene scene, SDF_Info *sdf_info_out);
 
-Scene* build_scene(const char* name);
+Scene *build_scene(const char *name);
 
-Vec3 apply_transform(Vec3 p, const Transform*transform);
+Vec3 apply_transform(Vec3 p, const Transform *transform);
 
 #endif // SCENE_H_

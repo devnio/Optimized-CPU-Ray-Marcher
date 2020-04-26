@@ -3,12 +3,12 @@
 
 #include "vec3.h"
 
-typedef struct 
+typedef struct
 {
     Vec3 center;
     Vec3 orientation;
 } Transform;
 
-Transform* new_transform(Vec3 center, Vec3 orientation);
+Transform *new_transform(Vec3 center, Vec3 orientation);
 
 #endif // TRANSFORM_H_

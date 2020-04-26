@@ -4,8 +4,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-
-typedef struct {
+typedef struct
+{
     double x, y, z;
 } Vec3;
 
