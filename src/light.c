@@ -1,11 +1,10 @@
+// #include <stdlib.h>
 #include "light.h"
 
-
-/*
- * LIGHT HEADER
- * ----------------------------
- *   Includes all types of light definitions and functions commonly used to compute
- *   parameters or results of lightsources
- * 
- */
-
+PointLight *create_pointlight(Vec3 center, Vec3 emissionColor)
+{
+    PointLight *light = malloc(sizeof(PointLight));
+    light->c = center;
+    light->emissionColor = emissionColor;
+    return light;
+}

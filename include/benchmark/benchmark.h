@@ -17,10 +17,10 @@ enum type {NOTYPE, RENDER, TRACE};
 
 
 /* Prototype of render function */
-typedef void(*render_func_prot)(Scene , unsigned int, unsigned int, char*);
+typedef void(*render_func_prot)(Scene, char*);
 
 /* Prototype of trace function */
-typedef Vec3(*trace_func_prot)(Vec3, Vec3, Scene, int, SDF_Info *);
+typedef Vec3(*trace_func_prot)(Vec3, Vec3, Scene, int);
 
 typedef void(*func_pointer)();
 

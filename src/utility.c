@@ -21,7 +21,6 @@ double mix(double a, double b, double weight)
     return b * weight + a * (1 - weight);
 }
 
-
 /*
  * Function:  min 
  * --------------------
@@ -39,7 +38,6 @@ double min(double a, double b)
     else
         return b;
 }
-
 
 /*
  * Function:  max 
@@ -113,14 +111,16 @@ Vec3 color_blend(Vec3 colA, Vec3 colB, double weight)
  */
 double clamp(double val, double min, double max)
 {
-    if (val < min) return min;
-    if (val > max) return max;
+    if (val < min)
+        return min;
+    if (val > max)
+        return max;
     return val;
 }
 
 double sign(double val)
 {
-    return val/fabs(val);
+    return val / fabs(val);
 }
 
 Vec3 vec_max(Vec3 v1, Vec3 v2)
@@ -135,7 +135,7 @@ Vec3 vec_max(Vec3 v1, Vec3 v2)
 Vec3 rotate_point(Vec3 p, Vec3 angle)
 {
     float a;
-    Vec3 q = p; 
+    Vec3 q = p;
     if (angle.x > 0.1)
     {
         a = to_radians(angle.x);
@@ -164,7 +164,8 @@ Vec3 rotate_point(Vec3 p, Vec3 angle)
     return q;
 }
 
-double to_radians(double degrees) {
+double to_radians(double degrees)
+{
     return degrees * (M_PI / 180.0);
 }
 

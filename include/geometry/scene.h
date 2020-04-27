@@ -1,58 +1,58 @@
 #ifndef SCENE_H_
 #define SCENE_H_
 
-#include "geometry/plane.h"
-#include "geometry/octahedron.h"
-#include "geometry/sphere.h"
-#include "geometry/box.h"
-#include "geometry/cone.h"
-#include "geometry/torus.h"
+#include "camera.h"
+#include "material.h"
+#include "geometry/transform.h"
 #include "light.h"
 
-typedef enum
+typedef double (*sdf_func)(Vec3 p, double params[]);
+
+typedef struct
 {
-    T_Plane,
-    T_Sphere,
-    T_Box,
-    T_Octahedron,
-    T_Cone,
-    T_TORUS
-} GeometryType; 
+    sdf_func sdf;
+    double *params;
+    const Material *mat;
+    const Transform *transform;
 
-typedef struct {
-    char* name;
+} GeomtericObject;
 
-    int nr_planes;
-    int nr_octahedrons;
-    int nr_spheres;
-    int nr_boxes;
-    int nr_cones;
-    int nr_toruses;
-    int nr_lights;
+typedef struct
+{
+    char *name;
 
-    Plane **planes;
-    Octahedron **octahedrons;
-    Sphere **spheres; 
-    Box **boxes; 
-    Cone **cones;
-    Torus **toruses;
+    unsigned char *img;
 
-    PointLight plight;
+    Camera *camera;
+    PointLight *light;
 
+    int nr_materials;
+    Material **materials;
+
+    int nr_transforms;
+    Transform **transforms;
+
+    int nr_geom_objs;
+    GeomtericObject **geometric_ojects;
 } Scene;
 
-typedef struct  
+typedef struct
 {
     double min_dist;
-    GeometryType nearest_obj_type;
     int nearest_obj_idx;
     int intersected;
     Vec3 intersection_pt; // if intersected is 0, this shouldn't be used (TODO: maybe separate this?)
     double s;
 } SDF_Info;
 
-SDF_Info sdf(Vec3 p, Scene scene, SDF_Info* prev_sdf_info);
+void sdf(Vec3 p, Scene scene, SDF_Info *sdf_info_out);
 
-Scene* build_scene(int nr_planes, int nr_spheres, int nr_boxes, int nr_cones, int nr_octahedrons, int nr_toruses, PointLight pl, const char* name);
+Scene *build_scene(const char *name);
+
+Vec3 apply_transform(Vec3 p, const Transform *transform);
+
+unsigned char* create_image(Scene* scene, unsigned int width, unsigned int height);
+
+void destroy_image(Scene* scene);
 
 #endif // SCENE_H_

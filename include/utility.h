@@ -1,14 +1,20 @@
-#ifndef UTILITY
-#define UTILITY
+#ifndef UTILITY_H_
+#define UTILITY_H_
 
 #include "lodepng.h"
-
-#ifndef VEC_3
 #include "vec3.h"
-#endif
 
 #define OUTPUT_PATH "../output"
 #define RENDER_OUT "../output/render_out/"
+
+// ANTI ALIASING
+#define AA 1
+
+// GAMMA CORRECTION
+#define GAMMA_CORR 1
+
+// DEBUG
+#define DEBUG_MODE 1
 
 double mix(double a, double b, double mix);
 double min(double a, double b);

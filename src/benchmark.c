@@ -10,6 +10,7 @@
 #include "benchmark/tsc_x86.h"
 #include "camera.h"
 #include "lodepng.h"
+#include "geometry/scene.h"
 // #ifndef TSC_X86_H
 //   #include "benchmark/tsc_x86.h"
 // #endif
@@ -25,9 +26,9 @@
 #define CALIBRATE
 #define NR_OF_SAMPLES 30
 
-#define START_W_RESOLUTION 10 // width resolution with which we want to start with
-#define END_W_RESOLUTION 50 // width resolution we want to reach
-#define RESOLUTION_STEPS 10
+#define START_W_RESOLUTION 100 // width resolution with which we want to start with
+#define END_W_RESOLUTION 500 // width resolution we want to reach
+#define RESOLUTION_STEPS 100
 #define SCALE_RATIO 1.77777778f // scale ratio width to height of image
 
 #define MAX_NR_OF_FUNCS 32
@@ -206,10 +207,13 @@ double perf_test_render(render_func_prot f, char* name, int flops, SceneContaine
 
       printf("\n|||Starting performance on n = %d with resolution: %d x %d \n||||", n, (int) height_, (int)  width_);
 
+      Scene scene = *(sceneContainer.scenes)[i];
+      update_width_height(scene.camera, width_, height_);
+
       //// --- WARM-UP --- ///
       for (unsigned int j = 0; j < WARM_UP_REPETITIONS; j++)
       {
-        f(*(sceneContainer.scenes)[i], (unsigned int) width_, (unsigned int) height_, filename);
+        f(scene, filename);
       }
 
       //// --- START PERFORMANCE MEASUREMENT --- ///
@@ -217,7 +221,7 @@ double perf_test_render(render_func_prot f, char* name, int flops, SceneContaine
       start = start_tsc(); // start timer
       for (unsigned int j = 0; j < REPETITIONS; j++)
       {
-        f(*(sceneContainer.scenes)[i], (unsigned int) width_, (unsigned int) height_, filename);
+        f(scene, filename);
       }
       end = stop_tsc(start); // end timer
       //// --- END PERFORMANCE MEASUREMENT --- ///
@@ -287,6 +291,8 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
     strcat(temp_text, time_);
     fputs(temp_text, fmeasurem);
 
+    Scene scene = *(sceneContainer.scenes)[i];
+    
     // do performance testing on scene i with given parameters
     for (unsigned int n = START_W_RESOLUTION; n <= END_W_RESOLUTION; n += RESOLUTION_STEPS)
     {
@@ -302,14 +308,6 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
 
       printf("\n|||Starting performance on n = %d with resolution: %d x %d \n||||", n, (int) height_, (int)  width_);
 
-      float fov = 30;
-      Camera* camera = create_camera(fov, width_, height_);
-
-      //Translation and rotation
-      Vec3 t = {0.0,5.0,-7};
-      move_camera(camera, t);
-      rotate_camera(camera, 20, 0);
-
       // debug
       printf("RENDERING... ");
       float progress = 0.;
@@ -318,43 +316,44 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
 
       Vec3 tot_col;
 
-      // render
-      size_t png_img_size = width_ * height_ * 4 * sizeof(unsigned char);
-      unsigned char *img = (unsigned char *)malloc(png_img_size);
-      
-
       cycles_temp = 0;
       myInt64 start, end;
+
+      create_image(&scene, width_, height_);
+      update_width_height(scene.camera, width_, height_);
 
       for (size_t y = 0; y < height_; y++)
       {
         for (size_t x = 0; x < width_; x++)
         {
           Vec3 px_col;
-          Vec3 dir = shoot_ray(camera, x, y);
-
+          Vec3 dir = shoot_ray(scene.camera, x, y);
 
           //// --- WARM-UP --- ///
           for (unsigned int j = 0; j < WARM_UP_REPETITIONS; j++)
           {
-            px_col = f(camera->pos, dir, *(sceneContainer.scenes)[i], 0, NULL);
+            px_col = f(scene.camera->pos, dir, scene, 0);
           }
-
+          
           //// --- START PERFORMANCE MEASUREMENT --- ///
           start = start_tsc(); // start timer
           for (unsigned int j = 0; j < REPETITIONS; j++)
           {
-            px_col = f(camera->pos, dir, *(sceneContainer.scenes)[i], 0, NULL);
+            px_col = f(scene.camera->pos, dir, scene, 0);
           }
           end = stop_tsc(start); // end timer
           cycles_temp += ((double)end) / REPETITIONS;
           //// --- END PERFORMANCE MEASUREMENT --- ///
 
+#if GAMMA_CORR == 1
+          px_col = vec_pow(px_col, 0.4545);
+#endif
+
           // save colors computed by trace into current pixel
-          img[y * width_ * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
-          img[y * width_ * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
-          img[y * width_ * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
-          img[y * width_ * 4 + x * 4 + 3] = 255;
+          scene.img[y * width_ * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
+          scene.img[y * width_ * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
+          scene.img[y * width_ * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
+          scene.img[y * width_ * 4 + x * 4 + 3] = 255;
             
           if (DEBUG_MODE)
           {
@@ -367,7 +366,7 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
           
       }
 
-      encodeOneStep(filename, img, width_, height_);
+      encodeOneStep(filename, scene.img, width_, height_);
 
       // cycles and performance for rendering whole image with trace
       cycles = cycles_temp; 
@@ -395,6 +394,7 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
     free(path);
     free(newPathName);
     free(newSubdirName);
+    destroy_image(&scene);
   }
 
   return cycles;
@@ -418,7 +418,7 @@ void write_measurm_to_file(FILE* f, char* s_n, unsigned int n, char* s_cycles, d
   strcat(txt_measur, s_perf);
   sprintf(idx, "%f", perf);
   strcat(txt_measur, idx);
-  
+
   fputs(txt_measur, f);
 }
 
