@@ -25,4 +25,6 @@ Vec3 shoot_ray(Camera *camera, double coordX, double coordY);
 
 void free_camera(Camera *camera);
 
+void update_width_height(Camera* camera, unsigned int width, unsigned int height);
+
 #endif

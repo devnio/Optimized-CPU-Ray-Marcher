@@ -46,6 +46,11 @@ void rotate_camera(Camera *camera, double xRot, double yRot)
     camera->viewMatrix = look_at(camera->pos, camera->dir, up);
 }
 
+void update_width_height(Camera* camera, unsigned int width, unsigned int height) {
+    camera->widthPx = width;
+    camera->heightPx = height;
+}
+
 Vec3 shoot_ray(Camera *camera, double i, double j)
 {
 

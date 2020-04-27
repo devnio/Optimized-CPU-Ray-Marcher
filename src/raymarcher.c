@@ -14,17 +14,24 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <string.h>
 #include <dirent.h>
 
 #include "geometry/scene.h"
-#include "lodepng.h"
 #include "camera.h"
 #include "utility.h"
 #include "light.h"
 #include "scene_loader.h"
+// #include "benchmark/tsc_x86.h"
+#include "benchmark/benchmark.h"
 
 // ===== MACROS =====
+
+// BENCHMARKING
+#define RUN_BENCHMARK 1
 
 // RENDERING
 #define MAX_RAY_DEPTH 2    // max nr. bounces
@@ -44,18 +51,7 @@
 #define EPSILON 0.001
 #define EPSILON_NORMALS 0.0001
 
-// RESOLUTION
-#define WIDTH 1280
-#define HEIGHT 720
 
-// ANTI ALIASING
-#define AA 1
-
-// GAMMA CORRECTION
-#define GAMMA_CORR 1
-
-// DEBUG
-#define DEBUG_MODE 1
 
 Vec3 compute_normal(Vec3 p, Scene scene)
 {
@@ -218,16 +214,6 @@ Vec3 trace(Vec3 o,
     return finalColor;
 }
 
-void encodeOneStep(const char *filename, const unsigned char *image, unsigned width, unsigned height)
-{
-    /*Encode the image*/
-    unsigned error = lodepng_encode32_file(filename, image, width, height);
-
-    /*if there's an error, display it*/
-    if (error)
-        printf("error %u: %s\n", error, lodepng_error_text(error));
-}
-
 /*
  * Function: render
  * ----------------------------
@@ -238,12 +224,12 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
  *
  *   returns: void
  */
-void render(Scene scene)
+void render(Scene scene, char* dirName)
 {
 #if DEBUG_MODE == 1
     printf("RENDERING... ");
     float progress = 0.;
-    float progress_step = 1. / (WIDTH * HEIGHT);
+    float progress_step = 1. / (scene.camera->widthPx * scene.camera->heightPx);
     progress += progress_step;
 #endif
 
@@ -252,6 +238,8 @@ void render(Scene scene)
 
     int width = scene.camera->widthPx;
     int height = scene.camera->heightPx;
+
+    create_image(&scene, width, height);
 
     for (unsigned y = 0; y < height; ++y)
     {
@@ -297,22 +285,35 @@ void render(Scene scene)
         }
     }
 
-    // TODO: make better! prepare output name
-    char *out = malloc(sizeof(char) * 300);
-    strcpy(out, "../output/");
-    strcat(out, scene.name);
-    strcat(out, ".png");
-    encodeOneStep(out, scene.img, width, height);
-    printf("\nImage \"%s.png\" rendered and saved in output folder %s.\n", scene.name, out);
-    free(out);
+    if (RUN_BENCHMARK)
+    {   
+        // encode image: filepath is built into name
+        encodeOneStep(dirName, scene.img, width, height);
+
+    } else {
+        // Build path-name
+        char* path = RENDER_OUT;
+        char* tmp = _concat(path, scene.name); 
+        char* filename = _concat(tmp, ".png"); 
+
+        // encode image
+        encodeOneStep(filename, scene.img, width, height);
+        printf("\nImage rendered and saved in path folder %s \n", filename);
+
+        // Clean-up allocated strings
+        free(tmp);
+        free(filename);
+    }
+
+    destroy_image(&scene);
+
+
 }
 
 /*
  * Function: render_all
  * ----------------------------
  *   Render all the different scenes and save it in ouput. 
- *
- *   pLight: point light 
  *
  *   returns: void
  */
@@ -322,7 +323,7 @@ void render_all(SceneContainer scenes_container)
     for (int i = 0; i < scenes_container.num_scenes; ++i)
     {
         Scene s = *(scenes_container.scenes)[i];
-        render(s);
+        render(s, NULL);
         destroy_scene(&s);
         free((scenes_container.scenes)[i]);
     }
@@ -330,6 +331,13 @@ void render_all(SceneContainer scenes_container)
 
 int main(int argc, char **argv)
 {
+
+    //--- Check if output directory exists, create otherwise ---//
+    struct stat st = {0};
+    if (stat(OUTPUT_PATH, &st) == -1) {
+        mkdir(OUTPUT_PATH, 0700); // create directory 
+    } 
+
     SceneContainer scenes_container;
     if (argc == 1)
     {
@@ -346,7 +354,23 @@ int main(int argc, char **argv)
         }
     }
 
-    render_all(scenes_container);
 
+    if (!RUN_BENCHMARK)
+    {   
+        // Check if render_out directory exists, create otherwise
+        if (stat(RENDER_OUT, &st) == -1) {
+            mkdir(RENDER_OUT, 0700); // create directory 
+        } 
+        render_all(scenes_container);
+    } else
+    {
+        //--- BENCHMARKING ---//
+        int flops = 1;
+        benchmark_add_trace_func(&trace, "trace_func_noOpt", flops); // benchmarks rendering functions of prototype render_func_prot
+        // benchmark_add_render_func(&render, "render_func_noOpt2", flops); // benchmarks rendering functions of prototype render_func_prot
+        run_perf_benchmarking(scenes_container);
+    }
+    
+    
     return 0;
 }

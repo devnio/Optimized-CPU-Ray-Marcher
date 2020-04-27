@@ -48,7 +48,6 @@ void add_scene(SceneContainer *scene_container, char *scene_name, int idx)
 void destroy_scene(Scene *scene)
 {
     free(scene->name);
-    free(scene->img);
     free(scene->camera);
     free(scene->light);
 
@@ -218,11 +217,7 @@ int create_cam(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, i
     Camera *camera = create_camera(fov, width, height);
     move_camera(camera, position);
     rotate_camera(camera, rotation.x, rotation.y);
-
     scene->camera = camera;
-
-    size_t png_img_size = width * height * 4 * sizeof(unsigned char);
-    scene->img = (unsigned char *)malloc(png_img_size);
 
     return j;
 }
