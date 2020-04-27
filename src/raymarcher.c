@@ -391,15 +391,12 @@ int main()
     {
         //--- BENCHMARKING ---//
         int flops = 1;
-        benchmark_add_render_func(&render, "render_func_noOpt", flops); // benchmarks rendering functions of prototype render_func_prot
-        benchmark_add_render_func(&render, "render_func_noOpt2", 1); // benchmarks rendering functions of prototype render_func_prot
+        benchmark_add_trace_func(&trace, "trace_func_noOpt", flops); // benchmarks rendering functions of prototype render_func_prot
+        // benchmark_add_render_func(&render, "render_func_noOpt2", flops); // benchmarks rendering functions of prototype render_func_prot
         run_perf_benchmarking(scenes_container);
     }
     
     
-
-
-
     return 0;
 }
 
