@@ -43,3 +43,6 @@ double perf_test_render(render_func_prot f, char* name, int flops, SceneContaine
 double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer sceneContainer, char* dirName);
 
 void create_params_file(char* time, char* scneneName, char* dirName);
+
+char* create_dir(char* path, char* dirName);
+void write_measurm_to_file(FILE* f, char* s_n, unsigned int n, char* s_cycles, double cycles, char* s_perf, double perf);

@@ -17,7 +17,7 @@
 // --- Benchmarking and Performance Parameters --- //
 #define CYCLES_REQUIRED 1e7
 #define REPETITIONS 1
-#define WARM_UP_REPETITIONS 2
+#define WARM_UP_REPETITIONS 0
 #define FLOPS (4.*n)
 #define EPS (1e-3)
 #define NUM_RUNS 1
@@ -92,23 +92,10 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
   strftime(date_, sizeof(date_)-1, "benchmark_%d_%m_%Y_%H_%M_%S", t); 
-  
-  char dirName[200] = OUTPUT_PATH;
-  char bFuncName[100];
-  /// TODO: concat function name according to benchtype before "benchmark"
-  strcat(dirName, date_);
-  struct stat st = {0};
-  if (stat(dirName, &st) == -1) {
-    mkdir(dirName, 0700); // create directory 
-  } else // directory already exists 
-  {
-      printf("\nToo fast...directory already exists:  %s", dirName);
-  }
+
+  char* dirName = create_dir(OUTPUT_PATH, date_);
 
   unsigned int nrOfFunctions;
-  render_func_prot *_funcs; // array of function pointers
-  char **_funcsNames;
-  int *_funcsFLops;
   if (benchtype == RENDER)
   {
     nrOfFunctions = nrOfRenderFuncs;
@@ -117,7 +104,8 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
     nrOfFunctions = nrOfTraceFuncs;
   } else
   {
-    /* code */
+    printf("ERROR: No benchtype defined.");
+    return;
   }
   
   for (unsigned int i = 0; i < nrOfFunctions; i++) {
@@ -125,59 +113,47 @@ void run_perf_benchmarking(SceneContainer sceneContainer) {
     // create subdirectory for each function i
     char indx[10];
     sprintf(indx, "_%d", i);
-    char* new_subdir_name; 
+    char* newSubdirName; 
 
-    if (benchtype == RENDER)
-    {
-      new_subdir_name = _concat(renderFuncsNames[i], indx);
-    } else if (benchtype == TRACE)
-    {
-      new_subdir_name = _concat(traceFuncsNames[i], indx);
-    } else
-    {
-      /* code */
+    if (benchtype == RENDER) {
+      newSubdirName = _concat(renderFuncsNames[i], indx);
+    } else if (benchtype == TRACE) {
+      newSubdirName = _concat(traceFuncsNames[i], indx);
+    } else {
+      printf("ERROR: No benchtype defined.");
     }
 
-    char* new_subdir_name_ = _concat("/", new_subdir_name); 
-    char* newDirName = _concat(dirName, new_subdir_name_);
-    struct stat st = {0};
-    if (stat(newDirName, &st) == -1) { 
-      mkdir(newDirName, 0700); // create subdirectory for function i
-    }    
+    char* newPathName = create_dir(dirName, newSubdirName);
 
     // Start benchmark on registered functions
-
-
-    if (benchtype == RENDER)
-    {
+    if (benchtype == RENDER) {
       printf("\n|Starting benchmark for render function %s", renderFuncsNames[i]);
-      double perf = perf_test_render(renderFuncs[i], renderFuncsNames[i], renderFuncsFLops[i], sceneContainer, newDirName);
+      double perf = perf_test_render(renderFuncs[i], renderFuncsNames[i], renderFuncsFLops[i], sceneContainer, newPathName);
       printf("\n|Done.\n");
-    } else if (benchtype == TRACE)
-    {
+    } else if (benchtype == TRACE) {
       printf("\n|Starting benchmark for trace function %s", traceFuncsNames[i]);
-      double perf = perf_test_trace(traceFuncs[i], traceFuncsNames[i], traceFuncsFLops[i], sceneContainer, newDirName);
+      double perf = perf_test_trace(traceFuncs[i], traceFuncsNames[i], traceFuncsFLops[i], sceneContainer, newPathName);
       printf("\n|Done.\n");
-    } else
-    {
-      /* code */
+    } else {
+      printf("ERROR: No benchtype defined.");
     }
 
-
-    free(new_subdir_name);
-    free(new_subdir_name_);
-    free(newDirName);
+    // Clean-up
+    free(newSubdirName);
+    free(newPathName);
   }
 
   // Clean-up
   for(unsigned int i = 0; i < sceneContainer.num_scenes; ++i){
     destroy_scene(&(*(sceneContainer.scenes)[i]));
   }
+  free(dirName);
 
 }
 
+
 double perf_test_render(render_func_prot f, char* name, int flops, SceneContainer sceneContainer, char* dirName) {
-  printf("\n||Performance testing:");
+  printf("\n||Performance testing [RENDER FUNCTION]:");
 
   double cycles, perf;
 
@@ -187,28 +163,23 @@ double perf_test_render(render_func_prot f, char* name, int flops, SceneContaine
     // create sub-directory for each scene
     char indx[10];
     sprintf(indx, "_%d", i);
-    char* new_subdir_name = _concat((sceneContainer.scenes)[i]->name, indx); // free
-    char* new_subdir_name_ = _concat("/", new_subdir_name);  // free
-    char* newDirName = _concat(dirName, new_subdir_name_); // free
-    struct stat st = {0};
-    if (stat(newDirName, &st) == -1) { // create subdirectory for function i
-      mkdir(newDirName, 0700); // create directory 
-    }  
+    char* newSubdirName = _concat((sceneContainer.scenes)[i]->name, indx); 
+    char* newPathName = create_dir(dirName, newSubdirName);
 
     // Create txt file for parameters
     char *time_ = malloc(100 + 1);
     create_params_file(time_, (sceneContainer.scenes)[i]->name, dirName);
 
     // create txt file for performance timings
-    char* path = _concat(newDirName, "/"); // free
+    char* path = _concat(newPathName, "/"); 
     char* add_ = "benchmark_";
-    char* str1 = _concat(path, add_); // Note: free up str1!
-    char* str2 = _concat(str1, (sceneContainer.scenes)[i]->name); // Note: free up str2!
+    char* str1 = _concat(path, add_); 
+    char* str2 = _concat(str1, (sceneContainer.scenes)[i]->name); 
 
     // Create txt file for performance measurements
     FILE *fmeasurem = NULL;
     char measurem_fileName[100];
-    sprintf(measurem_fileName, "%s%s", newDirName, "/measurements.txt");
+    sprintf(measurem_fileName, "%s%s", newPathName, "/measurements.txt");
     fmeasurem = fopen(measurem_fileName ,"w");
     if (fmeasurem == NULL) {
       printf("ERROR: Failed to create measurements.txt file");
@@ -235,35 +206,29 @@ double perf_test_render(render_func_prot f, char* name, int flops, SceneContaine
 
       printf("\n|||Starting performance on n = %d with resolution: %d x %d \n||||", n, (int) height_, (int)  width_);
 
-      // TODO: Warm-up phase
+      //// --- WARM-UP --- ///
+      for (unsigned int j = 0; j < WARM_UP_REPETITIONS; j++)
+      {
+        f(*(sceneContainer.scenes)[i], (unsigned int) width_, (unsigned int) height_, filename);
+      }
 
+      //// --- START PERFORMANCE MEASUREMENT --- ///
       myInt64 start, end;
       start = start_tsc(); // start timer
-
       for (unsigned int j = 0; j < REPETITIONS; j++)
       {
         f(*(sceneContainer.scenes)[i], (unsigned int) width_, (unsigned int) height_, filename);
       }
       end = stop_tsc(start); // end timer
+      //// --- END PERFORMANCE MEASUREMENT --- ///
 
       cycles = ((double)end) / REPETITIONS; 
       perf = flops / cycles; // performance in flops/cycle
 
       // update measurement.txt file with new measurements
-      char idx[20];
-      txt_measur[0] = '\0';
-      strcat(txt_measur, "\nn = ");
-      sprintf(idx, "%d", n); 
-      strcat(txt_measur, idx);
-      strcat(txt_measur, " | Cycles = ");
-      sprintf(idx, "%f", cycles);
-      strcat(txt_measur, idx);
-      strcat(txt_measur, " | Perf = ");
-      sprintf(idx, "%f", perf);
-      strcat(txt_measur, idx);
-      fputs(txt_measur, fmeasurem);
+      write_measurm_to_file(fmeasurem, "\nn = ", n, " | Cycles = ", cycles, " | Perf = ", perf); // write measurements to file
 
-      // Clean-up allocated strings and handlers
+      // Clean-up 
       free(str3);
       free(filename);
 
@@ -275,9 +240,8 @@ double perf_test_render(render_func_prot f, char* name, int flops, SceneContaine
     free(str1);
     free(str2);
     free(path);
-    free(newDirName);
-    free(new_subdir_name_);
-    free(new_subdir_name);
+    free(newPathName);
+    free(newSubdirName);
   }
 
   return cycles;
@@ -285,7 +249,7 @@ double perf_test_render(render_func_prot f, char* name, int flops, SceneContaine
 
 
 double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer sceneContainer, char* dirName) {
-  printf("\n||Performance testing:");
+  printf("\n||Performance testing [TRACE FUNCTION]:");
 
   double cycles_temp, cycles, perf, cycles_pp, perf_pp;
 
@@ -295,21 +259,15 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
     // create sub-directory for each scene
     char indx[10];
     sprintf(indx, "_%d", i);
-    char* new_subdir_name = _concat((sceneContainer.scenes)[i]->name, indx); // free
-    char* new_subdir_name_ = _concat("/", new_subdir_name);  // free
-    char* newDirName = _concat(dirName, new_subdir_name_); // free
-    struct stat st = {0};
-    if (stat(newDirName, &st) == -1) { // create subdirectory for function i
-      mkdir(newDirName, 0700); // create directory 
-    }  
+    char* newSubdirName = _concat((sceneContainer.scenes)[i]->name, indx); // free
+    char* newPathName = create_dir(dirName, newSubdirName);
 
     // Create txt file for parameters
     char *time_ = malloc(100 + 1);
     create_params_file(time_, (sceneContainer.scenes)[i]->name, dirName);
 
-
     // create txt file for performance timings
-    char* path = _concat(newDirName, "/"); // free
+    char* path = _concat(newPathName, "/"); // free
     char* add_ = "benchmark_";
     char* str1 = _concat(path, add_); // Note: free up str1!
     char* str2 = _concat(str1, (sceneContainer.scenes)[i]->name); // Note: free up str2!
@@ -317,7 +275,7 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
     // Create txt file for performance measurements
     FILE *fmeasurem = NULL;
     char measurem_fileName[100];
-    sprintf(measurem_fileName, "%s%s", newDirName, "/measurements.txt");
+    sprintf(measurem_fileName, "%s%s", newPathName, "/measurements.txt");
     fmeasurem = fopen(measurem_fileName ,"w");
     if (fmeasurem == NULL) {
       printf("ERROR: Failed to create measurements.txt file");
@@ -416,28 +374,14 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
       perf = flops / cycles; // performance in flops/cycle
 
       // cycles and performance per pixel
-      cycles_pp = cycles_temp/(width_*height_); 
-      perf_pp = flops / cycles_pp; // performance in flops/cycle
-
-      /////////////////////////////
-
+      cycles_pp = cycles_temp/(width_*height_); // average cycle per pixel!
+      perf_pp = flops / cycles_pp; // average performance in flops/cycle per pixel!
 
 
       // update measurement.txt file with new measurements
-      char idx[20];
-      txt_measur[0] = '\0';
-      strcat(txt_measur, "\nn = ");
-      sprintf(idx, "%d", n); 
-      strcat(txt_measur, idx);
-      strcat(txt_measur, " | Cycles = ");
-      sprintf(idx, "%f", cycles);
-      strcat(txt_measur, idx);
-      strcat(txt_measur, " | Perf = ");
-      sprintf(idx, "%f", perf);
-      strcat(txt_measur, idx);
-      fputs(txt_measur, fmeasurem);
+      write_measurm_to_file(fmeasurem, "\nn = ", n, " | Cycles = ", cycles, " | Perf = ", perf); // write measurements to file
 
-      // Clean-up allocated strings and handlers
+      // Clean-up 
       free(str3);
       free(filename);
 
@@ -449,15 +393,34 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
     free(str1);
     free(str2);
     free(path);
-    free(newDirName);
-    free(new_subdir_name_);
-    free(new_subdir_name);
+    free(newPathName);
+    free(newSubdirName);
   }
 
   return cycles;
 }
 
+void write_measurm_to_file(FILE* f, char* s_n, unsigned int n, char* s_cycles, double cycles, char* s_perf, double perf) {
 
+  const unsigned int bufferLength = 1000;
+  char idx[20];
+  char txt_measur[bufferLength];
+  txt_measur[0] = '\0';
+
+  strcat(txt_measur, s_n);
+  sprintf(idx, "%d", n); 
+  strcat(txt_measur, idx);
+
+  strcat(txt_measur, s_cycles);
+  sprintf(idx, "%f", cycles);
+  strcat(txt_measur, idx);
+
+  strcat(txt_measur, s_perf);
+  sprintf(idx, "%f", perf);
+  strcat(txt_measur, idx);
+  
+  fputs(txt_measur, f);
+}
 
 void create_params_file(char* time_, char* scneneName, char* dirName) {
 
@@ -515,4 +478,16 @@ void create_params_file(char* time_, char* scneneName, char* dirName) {
     {
       printf("ERROR: Failed to create parameters.txt file");
     }
+}
+
+char* create_dir(char* path, char* dirName) {
+  // Creates a sub-directory from path and returns res = path/dirName
+  char* newDirName = _concat("/", dirName);  
+  char* newPathName = _concat(path, newDirName); 
+  struct stat st = {0};
+  if (stat(newPathName, &st) == -1) { 
+    mkdir(newPathName, 0700); 
+  }  
+  free(newDirName);
+  return newPathName; // Note: free up string when not used anymore!
 }

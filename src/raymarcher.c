@@ -19,7 +19,6 @@
 #include <unistd.h>
 
 #include "geometry/scene.h"
-#include "lodepng.h"
 #include "camera.h"
 #include "utility.h"
 #include "light.h"
@@ -223,16 +222,6 @@ Vec3 trace(Vec3 o,
     specularColor = vec_mult(scene.plight.emissionColor, vec_mult_scalar(specularColor, specular));
     finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
     return finalColor;
-}
-
-void encodeOneStep(const char *filename, const unsigned char *image, unsigned width, unsigned height)
-{
-    /*Encode the image*/
-    unsigned error = lodepng_encode32_file(filename, image, width, height);
-
-    /*if there's an error, display it*/
-    if (error)
-        printf("error %u: %s\n", error, lodepng_error_text(error));
 }
 
 /*

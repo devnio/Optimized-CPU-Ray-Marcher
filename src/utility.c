@@ -181,3 +181,13 @@ char* _concat(const char *str1, const char *str2) {
     memcpy(res + len1, str2, len2 + 1); // +1 to copy the null-terminator
     return res; // NOTE: your responsibility to free memory! 
 }
+
+void encodeOneStep(const char *filename, const unsigned char *image, unsigned width, unsigned height)
+{
+    /*Encode the image*/
+    unsigned error = lodepng_encode32_file(filename, image, width, height);
+
+    /*if there's an error, display it*/
+    if (error)
+        printf("error %u: %s\n", error, lodepng_error_text(error));
+}
