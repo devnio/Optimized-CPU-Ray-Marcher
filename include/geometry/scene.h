@@ -51,7 +51,7 @@ Scene *build_scene(const char *name);
 
 Vec3 apply_transform(Vec3 p, const Transform *transform);
 
-unsigned char* create_image(Scene* scene, unsigned int width, unsigned int height);
+void create_image(Scene* scene, unsigned int width, unsigned int height);
 
 void destroy_image(Scene* scene);
 
