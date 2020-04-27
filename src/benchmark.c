@@ -416,7 +416,7 @@ double perf_test_trace(trace_func_prot f, char* name, int flops, SceneContainer 
       perf = flops / cycles; // performance in flops/cycle
 
       // cycles and performance per pixel
-      cycles_pp = cycles_temp/(height_*height_); 
+      cycles_pp = cycles_temp/(width_*height_); 
       perf_pp = flops / cycles_pp; // performance in flops/cycle
 
       /////////////////////////////
