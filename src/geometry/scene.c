@@ -30,7 +30,7 @@ Vec3 apply_transform(Vec3 p, const Transform *transform)
     // TODO: apply rotation
 }
 
-unsigned char* create_image(Scene* scene, unsigned int width, unsigned int height) {
+void create_image(Scene* scene, unsigned int width, unsigned int height) {
     size_t png_img_size = width * height * 4 * sizeof(unsigned char);
     scene->img = (unsigned char *)malloc(png_img_size);
 }
