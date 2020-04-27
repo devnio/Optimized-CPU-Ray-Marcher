@@ -271,6 +271,7 @@ double perf_test_render(render_func_prot f, char* name, int flops, SceneContaine
 
     // Clean-up allocated strings and handlers
     fclose(fmeasurem);
+    free(time_);
     free(str1);
     free(str2);
     free(path);
