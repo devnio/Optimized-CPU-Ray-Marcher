@@ -54,7 +54,7 @@ Another way of running the run_tests.sh script is:
 ```console
 team049/tests$ bash run_tests.sh
 ```
-Another windows compatible version: run_tests_win.sh is available too
+Another windows compatible version: run_tests_win.sh is available too.
 
 
 # Add test cases
@@ -64,7 +64,7 @@ add the test file you want to create, i.e. see test_example.h
 In test_example.h you find also an example on how to write a test.
 
 On the file tests/tests.c:
-Create e new SUITE for you test cases or add the to the main suite.
+Create a new SUITE for you test cases or add them to the main suite.
 i.e.
 ```c
 SUITE(<SUITE NAME>){   
@@ -89,15 +89,21 @@ TFLAGS =  -I$(IDIR) -lm -g -Wall -Werror -pedantic
 # Organizational
 In order to have the best team work we also use additional tools:
 
-## Working directory
-We work on Google Drive.
-
-## Task management
-We use Trello.
+- **Working directory**: Google Drive.
+- **Task management**: Trello.
 
 If access to these platform is required contact us.
 
 
 
 ## Authors
-Nihat Isik, Qais El Okaili, Alexandre Cavaleri, David Graf
+**Nihat Isik - (github: devnio)**
+
+**Qais El Okaili - (github: Xemno)**
+
+**Alexandre Cavaleri - (github: cavEpfl)** 
+
+**David Graf  - (github: fxd24)**
+
+Note that some commits were done on computers with different global git configurations, which ultimately resulted in commits authored by our github (and not gitlab) user names. 
+For the sake of clarity we attach the github name on the right of each team member name.
