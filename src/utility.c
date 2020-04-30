@@ -132,6 +132,7 @@ Vec3 vec_max(Vec3 v1, Vec3 v2)
     return q;
 }
 
+
 Vec3 rotate_point(Vec3 p, Vec3 angle)
 {
     float a;

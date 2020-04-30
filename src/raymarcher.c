@@ -34,14 +34,14 @@
 #define RUN_BENCHMARK 0
 
 // RENDERING
-#define MAX_RAY_DEPTH 1    // max nr. bounces
+#define MAX_RAY_DEPTH 3    // max nr. bounces
 #define MARCH_COUNT 3000   // max marching steps
 #define BBOX_AXES 100     // bounding box size
 #define INTERSECT_THRESHOLD 0.000001 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING
 #define SPECULAR_COEFF 0.3
-#define MATERIAL_AMBIENT_COEFF 0.1
+#define MATERIAL_AMBIENT_COEFF 0.01
 #define REFLECTIVE_COEFF 0.1
 #define SHADOW_LIGHTNESS 0.0
 #define LIGHT_STR 3
@@ -258,7 +258,7 @@ void render(Scene scene, char* dirName)
                     // pixel coordinates
                     double disp_x = (inv_AA * n - 0.5) + x;
                     double disp_y = (inv_AA * m - 0.5) + y;
-                    Vec3 dir = shoot_ray(camera, disp_x, disp_y);
+                    Vec3 dir = shoot_ray(scene.camera, disp_x, disp_y);
                     Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
                     tot_col = vec_add(tot_col, px_col);
                 }
