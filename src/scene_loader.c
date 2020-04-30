@@ -15,6 +15,7 @@
 #include "geometry/cone.h"
 #include "geometry/octahedron.h"
 #include "geometry/torus.h"
+#include "geometry/mandelbulb.h"
 #include "scene_loader.h"
 
 #define JSMN_STRICT
@@ -439,6 +440,11 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
             {
                 geom_obj->sdf = &sdf_torus;
                 fprintf(logFile, " => assigned sdf of %s\n", "torus");
+            }
+            else if (strcmp(name, "mandelbulb") == 0)
+            {
+                geom_obj->sdf = &sdf_mandelbulb;
+                fprintf(logFile, " => assigned sdf of %s\n", "mandelbulb");
             }
 
             j += 2;
