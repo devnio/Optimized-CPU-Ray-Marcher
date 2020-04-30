@@ -31,20 +31,22 @@
 // ===== MACROS =====
 
 // BENCHMARKING
-#define RUN_BENCHMARK 1
+#define RUN_BENCHMARK 0
 
 // RENDERING
-#define MAX_RAY_DEPTH 2    // max nr. bounces
+#define MAX_RAY_DEPTH 1    // max nr. bounces
 #define MARCH_COUNT 3000   // max marching steps
 #define BBOX_AXES 100     // bounding box size
 #define INTERSECT_THRESHOLD 0.000001 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING
-#define SPECULAR_COEFF 0.2
-#define SHADOW_LIGHTNESS 0.1
+#define SPECULAR_COEFF 0.3
+#define MATERIAL_AMBIENT_COEFF 0.1
+#define REFLECTIVE_COEFF 0.1
+#define SHADOW_LIGHTNESS 0.0
 #define LIGHT_STR 3
 
-#define FOG 0
+#define FOG 1
 #define FOG_COEFF -0.00002
 
 // PRECISION
@@ -171,7 +173,7 @@ Vec3 trace(Vec3 o,
 
         // Compute reflected color
         Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, vec_mult_scalar(N, EPSILON)), reflDir, scene, depth + 1);
-        finalColor = vec_mult_scalar(reflectedCol, mat.refl);
+        finalColor = vec_mult_scalar(vec_mult_scalar(reflectedCol, mat.refl), REFLECTIVE_COEFF);
     }
 
     /* Before doing anything else check if shadow ray.
@@ -201,9 +203,10 @@ Vec3 trace(Vec3 o,
         specular = pow(specAngle, mat.shininess);
     }
 
-    Vec3 diffuseColor = vec_mult_scalar(vec_mult_scalar(mat.surfCol, lambertian), sdf_shadow_info.s);
+    ambientColor = vec_add(ambientColor, vec_mult_scalar(mat.surfCol, MATERIAL_AMBIENT_COEFF));
+    Vec3 diffuseColor = vec_mult(scene.light->emissionColor, vec_mult_scalar(vec_mult_scalar(mat.surfCol, lambertian), sdf_shadow_info.s));
     Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
-    specularColor = vec_mult(scene.light->emissionColor, vec_mult_scalar(specularColor, specular));
+    specularColor = vec_mult_scalar(vec_mult(scene.light->emissionColor, vec_mult_scalar(specularColor, specular)), sdf_shadow_info.s);
     finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
 
 #if FOG == 1
