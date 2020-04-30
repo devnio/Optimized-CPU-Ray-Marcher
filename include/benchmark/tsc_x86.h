@@ -1,7 +1,8 @@
 #ifndef TSC_X86_H
 #define TSC_X86_H
+
 /* ==================== GNU C and possibly other UNIX compilers ===================== */
-	#ifndef WIN32
+#if !defined(WIN32) || defined(__GNUC__)
 
 	#if defined(__GNUC__) || defined(__linux__)
 		#define VOLATILE __volatile__
@@ -10,7 +11,7 @@
 		/* if we're neither compiling with gcc or under linux, we can hope
 		 * the following lines work, they probably won't */
 		#define ASM asm
-		#define VOLATILE 
+		#define VOLATILE
 	#endif
 
 	#define myInt64 unsigned long long
@@ -41,7 +42,7 @@
 	(COUNTER(a)-COUNTER(b))
 
 /* ==================== GNU C and possibly other UNIX compilers ===================== */
-#ifndef WIN32
+#if !defined(WIN32) || defined(__GNUC__)
 
 	typedef union
 	{       myInt64 int64;
@@ -94,4 +95,4 @@ myInt64 stop_tsc(myInt64 start) {
 	return COUNTER_VAL(end) - start;
 }
 
-#endif // TSC_X86_H
+#endif

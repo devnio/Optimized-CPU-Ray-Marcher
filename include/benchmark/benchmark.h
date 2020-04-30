@@ -13,6 +13,11 @@
  #include "scene_loader.h"
 #endif
 
+#ifdef _WIN32
+# define  mkdir( D, M ) mkdir( D )
+#endif
+
+
 enum type {NOTYPE, RENDER, TRACE};
 
 
