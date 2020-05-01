@@ -1,87 +1,124 @@
 =================================================
 ================ LOG PARSING SCENE ==============
-========  [Date: 30.04.2020 - 20:25:47]  ======== 
-Creating scene path from scene_name: "mandelbulb" and scenes_path: "../scenes/" .
-Parsing file path: ../scenes/mandelbulb.json
-Successful read of json file "../scenes/mandelbulb.json" into string variable.
+========  [Date: 02.05.2020 - 01:13:36]  ======== 
+Creating scene path from scene_name: "scene0" and scenes_path: "../scenes/" .
+Parsing file path: ../scenes/scene0.json
+Successful read of json file "../scenes/scene0.json" into string variable.
 Read file contains: 
 _________________________
-{
-  "camera": {
-    "width": 1280,
-    "height": 720,
-    "fov": 25,
-    "position": { "x": 0, "y": 0, "z": 0 },
-    "rotation": { "x": 0, "y": 0, "z": 0 }
-  },
-  "pointlight": {
-    "position": { "x": 0, "y": 5, "z": -10 },
-    "emission": { "x": 5, "y": 5, "z": 5 }
-  },
-  "transforms": [
-    {
-      "position": { "x": 0, "y": 0, "z": 5 },
-      "rotation": { "x": 0, "y": 0, "z": 0 }
-    },
-    {
-      "position": { "x": 0, "y": 0, "z": 6 },
-      "rotation": { "x": 0, "y": 0, "z": 0 }
-    },
-    {
-      "position": { "x": 1, "y": 0, "z": 10 },
-      "rotation": { "x": 0, "y": 0, "z": 0 }
-    },
-    {
-      "position": { "x": -1, "y": 0, "z": 10 },
-      "rotation": { "x": 0, "y": 0, "z": 0 }
-    }
-  ],
-  "materials": [
-    {
-      "reflection": 0.0,
-      "shininess": 15.0,
-      "surface": { "x": 1.0, "y": 1.0, "z": 1.0 }
-    },
-    {
-      "reflection": 0.0,
-      "shininess": 15.0,
-      "surface": { "x": 0.0, "y": 0.1, "z": 0.6 }
-    },
-    {
-      "reflection": 0.0,
-      "shininess": 15.0,
-      "surface": { "x": 0.8, "y": 0.1, "z": 0.0 }
-    },
-    {
-      "reflection": 0.0,
-      "shininess": 15.0,
-      "surface": { "x": 0.0, "y": 0.8, "z": 0.1 }
-    }
-  ],  
-  "geometric_objects": [
-    {
-      "name": "plane",
-      "transform_idx": 0,
-      "material_idx": 0,
-      "params": [ 0.0, 1.0, 0.0, 1.5 ]
-    },
-    {
-      "name": "mandelbulb",
-      "transform_idx": 1,
-      "material_idx": 1,
-      "params": [ ]
-    }
-  ]
+{
+  "camera": {
+    "width": 1280,
+    "height": 720,
+    "fov": 30,
+    "position": { "x": 0, "y": 0, "z": 0 },
+    "rotation": { "x": 0, "y": 0, "z": 0 }
+  },
+  "pointlight": {
+    "position": { "x": 0, "y": 100, "z": 0 },
+    "emission": { "x": 200, "y": 200, "z": 200 }
+  },
+  "transforms": [
+    {
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "position": { "x": -4.0, "y": -1.5, "z": 15 },
+      "rotation": { "x": -1.5, "y": -1.5, "z": 12 }
+    },
+    {
+      "position": { "x": -1.5, "y": -1.5, "z": 12 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "position": { "x": 1.5, "y": -1.5, "z": 12 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "position": { "x": 4, "y": -1.5, "z": 15 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "position": { "x": 0, "y": 0, "z": 20 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    }
+  ],
+  "materials": [
+    {
+      "reflection": 0.0,
+      "shininess": 15.0,
+      "surface": { "x": 1.0, "y": 1.0, "z": 1.0 }
+    },
+    {
+      "reflection": 0.0,
+      "shininess": 15.0,
+      "surface": { "x": 0.0, "y": 0.1, "z": 0.6 }
+    },
+    {
+      "reflection": 0.0,
+      "shininess": 15.0,
+      "surface": { "x": 0.0, "y": 0.6, "z": 0.1 }
+    },
+    {
+      "reflection": 0.0,
+      "shininess": 15.0,
+      "surface": { "x": 0.5, "y": 0.5, "z": 0.0 }
+    },
+    {
+      "reflection": 0.5,
+      "shininess": 15.0,
+      "surface": { "x": 0.3, "y": 0.0, "z": 0.0 }
+    }
+  ],
+  "geometric_objects": [
+    {
+      "name": "plane",
+      "transform_idx":0 ,
+      "material_idx": 0,
+      "params": [ 0.0, 1.0, 0.0, -3.0 ]
+    },
+    {
+      "name": "box",
+      "transform_idx": 1,
+      "material_idx": 1,
+      "params": [ 0.25, 0.5, 1.0 ]
+    },
+    {
+      "name": "sphere",
+      "transform_idx": 5,
+      "material_idx": 4,
+      "params": [ 3.0 ]
+    },
+    {
+      "name": "cone",
+      "transform_idx": 3,
+      "material_idx": 1,
+      "params": [ 1.0, 0.5, 1.0 ]
+    },
+    {
+      "name": "torus",
+      "transform_idx": 4,
+      "material_idx": 3,
+      "params": [ 1.0, 0.5, 1.0 ]
+    },
+    {
+      "name": "octahedron",
+      "transform_idx": 2,
+      "material_idx": 2,
+      "params": [ 1.0 ]
+    }
+  ]
 }
 _________________________
-Amount of needed tokes are: 191
+Amount of needed tokes are: 285
 PARSING STATUS: SUCCESS!
 
 ===================== CAMERA ====================
 +-- parsing 5 elements of camera.
 +-- width: 1280
 +-- height: 720
-+-- fov: 25.000000
++-- fov: 30.000000
 +-- position, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
 +-- rotation, size: 3
@@ -90,39 +127,51 @@ PARSING STATUS: SUCCESS!
 ===================== LIGHT =====================
 +-- parsing 2 elements of light.
 +-- position, size: 3
-       +-- vector: x: 0.000000, y: 5.000000, z: -10.000000
+       +-- vector: x: 0.000000, y: 100.000000, z: 0.000000
 +-- emission, size: 3
-       +-- vector: x: 5.000000, y: 5.000000, z: 5.000000
+       +-- vector: x: 200.000000, y: 200.000000, z: 200.000000
 
 =================== TRANSFORMS ==================
-+-- parsing 4 transforms.
++-- parsing 6 transforms.
 
 +--transform 0
    +-- position, size: 3
-       +-- vector: x: 0.000000, y: 0.000000, z: 5.000000
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
    +-- rotation, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
 
 +--transform 1
    +-- position, size: 3
-       +-- vector: x: 0.000000, y: 0.000000, z: 6.000000
+       +-- vector: x: -4.000000, y: -1.500000, z: 15.000000
    +-- rotation, size: 3
-       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+       +-- vector: x: -1.500000, y: -1.500000, z: 12.000000
 
 +--transform 2
    +-- position, size: 3
-       +-- vector: x: 1.000000, y: 0.000000, z: 10.000000
+       +-- vector: x: -1.500000, y: -1.500000, z: 12.000000
    +-- rotation, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
 
 +--transform 3
    +-- position, size: 3
-       +-- vector: x: -1.000000, y: 0.000000, z: 10.000000
+       +-- vector: x: 1.500000, y: -1.500000, z: 12.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 4
+   +-- position, size: 3
+       +-- vector: x: 4.000000, y: -1.500000, z: 15.000000
+   +-- rotation, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
+
++--transform 5
+   +-- position, size: 3
+       +-- vector: x: 0.000000, y: 0.000000, z: 20.000000
    +-- rotation, size: 3
        +-- vector: x: 0.000000, y: 0.000000, z: 0.000000
 
 =================== MATERIALS ===================
-+-- parsing 4 materials.
++-- parsing 5 materials.
 
 +-- material 0
    +-- reflection: 0.000000
@@ -140,29 +189,59 @@ PARSING STATUS: SUCCESS!
    +-- reflection: 0.000000
    +-- shininess: 15.000000
    +-- surface, size: 3
-       +-- vector: x: 0.800000, y: 0.100000, z: 0.000000
+       +-- vector: x: 0.000000, y: 0.600000, z: 0.100000
 
 +-- material 3
    +-- reflection: 0.000000
    +-- shininess: 15.000000
    +-- surface, size: 3
-       +-- vector: x: 0.000000, y: 0.800000, z: 0.100000
+       +-- vector: x: 0.500000, y: 0.500000, z: 0.000000
+
++-- material 4
+   +-- reflection: 0.500000
+   +-- shininess: 15.000000
+   +-- surface, size: 3
+       +-- vector: x: 0.300000, y: 0.000000, z: 0.000000
 
 ============== GEOMETRIC OBJECTS ================
-+-- parsing 2 geometric objects.
++-- parsing 6 geometric objects.
 
 +-- object 0
    +-- name: plane => assigned sdf of plane
    +-- transform_idx: 0
    +-- material_idx: 0
     +-- parsing 4 params (array).
-        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: 1.500000, 
+        +-- p[0]: 0.000000, p[1]: 1.000000, p[2]: 0.000000, p[3]: -3.000000, 
 +-- object 1
-   +-- name: mandelbulb => assigned sdf of mandelbulb
+   +-- name: box => assigned sdf of box
    +-- transform_idx: 1
    +-- material_idx: 1
-    +-- parsing 0 params (array).
-        +-- 
+    +-- parsing 3 params (array).
+        +-- p[0]: 0.250000, p[1]: 0.500000, p[2]: 1.000000, 
++-- object 2
+   +-- name: sphere => assigned sdf of sphere
+   +-- transform_idx: 5
+   +-- material_idx: 4
+    +-- parsing 1 params (array).
+        +-- p[0]: 3.000000, 
++-- object 3
+   +-- name: cone => assigned sdf of cone
+   +-- transform_idx: 3
+   +-- material_idx: 1
+    +-- parsing 3 params (array).
+        +-- p[0]: 1.000000, p[1]: 0.500000, p[2]: 1.000000, 
++-- object 4
+   +-- name: torus => assigned sdf of torus
+   +-- transform_idx: 4
+   +-- material_idx: 3
+    +-- parsing 3 params (array).
+        +-- p[0]: 1.000000, p[1]: 0.500000, p[2]: 1.000000, 
++-- object 5
+   +-- name: octahedron => assigned sdf of octahedron
+   +-- transform_idx: 2
+   +-- material_idx: 2
+    +-- parsing 1 params (array).
+        +-- p[0]: 1.000000, 
 ===================== END =======================
 
 

@@ -40,14 +40,14 @@
 #define INTERSECT_THRESHOLD 0.000001 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING
-#define SPECULAR_COEFF 0.3
+#define SPECULAR_COEFF 0.2
 #define MATERIAL_AMBIENT_COEFF 0.01
 #define REFLECTIVE_COEFF 0.1
 #define SHADOW_LIGHTNESS 0.0
 #define LIGHT_STR 3
 
 #define FOG 1
-#define FOG_COEFF -0.00002
+#define FOG_COEFF -0.000005
 
 // PRECISION
 #define EPSILON 0.001
@@ -163,7 +163,12 @@ Vec3 trace(Vec3 o,
 
     // Light dir
     Vec3 L = vec_sub(scene.light->c, sdf_info.intersection_pt);
-    L = vec_normalized(L);
+
+    // distance between intersection_pt and light source
+    double dist = vec_norm(L);
+    double inv_dist = 1 / dist;
+
+    L = vec_normalized(L); // = L / dist;
 
     if ((depth < MAX_RAY_DEPTH) && (mat.refl > 0))
     {
@@ -204,9 +209,9 @@ Vec3 trace(Vec3 o,
     }
 
     ambientColor = vec_add(ambientColor, vec_mult_scalar(mat.surfCol, MATERIAL_AMBIENT_COEFF));
-    Vec3 diffuseColor = vec_mult(scene.light->emissionColor, vec_mult_scalar(vec_mult_scalar(mat.surfCol, lambertian), sdf_shadow_info.s));
+    Vec3 diffuseColor = vec_mult_scalar(vec_mult(scene.light->emissionColor, vec_mult_scalar(vec_mult_scalar(mat.surfCol, lambertian), sdf_shadow_info.s)), inv_dist);
     Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
-    specularColor = vec_mult_scalar(vec_mult(scene.light->emissionColor, vec_mult_scalar(specularColor, specular)), sdf_shadow_info.s);
+    specularColor = vec_mult_scalar(vec_mult_scalar(vec_mult(scene.light->emissionColor, vec_mult_scalar(specularColor, specular)), sdf_shadow_info.s), inv_dist);
     finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
 
 #if FOG == 1
