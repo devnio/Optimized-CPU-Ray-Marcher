@@ -8,7 +8,7 @@
   },
   "pointlight": {
     "position": { "x": 0, "y": 100, "z": 0 },
-    "emission": { "x": 2, "y": 2, "z": 2 }
+    "emission": { "x": 200, "y": 200, "z": 200 }
   },
   "transforms": [
     {
