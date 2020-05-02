@@ -121,6 +121,17 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
     return sdf_info;
 }
 
+double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
+{
+    // Light reflected on normal
+    Vec3 R = vec_reflect(vec_mult_scalar(*L, -1), *N);
+    Vec3 V = vec_normalized(vec_mult_scalar(*dir, -1));
+
+    // Specular term
+    double specAngle = max(vec_dot(R, V), 0.0);
+    return pow(specAngle, (*mat).shininess);
+}
+
 /*
  * Function: trace
  * ----------------------------
@@ -161,25 +172,24 @@ Vec3 trace(Vec3 o,
         N = vec_mult_scalar(N, -1);
     }
 
-    // Light dir
-    Vec3 L = vec_sub(scene.light->c, sdf_info.intersection_pt);
-
-    // distance between intersection_pt and light source
-    double dist = vec_norm(L);
-    double inv_dist = 1 / dist;
-
-    L = vec_normalized(L); // = L / dist;
-
     if ((depth < MAX_RAY_DEPTH) && (mat.refl > 0))
     {
         // Compute reflected dir
-        Vec3 reflDir = vec_sub(dir, vec_mult_scalar(vec_mult_scalar(N, vec_dot(dir, N)), 2));
+        Vec3 reflDir = vec_reflect(dir, N);
         reflDir = vec_normalized(reflDir);
 
         // Compute reflected color
         Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, vec_mult_scalar(N, EPSILON)), reflDir, scene, depth + 1);
         finalColor = vec_mult_scalar(vec_mult_scalar(reflectedCol, mat.refl), REFLECTIVE_COEFF);
     }
+
+    // Light dir
+    Vec3 L = vec_sub(scene.light->c, sdf_info.intersection_pt);
+
+    // distance between intersection_pt and light source
+    double dist = vec_norm(L);
+    double inv_dist = 1 / dist;
+    L = vec_normalized(L); 
 
     /* Before doing anything else check if shadow ray.
      * We assume that light is not in between objects. 
@@ -191,7 +201,6 @@ Vec3 trace(Vec3 o,
     {
         sdf_shadow_info = ray_march(vec_add(sdf_info.intersection_pt, vec_mult_scalar(L, EPSILON)), L, scene, 1);
         sdf_shadow_info.s = clamp(sdf_shadow_info.s, SHADOW_LIGHTNESS, 1.0);
-        // if (sdf_shadow_info.intersected == 1) return new_vector(0.0, 0.0, 0.0);
     }
 
     // Lamber's cosine law
@@ -199,13 +208,7 @@ Vec3 trace(Vec3 o,
     double specular = 0;
     if (lambertian > 0.0)
     {
-        // Light reflected on normal
-        Vec3 R = vec_reflect(vec_mult_scalar(L, -1), N);
-        Vec3 V = vec_normalized(vec_mult_scalar(dir, -1));
-
-        // Specular term
-        double specAngle = max(vec_dot(R, V), 0.0);
-        specular = pow(specAngle, mat.shininess);
+        specular = compute_specular_coefficient(&dir, &N, &L, &mat);
     }
 
     ambientColor = vec_add(ambientColor, vec_mult_scalar(mat.surfCol, MATERIAL_AMBIENT_COEFF));
