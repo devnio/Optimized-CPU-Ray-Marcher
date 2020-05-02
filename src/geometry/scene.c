@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "geometry/scene.h"
+#include "utility.h"
 #include "camera.h"
 
 void sdf(Vec3 p, Scene scene, SDF_Info *sdf_info_out)
@@ -25,9 +26,15 @@ void sdf(Vec3 p, Scene scene, SDF_Info *sdf_info_out)
 Vec3 apply_transform(Vec3 p, const Transform *transform)
 {
     // apply translation
-    return vec_sub(p, transform->center);
+    Vec3 t;
+    t = vec_sub(p, transform->center);
 
-    // TODO: apply rotation
+    // apply rotation
+    t = rotate_point_x(t, transform->orientation.x);
+    t = rotate_point_y(t, transform->orientation.y);
+    t = rotate_point_z(t, transform->orientation.z);
+
+    return t;
 }
 
 void create_image(Scene* scene, unsigned int width, unsigned int height) {

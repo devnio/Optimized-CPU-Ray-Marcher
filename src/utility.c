@@ -133,34 +133,44 @@ Vec3 vec_max(Vec3 v1, Vec3 v2)
 }
 
 
-Vec3 rotate_point(Vec3 p, Vec3 angle)
+Vec3 rotate_point_x(Vec3 p, double angle)
 {
-    float a;
+    double a;
     Vec3 q = p;
-    if (angle.x > 0.1)
-    {
-        a = to_radians(angle.x);
-        double c = cos(a);
-        double s = sin(a);
-        q.y = c * p.y - s * p.z;
-        q.z = s * p.y + c * p.z;
-    }
-    else if (angle.y > 0.1)
-    {
-        a = to_radians(angle.y);
-        double c = cos(a);
-        double s = sin(a);
-        q.x = c * p.x - s * p.z;
-        q.z = s * p.x + c * p.z;
-    }
-    else if (angle.z > 0.1)
-    {
-        a = to_radians(angle.z);
-        double c = cos(a);
-        double s = sin(a);
-        q.x = c * p.x - s * p.y;
-        q.y = s * p.x + c * p.y;
-    }
+
+    a = to_radians(angle);
+    double c = cos(a);
+    double s = sin(a);
+    q.y = c * p.y - s * p.z;
+    q.z = s * p.y + c * p.z;
+
+    return q;
+}
+
+Vec3 rotate_point_y(Vec3 p, double angle)
+{
+    double a;
+    Vec3 q = p;
+  
+    a = to_radians(angle);
+    double c = cos(a);
+    double s = sin(a);
+    q.x = c * p.x - s * p.z;
+    q.z = s * p.x + c * p.z;
+
+    return q;
+}
+
+Vec3 rotate_point_z(Vec3 p, double angle)
+{
+    double a;
+    Vec3 q = p;
+  
+    a = to_radians(angle);
+    double c = cos(a);
+    double s = sin(a);
+    q.x = c * p.x - s * p.y;
+    q.y = s * p.x + c * p.y;
 
     return q;
 }
