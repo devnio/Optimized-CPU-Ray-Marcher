@@ -25,7 +25,7 @@
 #include "utility.h"
 #include "light.h"
 #include "scene_loader.h"
-// #include "benchmark/tsc_x86.h"
+
 #include "benchmark/benchmark.h"
 
 // ===== MACROS =====
@@ -79,6 +79,27 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     return vec_normalized(n);
 }
 
+double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
+{
+    // Light reflected on normal
+    Vec3 R = vec_reflect(vec_mult_scalar(*L, -1), *N);
+    Vec3 V = vec_normalized(vec_mult_scalar(*dir, -1));
+
+    // Specular term
+    double specAngle = max(vec_dot(R, V), 0.0);
+    return pow(specAngle, (*mat).shininess);
+}
+
+void compute_shadow_coefficient(SDF_Info *sdf_info, double *ph, double *t)
+{
+    double mid = sdf_info->min_dist*sdf_info->min_dist;
+    double y = mid/(2.0*(*ph)); 
+    double d = sqrt(mid-y*y);
+    sdf_info->s = min(sdf_info->s, LIGHT_STR*d/max(0.0,(*t)-y));
+    *ph = sdf_info->min_dist;
+    *t += sdf_info->min_dist;
+}
+
 SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
 {
     SDF_Info sdf_info;
@@ -109,27 +130,11 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
 
         if (doShadowSteps == 1)
         {
-            double mid = sdf_info.min_dist*sdf_info.min_dist;
-            double y = mid/(2.0*ph); 
-            double d = sqrt(mid-y*y);
-            sdf_info.s = min(sdf_info.s, LIGHT_STR*d/max(0.0,t-y));
-            ph = sdf_info.min_dist;
-            t += sdf_info.min_dist;
+            compute_shadow_coefficient(&sdf_info, &ph, &t);
         }
     }
 
     return sdf_info;
-}
-
-double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
-{
-    // Light reflected on normal
-    Vec3 R = vec_reflect(vec_mult_scalar(*L, -1), *N);
-    Vec3 V = vec_normalized(vec_mult_scalar(*dir, -1));
-
-    // Specular term
-    double specAngle = max(vec_dot(R, V), 0.0);
-    return pow(specAngle, (*mat).shininess);
 }
 
 /*
@@ -381,7 +386,7 @@ int main(int argc, char **argv)
         // benchmark_add_render_func(&render, "render_func_noOpt2", flops); // benchmarks rendering functions of prototype render_func_prot
         run_perf_benchmarking(scenes_container);
     }
-    
-    
+
+
     return 0;
 }
