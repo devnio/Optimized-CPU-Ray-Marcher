@@ -94,6 +94,7 @@ Vec3 color_blend(Vec3 colA, Vec3 colB, double weight)
 {
     double val = weight > 1 ? 1 : weight;
     double weight_ = 1 - val;
+    Vec3 c;
     return color_add_weighted(colA, colB, weight, weight_);
 }
 
