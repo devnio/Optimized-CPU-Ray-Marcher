@@ -179,8 +179,8 @@ int create_cam(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, i
     fprintf(logFile, "+-- parsing %d elements of camera.\n", tokens[idx_camera_properties].size);
     // we start with 1 because we have to step inside the tokens of camera
     // (0: the whole camera block, 1: fov, 2: value of fox, 3: position, 4:value and so on...)
-    int width, height;
-    double fov;
+    int width=0, height=0;
+    double fov=0;
     Vec3 position;
     Vec3 rotation;
     int j = 1;
@@ -320,8 +320,8 @@ int create_materials(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tok
     scene->nr_materials = tokens[idx].size;
     scene->materials = (Material **)malloc(sizeof(Material *) * scene->nr_materials);
 
-    double refl;
-    double shininess;
+    double refl = 0;
+    double shininess = 0;
     Vec3 surfaceCol;
     int j = 2;
     for (int step = 0; step < tokens[idx].size; step++)

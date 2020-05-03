@@ -249,8 +249,6 @@ void render(Scene scene, char* dirName)
     progress += progress_step;
 #endif
 
-    double inv_AA = 1.0 / AA;
-    Vec3 tot_col;
 
     int width = scene.camera->widthPx;
     int height = scene.camera->heightPx;
@@ -263,7 +261,8 @@ void render(Scene scene, char* dirName)
         {
 
 #if AA > 1
-            tot_col = new_vector(0, 0, 0);
+            double inv_AA = 1.0 / AA;
+            Vec3 tot_col = new_vector(0, 0, 0);
             for (int m = 0; m < AA; m++)
             {
                 for (int n = 0; n < AA; n++)
