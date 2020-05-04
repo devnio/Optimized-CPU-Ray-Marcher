@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- MI test scene from Eric Veach's thesis - modeled
+     after a file by Steve Marschner (CS667)
+-->
+
+<scene version="0.5.0">
+	<integrator type="direct"/>
+
+	<emitter type="point">
+		<spectrum name="intensity" value="10000"/>
+		<point name="position" x="0" y="100" z="0"/>
+	</emitter>
+
+	<shape type="sphere">
+		<point name="center" x="0" y="0" z="20"/>
+		<float name="radius" value="3"/>
+
+		<bsdf type="phong">
+			<float name="exponent" value="15"/>
+		</bsdf>
+	</shape>
+
+	<shape type="rectangle">
+		<transform name="toWorld">
+			<rotate x="1" angle="270"/>
+			<scale x="100" y="1" z="100"/>
+			<translate y="-3" z="0"/>
+		</transform>
+
+		<bsdf type="diffuse"/>
+	</shape>
+
+	<sensor type="perspective">
+		<float name="focusDistance" value="20"/>
+		<float name="fov" value="27"/>
+		<string name="fovAxis" value="x"/>
+		<transform name="toWorld">
+
+			<lookat target="0, 0, 1" origin="0, 0, -20" up="0, 1, 0"/>
+		</transform>
+
+		<sampler type="ldsampler">
+			<integer name="dimension" value="1"/>
+			<integer name="sampleCount" value="1"/>
+		</sampler>
+
+		<film type="hdrfilm">
+			<boolean name="banner" value="true"/>
+			<integer name="height" value="720"/>
+			<integer name="width" value="1280"/>
+
+			<rfilter type="gaussian"/>
+		</film>
+	</sensor>
+</scene>

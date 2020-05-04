@@ -1,0 +1,22 @@
+// BENCHMARKING
+#define RUN_BENCHMARK 0
+
+// RENDERING
+#define MAX_RAY_DEPTH 3    // max nr. bounces
+#define MARCH_COUNT 3000   // max marching steps
+#define BBOX_AXES 100     // bounding box size
+#define INTERSECT_THRESHOLD 0.000001 // careful with this -> should be low enoguh for shadow to work
+
+// SHADING
+#define SPECULAR_COEFF 0.6
+#define MATERIAL_AMBIENT_COEFF 0.01
+#define REFLECTIVE_COEFF 0.1
+#define SHADOW_LIGHTNESS 0.0
+#define LIGHT_STR 3
+
+#define FOG 0
+#define FOG_COEFF -0.000005
+
+// PRECISION
+#define EPSILON 0.001
+#define EPSILON_NORMALS 0.0001
