@@ -1,0 +1,49 @@
+{
+  "camera": {
+    "width": 1280,
+    "height": 720,
+    "fov": 16,
+    "position": { "x": 0, "y": 0, "z": 0 },
+    "rotation": { "x": 0.33, "y": 0, "z": 0 }
+  },
+  "pointlight": {
+    "position": { "x": 0, "y": 100, "z": 19 },
+    "emission": { "x": 70, "y": 70, "z": 70 }
+  },
+  "transforms": [
+    {
+      "position": { "x": 0, "y": 0, "z": 20 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "position": { "x": 0, "y": 0, "z": 39 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    }
+  ],
+  "materials": [
+    {
+      "reflection": 0.0,
+      "shininess": 15.0,
+      "surface": { "x": 0.211, "y": 0.211, "z": 0.211 }
+    },
+    {
+      "reflection": 0.0,
+      "shininess": 15.0,
+      "surface": { "x":  0.211, "y":  0.211, "z":  0.211 }
+    }
+  ],
+  "geometric_objects": [
+    {
+      "name": "plane",
+      "transform_idx": 0,
+      "material_idx": 0,
+      "params": [ 0.0, 1.0, 0.0, -3.0 ]
+    },
+    {
+      "name": "sphere",
+      "transform_idx": 1,
+      "material_idx": 1,
+      "params": [ 3.0 ]
+    }
+  ]
+}
