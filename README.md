@@ -23,45 +23,18 @@ On UNIX:
 ```console
 team049$ cd build
 team049/build$ bash run_raymarcher.sh 
-rm -f obj/*.o *~ core /*~ 
-gcc -c -o obj/raymarcher.o ../src/raymarcher.c -O3 -I../include -g
-gcc -c -o obj/lodepng.o ../src/lodepng.c -O3 -I../include -g
-gcc -c -o obj/vec3.o ../src/vec3.c -O3 -I../include -g
-gcc -c -o obj/mat4.o ../src/mat4.c -O3 -I../include -g
-gcc -c -o obj/camera.o ../src/camera.c -O3 -I../include -g
-gcc -c -o obj/utility.o ../src/utility.c -O3 -I../include -g
-gcc -c -o obj/light.o ../src/light.c -O3 -I../include -g
-gcc -c -o obj/scene_loader.o ../src/scene_loader.c -O3 -I../include -g
-gcc -c -o obj/material.o ../src/material.c -O3 -I../include -g
-gcc -c -o obj/benchmark.o ../src/benchmark.c -O3 -I../include -g
-gcc -o raymarcher obj/raymarcher.o obj/lodepng.o obj/vec3.o obj/mat4.o obj/camera.o obj/utility.o obj/light.o obj/geometry/scene.o obj/geometry/plane.o obj/geometry/sphere.o obj/geometry/box.o obj/geometry/cone.o obj/geometry/octahedron.o obj/geometry/torus.o obj/geometry/transform.o obj/geometry/mandelbulb.o obj/scene_loader.o obj/material.o obj/benchmark.o -O3 -I../include -g -lm
-===== START ./raymarcher scene0 shape0 shape1 shape2 shape3 shape4
-Add scene scene0 into index 0.
-Add scene shape0 into index 1.
-Add scene shape1 into index 2.
-Add scene shape2 into index 3.
-Add scene shape3 into index 4.
-Add scene shape4 into index 5.
-RENDERING...  0.99
-Image rendered and saved in path folder ../output/render_out/scene0.png 
-RENDERING...  0.99
-Image rendered and saved in path folder ../output/render_out/shape0.png 
-RENDERING...  0.99
-Image rendered and saved in path folder ../output/render_out/shape1.png 
-RENDERING...  0.99
-Image rendered and saved in path folder ../output/render_out/shape2.png 
-RENDERING...  0.99
-Image rendered and saved in path folder ../output/render_out/shape3.png 
-RENDERING...  0.99
-Image rendered and saved in path folder ../output/render_out/shape4.png 
-==== END ./raymarcher scene0 shape0 shape1 shape2 shape3 shape4
 ```
 
 ### Scenes
-A Scene contains geometric objects in a 3D space that the raymarcher uses to render an image. 
+A Scene is composed of geometric shapes that are each defined by a *signed distance function*.
+The combination of all these shapes creates a *signed distance space*. Our raymarcher algorithm is then applied on this space.
+
+The creation of a scene is defined via a JSON file that gets parsed via a custom JSON parser.
+With this pipeline we built you can create and customize any scene you want.
+
 The currently available scenes are in the team049/scenes/ folder.
 
-If an custom scene wants to be rendered then create a JSON file with the predefined structure.
+
 ### Test
 On the command line on the root of the team049 directory execute the following:
 
