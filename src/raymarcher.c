@@ -250,6 +250,7 @@ void render(Scene scene, char* dirName)
 #endif
 
     double inv_AA = 1.0 / AA;
+    double inv_AA2 = inv_AA / AA;
     Vec3 tot_col;
 
     int width = scene.camera->widthPx;
@@ -276,7 +277,7 @@ void render(Scene scene, char* dirName)
                     tot_col = vec_add(tot_col, px_col);
                 }
             }
-            Vec3 px_col = vec_mult_scalar(tot_col, 1.0 / (AA * AA));
+            Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);
 #else
             Vec3 dir = shoot_ray(scene.camera, x, y);
             Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
@@ -381,10 +382,12 @@ int main(int argc, char **argv)
     } else
     {
         //--- BENCHMARKING ---//
-        int flops = 1;
-        benchmark_add_trace_func(&trace, "trace_func_noOpt", flops); // benchmarks rendering functions of prototype render_func_prot
+        // int flops = 1;
+        // benchmark_add_trace_func(&trace, "trace_func_noOpt", flops); // benchmarks rendering functions of prototype render_func_prot
         // benchmark_add_render_func(&render, "render_func_noOpt2", flops); // benchmarks rendering functions of prototype render_func_prot
-        run_perf_benchmarking(scenes_container);
+        // run_perf_benchmarking(scenes_container);
+        // benchmark_render(&render, scenes_container);
+        benchmark_trace(&trace, scenes_container);
     }
 
 
