@@ -45,7 +45,6 @@ TEST vec_mult_test() {
       ASSERT_IN_RANGE(res1, output.x, TOLERANCE);
       ASSERT_IN_RANGE(res2, output.y, TOLERANCE);
       ASSERT_IN_RANGE(res3, output.z, TOLERANCE);
-      PASS();
   }
   PASS();
 }
@@ -70,7 +69,6 @@ TEST vec_mult_scalar_test() {
       ASSERT_IN_RANGE(res1, output.x, TOLERANCE);
       ASSERT_IN_RANGE(res2, output.y, TOLERANCE);
       ASSERT_IN_RANGE(res3, output.z, TOLERANCE);
-      PASS();
   }
   PASS();
 }
@@ -94,7 +92,6 @@ TEST vec_add_test() {
       ASSERT_IN_RANGE(res1, output.x, TOLERANCE);
       ASSERT_IN_RANGE(res2, output.y, TOLERANCE);
       ASSERT_IN_RANGE(res3, output.z, TOLERANCE);
-      PASS();
   }
   PASS();
 }
@@ -119,7 +116,6 @@ TEST vec_add_scalar_test() {
       ASSERT_IN_RANGE(res1, output.x, TOLERANCE);
       ASSERT_IN_RANGE(res2, output.y, TOLERANCE);
       ASSERT_IN_RANGE(res3, output.z, TOLERANCE);
-      PASS();
   }
   PASS();
 }
@@ -143,7 +139,6 @@ TEST vec_sub_test() {
       ASSERT_IN_RANGE(res1, output.x, TOLERANCE);
       ASSERT_IN_RANGE(res2, output.y, TOLERANCE);
       ASSERT_IN_RANGE(res3, output.z, TOLERANCE);
-      PASS();
   }
   PASS();
 }
@@ -162,7 +157,7 @@ TEST vec_norm_test() {
       res = sqrt(input1.x*input1.x+input1.y*input1.y+input1.z*input1.z);
 
       ASSERT_IN_RANGE(res, output, TOLERANCE);
-      PASS();
+
   }
   PASS();
 }
@@ -187,7 +182,6 @@ TEST vec_normalized_test() {
       ASSERT_EQ_FMT(res1, output.x, "%lf");
       ASSERT_IN_RANGE(res2, output.y, TOLERANCE);
       ASSERT_IN_RANGE(res3, output.z, TOLERANCE);
-      PASS();
       
   }
   PASS();
@@ -208,7 +202,7 @@ TEST vec_dot_test() {
       res = input1.x*input2.x+input1.y*input2.y+input1.z*input2.z;
 
       ASSERT_IN_RANGE(res, output, TOLERANCE);
-      PASS();
+
   }
   PASS();
 }
@@ -232,7 +226,7 @@ TEST vec_cross_test() {
       ASSERT_IN_RANGE(res1, output.x, TOLERANCE);
       ASSERT_IN_RANGE(res2, output.y, TOLERANCE);
       ASSERT_IN_RANGE(res3, output.z, TOLERANCE);
-      PASS();
+
   }
   PASS();
 }
@@ -258,7 +252,7 @@ TEST vec_reflect_test() {
       ASSERT_IN_RANGE(res1, output.x, TOLERANCE);
       ASSERT_IN_RANGE(res2, output.y, TOLERANCE);
       ASSERT_IN_RANGE(res3, output.z, TOLERANCE);
-      PASS();
+
   }
   PASS();
 }  

@@ -7,23 +7,21 @@
 *   Here you can include header files with the tests
 *   i.e. #include "test_example.h" 
 */
-// INSERT HERE
+// INSERT HERE the header file of the testing code
 #include "test_example.h" 
 #include "vec3_test.h"
 
+/*
+*   Add here the new test suites
+*
+*    SUITE(<SUITE NAME HERE>){
+*        // RUN_TEST here
+*    }
+*
+*/
 
-SUITE(main_suite){
-    
-    /*
-    *   Here you can add other test cases
-    *   i.e. RUN_TEST(<TEST NAME GOES HERE>);
-    */
-    // INSERT HERE 
-        //Example test
-    RUN_TEST(test_sample);
-
-        //Vector tests
-        // TODO: maybe add new test case for vectors
+// vector.c tests
+SUITE(vec_3_test){
     RUN_TEST(new_vector_test);
     RUN_TEST(vec_mult_test);
     RUN_TEST(vec_mult_scalar_test);
@@ -35,13 +33,27 @@ SUITE(main_suite){
     RUN_TEST(vec_dot_test);
     RUN_TEST(vec_cross_test);
     RUN_TEST(vec_reflect_test);
+}
 
+SUITE(main_suite){
+    
+    /*
+    *   Here you can add other test cases
+    *   i.e. RUN_TEST(<TEST NAME GOES HERE>);
+    */
+    // INSERT HERE 
+        //Example test
+    RUN_TEST(test_sample);
+    
 }
 
 GREATEST_MAIN_DEFS();
 int main(int argc, char **argv){
     GREATEST_MAIN_BEGIN();
     RUN_SUITE(main_suite);
+
+    // Add here the test suites to run
+    RUN_SUITE(vec_3_test);
 
     GREATEST_MAIN_END();  
     return 0;
