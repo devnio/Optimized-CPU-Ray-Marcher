@@ -14,7 +14,7 @@
 #define GAMMA_CORR 1
 
 // DEBUG
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 
 
 double mix(double a, double b, double mix);
@@ -25,7 +25,6 @@ Vec3 color_add_weighted(Vec3 colA, Vec3 colB, double weightA, double weightB);
 Vec3 color_blend(Vec3 colA, Vec3 colB, double weightA);
 double clamp(double val, double min, double max);
 double sign(double val);
-Vec3 vec_max(Vec3 v1, Vec3 v2);
 Vec3 rotate_point_x(Vec3 p, double angle);
 Vec3 rotate_point_y(Vec3 p, double angle);
 Vec3 rotate_point_z(Vec3 p, double angle);

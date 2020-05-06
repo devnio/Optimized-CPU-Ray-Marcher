@@ -39,6 +39,6 @@ Vec3 vec_abs(Vec3 v);
 
 Vec3 vec_rotate(Vec3 v, Vec3 k, double theta);
 
-Vec3 vec_lerp(Vec3 a, Vec3 b, float t);
+Vec3 vec_max(Vec3 v1, Vec3 v2);
 
 #endif

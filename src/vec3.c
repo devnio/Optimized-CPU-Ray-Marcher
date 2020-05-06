@@ -1,4 +1,5 @@
 #include "vec3.h"
+#include "utility.h"
 
 /*
  * Function: new_vector
@@ -222,6 +223,26 @@ Vec3 vec_reflect(Vec3 v, Vec3 normal)
 Vec3 vec_abs(Vec3 v)
 {
     return new_vector(fabs(v.x), fabs(v.y), fabs(v.z));
+}
+
+
+/*
+ * Function: vec_max
+ * ----------------------------
+ *   Elementwise max of 2 vectors
+ *
+ *   v1: of type Vec3 
+ *   v2: of type Vec3 
+ *
+ *   returns: absolute valued vector
+ */
+Vec3 vec_max(Vec3 v1, Vec3 v2)
+{
+    Vec3 q;
+    q.x = max(v1.x, v2.x);
+    q.y = max(v1.y, v2.y);
+    q.z = max(v1.z, v2.z);
+    return q;
 }
 /*
  * Function: vec_rotate

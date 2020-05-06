@@ -58,47 +58,6 @@ double max(double a, double b)
 }
 
 /*
- * Function:  color_add_weighted 
- * --------------------
- * computes a new color value by mixing two colors each with a weight
- *
- *  colA: first color value as a vector
- *  colB: second color value as a vector
- *  weightA: weight of color A value as a vector
- *  weightb: weight of color B value as a vector
- * 
- *  returns: color vector value by mixing colA with weightA and colB with weightB
- */
-Vec3 color_add_weighted(Vec3 colA, Vec3 colB, double weightA, double weightB)
-{
-    double sum = weightA + weightB;
-    Vec3 c;
-    c.x = ((colA.x * weightA) + (colB.x * weightB)) / sum;
-    c.y = ((colA.y * weightA) + (colB.y * weightB)) / sum;
-    c.z = ((colA.z * weightA) + (colB.z * weightB)) / sum;
-    return c;
-}
-
-/*
- * Function:  color_blend 
- * --------------------
- * computes a new color value by mixing two colors each with a weight
- *
- *  colA: first color value as a vector
- *  colB: second color value as a vector
- *  weight: weight with which to mix the two colors
- * 
- *  returns: color vector value by mixing the two colors with given weight
- */
-Vec3 color_blend(Vec3 colA, Vec3 colB, double weight)
-{
-    double val = weight > 1 ? 1 : weight;
-    double weight_ = 1 - val;
-    Vec3 c;
-    return color_add_weighted(colA, colB, weight, weight_);
-}
-
-/*
  * Function:  clamp 
  * --------------------
  * clamps a value between a minimum and maximum value
@@ -122,16 +81,6 @@ double sign(double val)
 {
     return val / fabs(val);
 }
-
-Vec3 vec_max(Vec3 v1, Vec3 v2)
-{
-    Vec3 q;
-    q.x = max(v1.x, v2.x);
-    q.y = max(v1.y, v2.y);
-    q.z = max(v1.z, v2.z);
-    return q;
-}
-
 
 Vec3 rotate_point_x(Vec3 p, double angle)
 {
@@ -185,10 +134,7 @@ char* _concat(const char *str1, const char *str2) {
     const size_t len1 = strlen(str1);
     const size_t len2 = strlen(str2);
     char *res = malloc(len1 + len2 + 1); // +1 for the null-terminator
-    // if (res == NULL)
-    // {
-    //     printf("Failed to allocate memory...\n");
-    // }
+
     memcpy(res, str1, len1);
     memcpy(res + len1, str2, len2 + 1); // +1 to copy the null-terminator
     return res; // NOTE: your responsibility to free memory! 
