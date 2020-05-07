@@ -1,21 +1,21 @@
-#include "vec3.h"
 #include <math.h>
-#include "greatest.h"
 
-/*
-*   Here we put all our test cases
-*   TEST <TEST NAME>() {
-*       <TEST FUNCTION GIVEN BY CHECK>(<FUNCTION TO TEST>, <EXPECTED RESUL>);
-*       //i.e. ASSERT_IN_RANGE(sayHello(), "Hello");
-*   }
-*
-*   For more information check out: https://github.com/silentbicycle/greatest
-*
-*/
-#define RANDMAX 1e8
-#define REPETITIONS 30
-#define TOLERANCE 0.000001
+#include "vec3.h"
+#include "vec3_test.h"
 
+SUITE(vec_3_test){
+    RUN_TEST(new_vector_test);
+    RUN_TEST(vec_mult_test);
+    RUN_TEST(vec_mult_scalar_test);
+    RUN_TEST(vec_add_test);
+    RUN_TEST(vec_add_scalar_test);
+    RUN_TEST(vec_sub_test);
+    RUN_TEST(vec_norm_test);
+    RUN_TEST(vec_normalized_test);
+    RUN_TEST(vec_dot_test);
+    RUN_TEST(vec_cross_test);
+    RUN_TEST(vec_reflect_test);
+}
 
 TEST new_vector_test() {
   Vec3 output = {0.,0.,0.};
@@ -179,7 +179,7 @@ TEST vec_normalized_test() {
       res2=input1.y/norm;
       res3=input1.z/norm;
 
-      ASSERT_EQ_FMT(res1, output.x, "%lf");
+      ASSERT_IN_RANGE(res1, output.x, TOLERANCE);
       ASSERT_IN_RANGE(res2, output.y, TOLERANCE);
       ASSERT_IN_RANGE(res3, output.z, TOLERANCE);
       

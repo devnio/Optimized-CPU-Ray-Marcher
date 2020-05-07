@@ -149,3 +149,19 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
     if (error)
         printf("error %u: %s\n", error, lodepng_error_text(error));
 }
+
+/*
+Example 1
+Decode from disk to raw pixels with a single function call
+
+Memory allocation: image.
+*/
+unsigned char* decodeOneStep(const char* filename, unsigned *out_width, unsigned *out_height, unsigned* error) {
+  unsigned char* image = 0;
+  
+  *error = lodepng_decode32_file(&image, out_width, out_height, filename);
+  //if(*error) printf("error %u: %s\n", *error, lodepng_error_text(*error));
+  // ERROR IS REPORTED OUTSIDE FOR CLEAN OUTPUT TERMINAL.
+
+  return image;
+}

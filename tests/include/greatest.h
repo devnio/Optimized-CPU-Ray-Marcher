@@ -356,7 +356,7 @@ void greatest_set_test_suffix(const char *suffix);
 
 /* Start defining a test function.
  * The arguments are not included, to allow parametric testing. */
-#define GREATEST_TEST static enum greatest_test_res
+#define GREATEST_TEST enum greatest_test_res
 
 /* PASS/FAIL/SKIP result from a test. Used internally. */
 typedef enum greatest_test_res {
