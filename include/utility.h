@@ -14,15 +14,12 @@
 #define GAMMA_CORR 1
 
 // DEBUG
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1
 
 
 double mix(double a, double b, double mix);
 double min(double a, double b);
 double max(double a, double b);
-double clamp(double value, double max, double min);
-Vec3 color_add_weighted(Vec3 colA, Vec3 colB, double weightA, double weightB);
-Vec3 color_blend(Vec3 colA, Vec3 colB, double weightA);
 double clamp(double val, double min, double max);
 double sign(double val);
 Vec3 rotate_point_x(Vec3 p, double angle);
@@ -31,5 +28,6 @@ Vec3 rotate_point_z(Vec3 p, double angle);
 double to_radians(double degrees);
 char* _concat(const char *str1, const char *str2);
 void encodeOneStep(const char *filename, const unsigned char *image, unsigned width, unsigned height);
+unsigned char* decodeOneStep(const char* filename, unsigned *out_width, unsigned *out_height, unsigned* error);
 
 #endif
