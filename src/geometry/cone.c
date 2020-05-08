@@ -16,7 +16,9 @@ double sdf_cone(Vec3 p, double params[])
     Vec3 k1 = new_vector(params[1], params[2], 0.);
     Vec3 k2 = new_vector(params[1] - params[0], 2. * params[2], 0);
     Vec3 ca = new_vector(q.x - fmin(q.x, (q.y < 0.) ? params[0] : params[1]), fabs(q.y) - params[2], 0.);
-    Vec3 cb = vec_add(vec_sub(q, k1), vec_mult_scalar(k2, clamp(vec_dot(vec_sub(k1, q), k2) / vec_dot(k2, k2), 0.0, 1.0)));
+    Vec3 tmp;
+    vec_mult_scalar(&k2, clamp(vec_dot(vec_sub(k1, q), k2) / vec_dot(k2, k2), 0.0, 1.0), &tmp);
+    Vec3 cb = vec_add(vec_sub(q, k1), tmp);
     double s = (cb.x < 0.0 && ca.y < 0.0) ? -1. : 1.0;
     return s * sqrt(fmin(vec_dot(ca, ca), vec_dot(cb, cb)));
 }

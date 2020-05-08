@@ -63,7 +63,9 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     
     SDF_Info sdf_info;
     sdf(p, scene, &sdf_info);
-    Vec3 c = new_vector_one(sdf_info.min_dist);
+    // Vec3 c = new_vector_one(sdf_info.min_dist);
+    Vec3 c;
+    set_vec_from_double(&c, sdf_info.min_dist);
 
     Vec3 ch;
     sdf(p0, scene, &sdf_info);
@@ -82,8 +84,11 @@ Vec3 compute_normal(Vec3 p, Scene scene)
 double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
 {
     // Light reflected on normal
-    Vec3 R = vec_reflect(vec_mult_scalar(*L, -1), *N);
-    Vec3 V = vec_normalized(vec_mult_scalar(*dir, -1));
+    Vec3 tmp;
+    vec_mult_scalar(L, -1, &tmp);
+    Vec3 R = vec_reflect(tmp, *N);
+    vec_mult_scalar(dir, -1, &tmp);
+    Vec3 V = vec_normalized(tmp);
 
     // Specular term
     double specAngle = max(vec_dot(R, V), 0.0);
@@ -109,10 +114,13 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
     double ph = 1e20;
     sdf_info.s = 1.0;
 
+    Vec3 tmp;
+
     for (int i = 0; i < MARCH_COUNT; i++)
     {
         sdf(march_pt, scene, &sdf_info);
-        march_pt = vec_add(march_pt, vec_mult_scalar(dir, sdf_info.min_dist));
+        vec_mult_scalar(&dir, sdf_info.min_dist, &tmp);
+        march_pt = vec_add(march_pt, tmp);
 
         // TOL
         if (sdf_info.min_dist < INTERSECT_THRESHOLD)
@@ -158,6 +166,9 @@ Vec3 trace(Vec3 o,
     Vec3 ambientColor = new_vector(0, 0, 0);
     Vec3 finalColor = new_vector(0, 0, 0);
 
+    // temporary result vector variable 
+    Vec3 tmp_res; 
+
     // CHECK INTERSECTION WITH SCENE
     SDF_Info sdf_info = ray_march(o, dir, scene, 0);
 
@@ -174,7 +185,7 @@ Vec3 trace(Vec3 o,
     // In theory not necessary if normals are computed outwards
     if (vec_dot(dir, N) > 0)
     {
-        N = vec_mult_scalar(N, -1);
+        vec_mult_scalar(&N, -1, &N);
     }
 
     if ((depth < MAX_RAY_DEPTH) && (mat.refl > 0))
@@ -184,8 +195,11 @@ Vec3 trace(Vec3 o,
         reflDir = vec_normalized(reflDir);
 
         // Compute reflected color
-        Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, vec_mult_scalar(N, EPSILON)), reflDir, scene, depth + 1);
-        finalColor = vec_mult_scalar(vec_mult_scalar(reflectedCol, mat.refl), REFLECTIVE_COEFF);
+        
+        vec_mult_scalar(&N, EPSILON, &tmp_res);
+        Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, tmp_res), reflDir, scene, depth + 1);
+        vec_mult_scalar(&reflectedCol, mat.refl, &tmp_res);
+        vec_mult_scalar(&tmp_res, REFLECTIVE_COEFF, &finalColor);
     }
 
     // Light dir
@@ -204,7 +218,8 @@ Vec3 trace(Vec3 o,
     sdf_shadow_info.s = 1.0;
     if (scene.nr_geom_objs > 1)
     {
-        sdf_shadow_info = ray_march(vec_add(sdf_info.intersection_pt, vec_mult_scalar(L, EPSILON)), L, scene, 1);
+        vec_mult_scalar(&L, EPSILON, &tmp_res);
+        sdf_shadow_info = ray_march(vec_add(sdf_info.intersection_pt, tmp_res), L, scene, 1);
         sdf_shadow_info.s = clamp(sdf_shadow_info.s, SHADOW_LIGHTNESS, 1.0);
     }
 
@@ -216,15 +231,34 @@ Vec3 trace(Vec3 o,
         specular = compute_specular_coefficient(&dir, &N, &L, &mat);
     }
 
-    ambientColor = vec_add(ambientColor, vec_mult_scalar(mat.surfCol, MATERIAL_AMBIENT_COEFF));
-    Vec3 diffuseColor = vec_mult_scalar(vec_mult(scene.light->emissionColor, vec_mult_scalar(vec_mult_scalar(mat.surfCol, lambertian), sdf_shadow_info.s)), inv_dist);
     Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
-    specularColor = vec_mult_scalar(vec_mult_scalar(vec_mult(scene.light->emissionColor, vec_mult_scalar(specularColor, specular)), sdf_shadow_info.s), inv_dist);
+    Vec3 diffuseColor;
+    Vec3 v_mult;
+    Vec3 tmp;
+
+
+    // Diffuse Colour Computation
+    vec_mult_scalar(&mat.surfCol, lambertian, &tmp);
+    vec_mult_scalar(&tmp, sdf_shadow_info.s, &tmp);
+    vec_mult(&scene.light->emissionColor, &tmp, &v_mult);
+    vec_mult_scalar(&v_mult, inv_dist, &diffuseColor); // diffuse colour result
+
+    // Ambient Colour Computation
+    vec_mult_scalar(&mat.surfCol, MATERIAL_AMBIENT_COEFF, &tmp);
+    ambientColor = vec_add(ambientColor, tmp); // ambient colour result
+    
+    // Specular Colour Computation
+    vec_mult_scalar(&specularColor, specular, &tmp);
+    vec_mult(&scene.light->emissionColor, &tmp, &v_mult);
+    vec_mult_scalar(&v_mult, sdf_shadow_info.s, &tmp);
+    vec_mult_scalar(&tmp, inv_dist, &specularColor); // specular colour result
+
+    // Final Colour 
     finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
 
 #if FOG == 1
     double t = vec_norm(sdf_info.intersection_pt);
-    finalColor = vec_mult_scalar(finalColor, exp(FOG_COEFF * t * t * t));
+    vec_mult_scalar(&finalColor, exp(FOG_COEFF * t * t * t), &finalColor);
 #endif
 
     return finalColor;
@@ -243,7 +277,7 @@ Vec3 trace(Vec3 o,
 void render(Scene scene, char* dirName)
 {
 #if DEBUG_MODE == 1
-    printf("RENDERING... ");
+    printf("%s", "RENDERING... ");
     float progress = 0.;
     float progress_step = 1. / (scene.camera->widthPx * scene.camera->heightPx);
     progress += progress_step;
@@ -285,7 +319,7 @@ void render(Scene scene, char* dirName)
 #endif
 
 #if GAMMA_CORR == 1
-            px_col = vec_pow(px_col, 0.4545);
+            vec_pow_inplace(&px_col, 0.4545);
 #endif
             // save colors computed by trace into current pixel
             scene.img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);

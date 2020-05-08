@@ -16,6 +16,8 @@ double sdf_box(Vec3 p, double params[])
   q.y = (p.y < 0) ? (p.y * -1 - params[1]) : (p.y - params[1]);
   q.z = (p.z < 0) ? (p.z * -1 - params[2]) : (p.z - params[2]);
 
-  Vec3 zero = new_vector_one(0.0);
+  // Vec3 zero = new_vector_one(0.0);
+  Vec3 zero;
+  set_vec_from_double(&zero, 0.0);
   return vec_norm(vec_max(q, zero)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }

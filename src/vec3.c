@@ -4,7 +4,7 @@
 /*
  * Function: new_vector
  * ----------------------------
- *   Returns a new vector
+ *   Returns a new vector allocated on stack
  *
  *   x: double value 
  *   y: double value
@@ -24,51 +24,84 @@ Vec3 new_vector(double x, double y, double z)
 /*
  * Function: new_vector
  * ----------------------------
- *   Returns a new vector
- *
- *   x: double value 
- *   y: double value
- *   z: double value
- *
- *   returns: a new vector with the specified values
+ *   Returns a new vector pointer pointing 
+ *   to malloced memory on heap
  */
-Vec3 new_vector_one(double xyz)
+Vec3* new_vector_p(double x, double y, double z)
 {
-    Vec3 v;
-    v.x = xyz;
-    v.y = xyz;
-    v.z = xyz;
+    Vec3* v = malloc(sizeof(Vec3));
+
+    v->x = x;
+    v->y = y;
+    v->z = z;
     return v;
+}
+
+/*
+ * Function: set_vec_from_double
+ * ----------------------------
+ *   Sets all components of given vector to a given double
+ *
+ *   v: vector to be set to xyz value
+ *   xyz: double value
+ * 
+ */
+void set_vec_from_double(Vec3* v, double xyz)
+{
+    v->x = xyz;
+    v->y = xyz;
+    v->z = xyz;
 }
 
 /*
  * Function: vec_mult
  * ----------------------------
- *   Returns a new vector
+ *   Vector mult of v1 and v2 and result in res
  *
- *   v1: of type Vec3 
- *   v2: of type Vec3
- *
- *   returns: returns a new vector that is the vector product between v1 and v2
+ *   v1: multiplicannd 1
+ *   v2: multiplicand 2
+ *   res: result vector
+ * 
  */
-Vec3 vec_mult(Vec3 v1, Vec3 v2)
+void vec_mult(Vec3 *v1, Vec3 *v2, Vec3 *res)
 {
-    return new_vector(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+    res->x = v1->x * v2->x;
+    res->y = v1->y * v2->y;
+    res->z = v1->z * v2->z;
+}
+
+/*
+ * Function: vec_pow_inplace
+ * ----------------------------
+ *   Replaces v1 with its power of p
+ *
+ *   v1: vector to raise to power
+ *   p: power value
+ *
+ *   returns: vector elementwise power of p
+ */
+void vec_pow_inplace(Vec3 *v1, double p)
+{
+    v1->x = pow(v1->x, p);
+    v1->y = pow(v1->y, p);
+    v1->z = pow(v1->z, p);
 }
 
 /*
  * Function: vec_pow
  * ----------------------------
- *   Returns a new vector
+ *   Vector power of v1 saved in res
  *
- *   v1: of type Vec3 
+ *   v1: vector to raise to power p 
  *   p: power value
+ *   res: result vector
  *
- *   returns: vector elementwise power of p
  */
-Vec3 vec_pow(Vec3 v1, double p)
+void vec_pow(Vec3 *v1, double p, Vec3 *res)
 {
-    return new_vector(pow(v1.x, p), pow(v1.y, p), pow(v1.z, p));
+    res->x = pow(v1->x, p);
+    res->y = pow(v1->y, p);
+    res->z = pow(v1->z, p);
 }
 
 /*
@@ -81,9 +114,11 @@ Vec3 vec_pow(Vec3 v1, double p)
  *
  *   returns: a new vector that is the result of vector v multiplied by scalar m
  */
-Vec3 vec_mult_scalar(Vec3 v, double m)
+void vec_mult_scalar(Vec3 *v, double m, Vec3 *res)
 {
-    return new_vector(v.x * m, v.y * m, v.z * m);
+    res->x = v->x * m;
+    res->y = v->y * m;
+    res->z = v->z * m;
 }
 
 /*
@@ -159,7 +194,10 @@ Vec3 vec_normalized(Vec3 v)
     double norm = vec_norm(v);
     if (norm == 0.0 || norm == NAN)
         return v;
-    return vec_mult_scalar(v, 1 / norm);
+    
+    Vec3 tmp;
+    vec_mult_scalar(&v, 1 / norm, &tmp);
+    return tmp;
 }
 
 /*
@@ -208,7 +246,10 @@ Vec3 vec_cross(Vec3 u, Vec3 v)
  */
 Vec3 vec_reflect(Vec3 v, Vec3 normal)
 {
-    return vec_sub(v, vec_mult_scalar(vec_mult_scalar(normal, vec_dot(v, normal)), 2));
+    Vec3 tmp;
+    vec_mult_scalar(&normal, vec_dot(v, normal), &tmp);
+    vec_mult_scalar(&tmp, 2, &tmp);
+    return vec_sub(v, tmp);
 }
 
 /*
@@ -259,8 +300,12 @@ Vec3 vec_rotate(Vec3 v, Vec3 k, double theta)
 {
     //based on Euler rodrigues formula
     double cosTheta = cos(theta);
-    Vec3 first = vec_mult_scalar(v, cosTheta);
-    Vec3 second = vec_mult_scalar(vec_cross(k, v), sin(theta));
-    Vec3 third = vec_mult_scalar(k, vec_dot(k, v) * (1 - cosTheta));
+    Vec3 first;
+    vec_mult_scalar(&v, cosTheta, &first);
+    Vec3 second;
+    Vec3 tmp = vec_cross(k, v);
+    vec_mult_scalar(&tmp, sin(theta), &second);
+    Vec3 third;
+    vec_mult_scalar(&k, vec_dot(k, v) * (1 - cosTheta), &third);
     return vec_add(first, vec_add(second, third));
 }

@@ -10,14 +10,13 @@ typedef struct
 } Vec3;
 
 Vec3 new_vector(double x, double y, double z);
+Vec3* new_vector_p(double x, double y, double z);
+void set_vec_from_double(Vec3* v, double xyz);
+void vec_mult(Vec3 *v1, Vec3 *v2, Vec3 *res);
+void vec_pow_inplace(Vec3 *v1, double p);
+void vec_pow(Vec3 *v1, double p, Vec3 *res);
 
-Vec3 new_vector_one(double xyz);
-
-Vec3 vec_mult(Vec3 v1, Vec3 v2);
-
-Vec3 vec_pow(Vec3 v1, double p);
-
-Vec3 vec_mult_scalar(Vec3 v, double m);
+void vec_mult_scalar(Vec3 *v, double m, Vec3 *res);
 
 Vec3 vec_add(Vec3 v1, Vec3 v2);
 
