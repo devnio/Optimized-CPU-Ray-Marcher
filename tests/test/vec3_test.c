@@ -107,7 +107,7 @@ TEST vec_add_scalar_test() {
       input1 = new_vector(rand(), rand(), rand());
       input2 = rand();
 
-      output = vec_add_scalar(input1, input2);
+      vec_add_scalar(&input1, input2, &output);
 
       res1 = input1.x+input2;
       res2 = input1.y+input2;
@@ -131,7 +131,7 @@ TEST vec_sub_test() {
       input1 = new_vector(rand(), rand(), rand());
       input2 = new_vector(rand(), rand(), rand());
 
-      output = vec_sub(input1, input2);
+      vec_sub(&input1, &input2, &output);
       res1 = input1.x-input2.x;
       res2 = input1.y-input2.y;
       res3 = input1.z-input2.z;
@@ -246,7 +246,7 @@ TEST vec_reflect_test() {
       output = vec_reflect(input1, normal);
       vec_mult_scalar(&normal, vec_dot(normal, input1), &tmp1);
       vec_mult_scalar(&tmp1, 2.0, &tmp1);
-      tmp = vec_sub(input1, tmp1);
+      vec_sub(&input1, &tmp1, &tmp);
       res1 = tmp.x;
       res2 = tmp.y;
       res3 = tmp.z;

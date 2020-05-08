@@ -27,7 +27,7 @@ Vec3 apply_transform(Vec3 p, const Transform *transform)
 {
     // apply translation
     Vec3 t;
-    t = vec_sub(p, transform->center);
+    vec_sub(&p, &transform->center, &t);
 
     // apply rotation
     t = rotate_point_x(t, transform->orientation.x);

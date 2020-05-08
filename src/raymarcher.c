@@ -81,7 +81,8 @@ Vec3 compute_normal(Vec3 p, Scene scene)
 
     // Vec3 n = vec_mult_scalar(vec_sub(ch, c), 1.0/EPSILON);
     // return n;
-    Vec3 n = vec_sub(ch, c);
+    Vec3 n; 
+    vec_sub(&ch, &c, &n);
     return vec_normalized(n);
 }
 
@@ -207,7 +208,8 @@ Vec3 trace(Vec3 o,
     }
 
     // Light dir
-    Vec3 L = vec_sub(scene.light->c, sdf_info.intersection_pt);
+    Vec3 L;
+    vec_sub(&scene.light->c, &sdf_info.intersection_pt, &L);
 
     // distance between intersection_pt and light source
     double dist = vec_norm(L);
@@ -315,7 +317,7 @@ void render(Scene scene, char* dirName)
                     double disp_y = (inv_AA * m - 0.5) + y;
                     Vec3 dir = shoot_ray(scene.camera, disp_x, disp_y);
                     Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
-                    tot_col = vec_add(tot_col, px_col);
+                    vec_add(&tot_col, &px_col, &tot_col);
                 }
             }
             Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);

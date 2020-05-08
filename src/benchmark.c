@@ -217,7 +217,7 @@ double benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
                             // ===================================================
                             //// --- END PERFORMANCE MEASUREMENT --- ///
                             // ===================================================
-                            tot_col = vec_add(tot_col, px_col);
+                            vec_add(&tot_col, &px_col, &tot_col);
                         }
                     }
                     Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);

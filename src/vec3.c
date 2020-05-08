@@ -143,14 +143,15 @@ void vec_add(Vec3 *v1, Vec3 *v2, Vec3 *res)
  * ----------------------------
  *   Adds a scalar value to each element of the vector
  *
- *   v: of type Vec3 
- *   m: of type double
+ *   v: vector summand 1
+ *   m: scalar summand 2
  *
- *   returns: a new vector with the specified values
  */
-Vec3 vec_add_scalar(Vec3 v, double m)
+void vec_add_scalar(Vec3 *v, double m, Vec3* res)
 {
-    return new_vector(v.x + m, v.y + m, v.z + m);
+    res->x = v->x * m;
+    res->y = v->y * m;
+    res->z = v->z * m;
 }
 
 /*
@@ -163,9 +164,11 @@ Vec3 vec_add_scalar(Vec3 v, double m)
  *
  *   returns: new vector with subtraction between v1 and v2 
  */
-Vec3 vec_sub(Vec3 v1, Vec3 v2)
+void vec_sub(Vec3 *v1, Vec3 *v2, Vec3 *res)
 {
-    return new_vector(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+    res->x = v1->x - v2->x;
+    res->y = v1->y - v2->y;
+    res->z = v1->z - v2->z;
 }
 
 /*
@@ -251,7 +254,8 @@ Vec3 vec_reflect(Vec3 v, Vec3 normal)
     Vec3 tmp;
     vec_mult_scalar(&normal, vec_dot(v, normal), &tmp);
     vec_mult_scalar(&tmp, 2, &tmp);
-    return vec_sub(v, tmp);
+    vec_sub(&v, &tmp, &tmp);
+    return tmp;
 }
 
 /*
