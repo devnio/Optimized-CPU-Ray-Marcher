@@ -107,12 +107,12 @@ void vec_pow(Vec3 *v1, double p, Vec3 *res)
 /*
  * Function: vec_mult_scalar
  * ----------------------------
- *   Returns a new vector
+ *   Vector multiplication with a scalar
  *
- *   v: of type Vec3 
- *   m: of type double
- *
- *   returns: a new vector that is the result of vector v multiplied by scalar m
+ *   v: vector to be multiplied
+ *   m: scalar of value double
+ *   res: result of scalar multiplication
+ * 
  */
 void vec_mult_scalar(Vec3 *v, double m, Vec3 *res)
 {
@@ -126,14 +126,16 @@ void vec_mult_scalar(Vec3 *v, double m, Vec3 *res)
  * ----------------------------
  *   Performs vector addition between two vectors
  *
- *   v1: of type Vec3 
- *   v2: of type Vec3
- *
- *   returns: returns a new vector including the addition of v1 and v2
+ *   v1: summand 1
+ *   v2: summand 2
+ *   res: result vector
+ * 
  */
-Vec3 vec_add(Vec3 v1, Vec3 v2)
+void vec_add(Vec3 *v1, Vec3 *v2, Vec3 *res)
 {
-    return new_vector(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+    res->x = v1->x + v2->x;
+    res->y = v1->y + v2->y;
+    res->z = v1->z + v2->z;
 }
 
 /*
@@ -307,5 +309,9 @@ Vec3 vec_rotate(Vec3 v, Vec3 k, double theta)
     vec_mult_scalar(&tmp, sin(theta), &second);
     Vec3 third;
     vec_mult_scalar(&k, vec_dot(k, v) * (1 - cosTheta), &third);
-    return vec_add(first, vec_add(second, third));
+
+    Vec3 tmp_add;
+    vec_add(&second, &third, &tmp_add);
+    vec_add(&first, &tmp_add, &tmp_add);
+    return tmp_add;
 }

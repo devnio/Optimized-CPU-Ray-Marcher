@@ -18,7 +18,7 @@ void vec_pow(Vec3 *v1, double p, Vec3 *res);
 
 void vec_mult_scalar(Vec3 *v, double m, Vec3 *res);
 
-Vec3 vec_add(Vec3 v1, Vec3 v2);
+void vec_add(Vec3 *v1, Vec3 *v2, Vec3 *res);
 
 Vec3 vec_add_scalar(Vec3 v, double m);
 

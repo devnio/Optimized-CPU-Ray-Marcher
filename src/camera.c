@@ -27,7 +27,7 @@ struct Camera *create_camera(double fov, unsigned int widthPx, unsigned int heig
 
 void move_camera(Camera *camera, Vec3 t)
 {
-    camera->pos = vec_add(camera->pos, t);
+    vec_add(&camera->pos, &t, &camera->pos );
     camera->viewMatrix = look_at(camera->pos, camera->dir, up);
 }
 

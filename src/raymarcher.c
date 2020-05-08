@@ -57,9 +57,13 @@
 
 Vec3 compute_normal(Vec3 p, Scene scene)
 {
-    Vec3 p0 = vec_add(p, new_vector(EPSILON_NORMALS, 0, 0));
-    Vec3 p1 = vec_add(p, new_vector(0, EPSILON_NORMALS, 0));
-    Vec3 p2 = vec_add(p, new_vector(0, 0, EPSILON_NORMALS));
+    Vec3 p0, p1, p2;
+    Vec3 eps_0 = new_vector(EPSILON_NORMALS, 0, 0);
+    Vec3 eps_1 = new_vector(0, EPSILON_NORMALS, 0);
+    Vec3 eps_2 = new_vector(0, 0, EPSILON_NORMALS);
+    vec_add(&p, &eps_0, &p0);
+    vec_add(&p, &eps_1, &p1);
+    vec_add(&p, &eps_2, &p2);
     
     SDF_Info sdf_info;
     sdf(p, scene, &sdf_info);
@@ -120,7 +124,7 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
     {
         sdf(march_pt, scene, &sdf_info);
         vec_mult_scalar(&dir, sdf_info.min_dist, &tmp);
-        march_pt = vec_add(march_pt, tmp);
+        vec_add(&march_pt, &tmp, &march_pt);
 
         // TOL
         if (sdf_info.min_dist < INTERSECT_THRESHOLD)
@@ -195,9 +199,9 @@ Vec3 trace(Vec3 o,
         reflDir = vec_normalized(reflDir);
 
         // Compute reflected color
-        
         vec_mult_scalar(&N, EPSILON, &tmp_res);
-        Vec3 reflectedCol = trace(vec_add(sdf_info.intersection_pt, tmp_res), reflDir, scene, depth + 1);
+        vec_add(&sdf_info.intersection_pt, &tmp_res, &tmp_res);
+        Vec3 reflectedCol = trace(tmp_res, reflDir, scene, depth + 1);
         vec_mult_scalar(&reflectedCol, mat.refl, &tmp_res);
         vec_mult_scalar(&tmp_res, REFLECTIVE_COEFF, &finalColor);
     }
@@ -219,7 +223,8 @@ Vec3 trace(Vec3 o,
     if (scene.nr_geom_objs > 1)
     {
         vec_mult_scalar(&L, EPSILON, &tmp_res);
-        sdf_shadow_info = ray_march(vec_add(sdf_info.intersection_pt, tmp_res), L, scene, 1);
+        vec_add(&sdf_info.intersection_pt, &tmp_res, &tmp_res);
+        sdf_shadow_info = ray_march(tmp_res, L, scene, 1);
         sdf_shadow_info.s = clamp(sdf_shadow_info.s, SHADOW_LIGHTNESS, 1.0);
     }
 
@@ -245,7 +250,7 @@ Vec3 trace(Vec3 o,
 
     // Ambient Colour Computation
     vec_mult_scalar(&mat.surfCol, MATERIAL_AMBIENT_COEFF, &tmp);
-    ambientColor = vec_add(ambientColor, tmp); // ambient colour result
+    vec_add(&ambientColor, &tmp, &ambientColor); // ambient colour result
     
     // Specular Colour Computation
     vec_mult_scalar(&specularColor, specular, &tmp);
@@ -254,7 +259,9 @@ Vec3 trace(Vec3 o,
     vec_mult_scalar(&tmp, inv_dist, &specularColor); // specular colour result
 
     // Final Colour 
-    finalColor = vec_add(finalColor, vec_add(vec_add(ambientColor, diffuseColor), specularColor));
+    vec_add(&ambientColor, &diffuseColor, &tmp);
+    vec_add(&tmp, &specularColor, &tmp);
+    vec_add(&finalColor, &tmp, &finalColor); // final colour result
 
 #if FOG == 1
     double t = vec_norm(sdf_info.intersection_pt);
