@@ -264,3 +264,14 @@ Vec3 vec_rotate(Vec3 v, Vec3 k, double theta)
     Vec3 third = vec_mult_scalar(k, vec_dot(k, v) * (1 - cosTheta));
     return vec_add(first, vec_add(second, third));
 }
+
+
+
+/*
+ * Function: vec_mode
+ * ----------------------------
+ *   modulo of vector 1 by vector 2 element wise
+ */
+Vec3 vec_mod(Vec3 v1, Vec3 v2){
+    return new_vector(mod(v1.x, v2.x), mod(v1.y, v2.y), mod(v1.z, v2.z));
+}
