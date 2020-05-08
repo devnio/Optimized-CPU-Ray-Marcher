@@ -85,7 +85,7 @@ Vec3 compute_normal(Vec3 p, Scene scene)
 double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
 {
     // Light reflected on normal
-    Vec3 R, V;
+    Vec3 R, V; 
     vec_mult_scalar(L, -1, &V);
     vec_reflect(&V, N, &R);
     vec_mult_scalar(dir, -1, &V);
@@ -238,29 +238,28 @@ Vec3 trace(Vec3 o,
     Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
     Vec3 diffuseColor;
     Vec3 v_mult;
-    Vec3 tmp;
 
 
     // Diffuse Colour Computation
-    vec_mult_scalar(&mat.surfCol, lambertian, &tmp);
-    vec_mult_scalar(&tmp, sdf_shadow_info.s, &tmp);
-    vec_mult(&scene.light->emissionColor, &tmp, &v_mult);
+    vec_mult_scalar(&mat.surfCol, lambertian, &tmp_res);
+    vec_mult_scalar(&tmp_res, sdf_shadow_info.s, &tmp_res);
+    vec_mult(&scene.light->emissionColor, &tmp_res, &v_mult);
     vec_mult_scalar(&v_mult, inv_dist, &diffuseColor); // diffuse colour result
 
     // Ambient Colour Computation
-    vec_mult_scalar(&mat.surfCol, MATERIAL_AMBIENT_COEFF, &tmp);
-    vec_add(&ambientColor, &tmp, &ambientColor); // ambient colour result
+    vec_mult_scalar(&mat.surfCol, MATERIAL_AMBIENT_COEFF, &tmp_res);
+    vec_add(&ambientColor, &tmp_res, &ambientColor); // ambient colour result
     
     // Specular Colour Computation
-    vec_mult_scalar(&specularColor, specular, &tmp);
-    vec_mult(&scene.light->emissionColor, &tmp, &v_mult);
-    vec_mult_scalar(&v_mult, sdf_shadow_info.s, &tmp);
-    vec_mult_scalar(&tmp, inv_dist, &specularColor); // specular colour result
+    vec_mult_scalar(&specularColor, specular, &tmp_res);
+    vec_mult(&scene.light->emissionColor, &tmp_res, &v_mult);
+    vec_mult_scalar(&v_mult, sdf_shadow_info.s, &tmp_res);
+    vec_mult_scalar(&tmp_res, inv_dist, &specularColor); // specular colour result
 
     // Final Colour 
-    vec_add(&ambientColor, &diffuseColor, &tmp);
-    vec_add(&tmp, &specularColor, &tmp);
-    vec_add(&finalColor, &tmp, &finalColor); // final colour result
+    vec_add(&ambientColor, &diffuseColor, &tmp_res);
+    vec_add(&tmp_res, &specularColor, &tmp_res);
+    vec_add(&finalColor, &tmp_res, &finalColor); // final colour result
 
 #if FOG == 1
     double t = vec_norm(&sdf_info.intersection_pt);
