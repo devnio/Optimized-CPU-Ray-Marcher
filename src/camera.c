@@ -61,8 +61,8 @@ Vec3 shoot_ray(Camera *camera, double i, double j)
     Vec3 dir = new_vector(x, y, camera->dir.z);
 
     Vec3 sRay = mult_vec_matrix_no_homo(&(camera->viewMatrix), dir);
-
-    return vec_normalized(sRay);
+    vec_normalize(&sRay);
+    return sRay;
 }
 
 void free_camera(Camera *camera)

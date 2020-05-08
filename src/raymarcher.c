@@ -83,7 +83,8 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     // return n;
     Vec3 n; 
     vec_sub(&ch, &c, &n);
-    return vec_normalized(n);
+    vec_normalize(&n);
+    return n;
 }
 
 double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
@@ -93,10 +94,11 @@ double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
     vec_mult_scalar(L, -1, &tmp);
     Vec3 R = vec_reflect(tmp, *N);
     vec_mult_scalar(dir, -1, &tmp);
-    Vec3 V = vec_normalized(tmp);
+    vec_normalize(&tmp);
+    Vec3 V = tmp;
 
     // Specular term
-    double specAngle = max(vec_dot(R, V), 0.0);
+    double specAngle = max(vec_dot(&R, &V), 0.0);
     return pow(specAngle, (*mat).shininess);
 }
 
@@ -135,7 +137,7 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
             break;
         }
         // BBOX CHECK
-        if (vec_norm(march_pt) > BBOX_AXES)
+        if (vec_norm(&march_pt) > BBOX_AXES)
         {
             sdf_info.intersected = 0;
             break;
@@ -188,7 +190,7 @@ Vec3 trace(Vec3 o,
     Vec3 N = compute_normal(sdf_info.intersection_pt, scene);
 
     // In theory not necessary if normals are computed outwards
-    if (vec_dot(dir, N) > 0)
+    if (vec_dot(&dir, &N) > 0)
     {
         vec_mult_scalar(&N, -1, &N);
     }
@@ -197,7 +199,7 @@ Vec3 trace(Vec3 o,
     {
         // Compute reflected dir
         Vec3 reflDir = vec_reflect(dir, N);
-        reflDir = vec_normalized(reflDir);
+        vec_normalize(&reflDir);
 
         // Compute reflected color
         vec_mult_scalar(&N, EPSILON, &tmp_res);
@@ -212,9 +214,9 @@ Vec3 trace(Vec3 o,
     vec_sub(&scene.light->c, &sdf_info.intersection_pt, &L);
 
     // distance between intersection_pt and light source
-    double dist = vec_norm(L);
+    double dist = vec_norm(&L);
     double inv_dist = 1 / dist;
-    L = vec_normalized(L); 
+    vec_normalize(&L); 
 
     /* Before doing anything else check if shadow ray.
      * We assume that light is not in between objects. 
@@ -231,7 +233,7 @@ Vec3 trace(Vec3 o,
     }
 
     // Lamber's cosine law
-    double lambertian = max(vec_dot(N, L), 0.0);
+    double lambertian = max(vec_dot(&N, &L), 0.0);
     double specular = 0;
     if (lambertian > 0.0)
     {
@@ -266,7 +268,7 @@ Vec3 trace(Vec3 o,
     vec_add(&finalColor, &tmp, &finalColor); // final colour result
 
 #if FOG == 1
-    double t = vec_norm(sdf_info.intersection_pt);
+    double t = vec_norm(&sdf_info.intersection_pt);
     vec_mult_scalar(&finalColor, exp(FOG_COEFF * t * t * t), &finalColor);
 #endif
 

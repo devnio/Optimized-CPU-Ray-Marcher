@@ -10,5 +10,5 @@ Params for plane are:
  */
 double sdf_sphere(Vec3 p, double params[])
 {
-    return vec_norm(p) - params[0];
+    return vec_norm(&p) - params[0];
 }

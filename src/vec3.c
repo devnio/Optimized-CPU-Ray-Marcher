@@ -46,7 +46,7 @@ Vec3* new_vector_p(double x, double y, double z)
  *   xyz: double value
  * 
  */
-void set_vec_from_double(Vec3* v, double xyz)
+void set_vec_from_double(Vec3* v, const double xyz)
 {
     v->x = xyz;
     v->y = xyz;
@@ -63,7 +63,7 @@ void set_vec_from_double(Vec3* v, double xyz)
  *   res: result vector
  * 
  */
-void vec_mult(Vec3 *v1, Vec3 *v2, Vec3 *res)
+void vec_mult(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
 {
     res->x = v1->x * v2->x;
     res->y = v1->y * v2->y;
@@ -80,7 +80,7 @@ void vec_mult(Vec3 *v1, Vec3 *v2, Vec3 *res)
  *
  *   returns: vector elementwise power of p
  */
-void vec_pow_inplace(Vec3 *v1, double p)
+void vec_pow_inplace(Vec3 *v1, const double p)
 {
     v1->x = pow(v1->x, p);
     v1->y = pow(v1->y, p);
@@ -97,7 +97,7 @@ void vec_pow_inplace(Vec3 *v1, double p)
  *   res: result vector
  *
  */
-void vec_pow(Vec3 *v1, double p, Vec3 *res)
+void vec_pow(const Vec3 *v1, const double p, Vec3 *res)
 {
     res->x = pow(v1->x, p);
     res->y = pow(v1->y, p);
@@ -114,7 +114,7 @@ void vec_pow(Vec3 *v1, double p, Vec3 *res)
  *   res: result of scalar multiplication
  * 
  */
-void vec_mult_scalar(Vec3 *v, double m, Vec3 *res)
+void vec_mult_scalar(const Vec3 *v, const double m, Vec3 *res)
 {
     res->x = v->x * m;
     res->y = v->y * m;
@@ -131,7 +131,7 @@ void vec_mult_scalar(Vec3 *v, double m, Vec3 *res)
  *   res: result vector
  * 
  */
-void vec_add(Vec3 *v1, Vec3 *v2, Vec3 *res)
+void vec_add(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
 {
     res->x = v1->x + v2->x;
     res->y = v1->y + v2->y;
@@ -147,7 +147,7 @@ void vec_add(Vec3 *v1, Vec3 *v2, Vec3 *res)
  *   m: scalar summand 2
  *
  */
-void vec_add_scalar(Vec3 *v, double m, Vec3* res)
+void vec_add_scalar(const Vec3 *v, const double m, Vec3* res)
 {
     res->x = v->x * m;
     res->y = v->y * m;
@@ -164,7 +164,7 @@ void vec_add_scalar(Vec3 *v, double m, Vec3* res)
  *
  *   returns: new vector with subtraction between v1 and v2 
  */
-void vec_sub(Vec3 *v1, Vec3 *v2, Vec3 *res)
+void vec_sub(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
 {
     res->x = v1->x - v2->x;
     res->y = v1->y - v2->y;
@@ -174,35 +174,30 @@ void vec_sub(Vec3 *v1, Vec3 *v2, Vec3 *res)
 /*
  * Function: vec_norm
  * ----------------------------
- *   Computes the norm of the vector 
+ *   Computes vector norm.
  *
- *   v1: of type Vec3 
+ *   v: vector of which the norm is computed
  *
- *   returns: norm of the given vector
+ *   returns: scalar norm of the given vector
  */
-double vec_norm(Vec3 v)
+double vec_norm(const Vec3 *v)
 {
-    return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    return sqrt(v->x * v->x + v->y * v->y + v->z * v->z);
 }
 
 /*
- * Function: vec_norm
+ * Function: vec_normalize
  * ----------------------------
- *   Normalizes the given vector
+ *   Normalizes the given vector in-place
  *
- *   v1: of type Vec3 
- *
- *   returns: normalized vector
+ *   v: Vector to be normalized
  */
-Vec3 vec_normalized(Vec3 v)
+void vec_normalize(Vec3 *v)
 {
     double norm = vec_norm(v);
     if (norm == 0.0 || norm == NAN)
-        return v;
-    
-    Vec3 tmp;
-    vec_mult_scalar(&v, 1 / norm, &tmp);
-    return tmp;
+        return;
+    vec_mult_scalar(v, 1 / norm, v);
 }
 
 /*
@@ -210,33 +205,30 @@ Vec3 vec_normalized(Vec3 v)
  * ----------------------------
  *   Computes the dot product between the two vectors
  *
- *   v1: of type Vec3 
- *   v2: of type Vec3 
+ *   v1: first vector
+ *   v2: second vector
  *
- *   returns: a new vector that is the dot product between v1 and v2
+ *   returns: resulting scalar value of the dot operation between v1 and v2
  */
-double vec_dot(Vec3 v1, Vec3 v2)
+double vec_dot(const Vec3 *v1, const Vec3 *v2)
 {
-    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+    return v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
 }
 
 /*
  * Function: vec_cross
  * ----------------------------
- *   Computes the cross product between v1 and v2
+ *   Computes the cross product between vectors u and v
  *
- *   u: of type Vec3 
- *   v: of type Vec3 
- *
- *   returns: new vector that is the cross product between u and v
+ *   u: first vector 
+ *   v: second vector
+ *   res: result vector of the operation
  */
-Vec3 vec_cross(Vec3 u, Vec3 v)
+void vec_cross(const Vec3 *u, const Vec3 *v, Vec3 *res)
 {
-    Vec3 result = {0, 0, 0};
-    result.x = u.y * v.z - v.y * u.z;
-    result.y = u.z * v.x - v.z * u.x;
-    result.z = u.x * v.y - v.x * u.y;
-    return result;
+    res->x = u->y * v->z - v->y * u->z;
+    res->y = u->z * v->x - v->z * u->x;
+    res->z = u->x * v->y - v->x * u->y;
 }
 
 /*
@@ -252,7 +244,7 @@ Vec3 vec_cross(Vec3 u, Vec3 v)
 Vec3 vec_reflect(Vec3 v, Vec3 normal)
 {
     Vec3 tmp;
-    vec_mult_scalar(&normal, vec_dot(v, normal), &tmp);
+    vec_mult_scalar(&normal, vec_dot(&v, &normal), &tmp);
     vec_mult_scalar(&tmp, 2, &tmp);
     vec_sub(&v, &tmp, &tmp);
     return tmp;
@@ -309,10 +301,11 @@ Vec3 vec_rotate(Vec3 v, Vec3 k, double theta)
     Vec3 first;
     vec_mult_scalar(&v, cosTheta, &first);
     Vec3 second;
-    Vec3 tmp = vec_cross(k, v);
+    Vec3 tmp; 
+    vec_cross(&k, &v, &tmp);
     vec_mult_scalar(&tmp, sin(theta), &second);
     Vec3 third;
-    vec_mult_scalar(&k, vec_dot(k, v) * (1 - cosTheta), &third);
+    vec_mult_scalar(&k, vec_dot(&k, &v) * (1 - cosTheta), &third);
 
     Vec3 tmp_add;
     vec_add(&second, &third, &tmp_add);

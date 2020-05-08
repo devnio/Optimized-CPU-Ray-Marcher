@@ -19,5 +19,6 @@ double sdf_box(Vec3 p, double params[])
   // Vec3 zero = new_vector_one(0.0);
   Vec3 zero;
   set_vec_from_double(&zero, 0.0);
-  return vec_norm(vec_max(q, zero)) + min(max(q.x, max(q.y, q.z)), 0.0);
+  Vec3 max_tmp = vec_max(q, zero);
+  return vec_norm(&max_tmp) + min(max(q.x, max(q.y, q.z)), 0.0);
 }

@@ -24,5 +24,6 @@ double sdf_octahedron(Vec3 p, double params[])
         return m * 0.57735027;
 
     float k = clamp(0.5 * (q.z - q.y + params[0]), 0.0, params[0]);
-    return vec_norm(new_vector(q.x, q.y - params[0] + k, q.z - k));
+    Vec3 val = new_vector(q.x, q.y - params[0] + k, q.z - k);
+    return vec_norm(&val);
 }

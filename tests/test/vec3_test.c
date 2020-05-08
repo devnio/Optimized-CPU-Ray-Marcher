@@ -153,7 +153,7 @@ TEST vec_norm_test() {
   for(int i=0; i<REPETITIONS; ++i){
       input1 = new_vector(rand(), rand(), rand());
       
-      output = vec_norm(input1);
+      output = vec_norm(&input1);
       res = sqrt(input1.x*input1.x+input1.y*input1.y+input1.z*input1.z);
 
       ASSERT_IN_RANGE(res, output, TOLERANCE);
@@ -171,8 +171,8 @@ TEST vec_normalized_test() {
   srand((unsigned) time(&t));
   for(int i=0; i<REPETITIONS; ++i){
       input1 = new_vector(rand(), rand(), rand());
-      
-      output = vec_normalized(input1);
+      vec_normalized(&input1);
+      output = input1;
 
       norm = sqrt(input1.x*input1.x+input1.y*input1.y+input1.z*input1.z);
       res1=input1.x/norm;
@@ -198,7 +198,7 @@ TEST vec_dot_test() {
       input1 = new_vector(rand(), rand(), rand());
       input2 = new_vector(rand(), rand(), rand());
       
-      output = vec_dot(input1, input2);
+      output = vec_dot(&input1, &input2);
       res = input1.x*input2.x+input1.y*input2.y+input1.z*input2.z;
 
       ASSERT_IN_RANGE(res, output, TOLERANCE);
@@ -218,7 +218,7 @@ TEST vec_cross_test() {
       input1 = new_vector(rand(), rand(), rand());
       input2 = new_vector(rand(), rand(), rand());
 
-      output = vec_cross(input1, input2);
+      vec_cross(&input1, &input2, &output);
       res1 = input1.y*input2.z-input2.y*input1.z;
       res2 = input1.z*input2.x-input2.z*input1.x;
       res3 = input1.x*input2.y-input2.x*input1.y;
@@ -244,7 +244,7 @@ TEST vec_reflect_test() {
       
 
       output = vec_reflect(input1, normal);
-      vec_mult_scalar(&normal, vec_dot(normal, input1), &tmp1);
+      vec_mult_scalar(&normal, vec_dot(&normal, &input1), &tmp1);
       vec_mult_scalar(&tmp1, 2.0, &tmp1);
       vec_sub(&input1, &tmp1, &tmp);
       res1 = tmp.x;
