@@ -129,6 +129,10 @@ double to_radians(double degrees)
     return degrees * (M_PI / 180.0);
 }
 
+double mod(double x, double y)
+{
+    return x - y * floor(x/y);
+}
 
 char* _concat(const char *str1, const char *str2) { 
     const size_t len1 = strlen(str1);

@@ -1,0 +1,34 @@
+{
+  "camera": {
+    "width": 1280,
+    "height": 720,
+    "fov": 70,
+    "position": { "x": 0, "y": 0.0, "z": -0.75 },
+    "rotation": { "x": 0, "y": 0, "z": 0 }
+  },
+  "pointlight": {
+    "position": { "x": 10, "y": 80, "z": 20 },
+    "emission": { "x": 180, "y": 180, "z": 180 }
+  },
+  "transforms": [
+    {
+      "position": { "x": 0, "y": 0, "z": 10 },
+      "rotation": { "x": 90, "y": 15, "z": 15 }
+    }
+  ],
+  "materials": [
+    {
+      "reflection": 1.0,
+      "shininess": 15.0,
+      "surface": { "x": 0.949, "y": 0.686, "z": 0.396 }
+    }
+  ],
+  "geometric_objects": [
+    {
+      "name": "box",
+      "transform_idx": 0,
+      "material_idx": 0,
+      "params": [ 1.5, 0.75, 1.5 ]
+    }
+  ]
+}

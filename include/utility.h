@@ -10,6 +10,9 @@
 // ANTI ALIASING
 #define AA 1
 
+//Infinite repetition
+#define INFINITE_REP 0
+
 // GAMMA CORRECTION
 #define GAMMA_CORR 1
 
@@ -20,6 +23,7 @@
 double mix(double a, double b, double mix);
 double min(double a, double b);
 double max(double a, double b);
+double mod(double x, double y);
 double clamp(double val, double min, double max);
 double sign(double val);
 Vec3 rotate_point_x(Vec3 p, double angle);
