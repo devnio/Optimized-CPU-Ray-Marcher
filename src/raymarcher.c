@@ -57,6 +57,7 @@
 
 Vec3 compute_normal(Vec3 p, Scene scene)
 {
+    Vec3 ch, c, n;
     Vec3 p0, p1, p2;
     Vec3 eps_0 = new_vector(EPSILON_NORMALS, 0, 0);
     Vec3 eps_1 = new_vector(0, EPSILON_NORMALS, 0);
@@ -67,11 +68,8 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     
     SDF_Info sdf_info;
     sdf(p, scene, &sdf_info);
-    // Vec3 c = new_vector_one(sdf_info.min_dist);
-    Vec3 c;
     set_vec_from_double(&c, sdf_info.min_dist);
 
-    Vec3 ch;
     sdf(p0, scene, &sdf_info);
     ch.x = sdf_info.min_dist;
     sdf(p1, scene, &sdf_info);
@@ -79,9 +77,6 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     sdf(p2, scene, &sdf_info);
     ch.z = sdf_info.min_dist;
 
-    // Vec3 n = vec_mult_scalar(vec_sub(ch, c), 1.0/EPSILON);
-    // return n;
-    Vec3 n; 
     vec_sub(&ch, &c, &n);
     vec_normalize(&n);
     return n;
@@ -90,13 +85,11 @@ Vec3 compute_normal(Vec3 p, Scene scene)
 double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
 {
     // Light reflected on normal
-    Vec3 tmp;
-    vec_mult_scalar(L, -1, &tmp);
-    Vec3 R;
-    vec_reflect(&tmp, N, &R);
-    vec_mult_scalar(dir, -1, &tmp);
-    vec_normalize(&tmp);
-    Vec3 V = tmp;
+    Vec3 R, V;
+    vec_mult_scalar(L, -1, &V);
+    vec_reflect(&V, N, &R);
+    vec_mult_scalar(dir, -1, &V);
+    vec_normalize(&V);
 
     // Specular term
     double specAngle = max(vec_dot(&R, &V), 0.0);
