@@ -40,8 +40,8 @@ void rotate_camera(Camera *camera, double xRot, double yRot)
     Vec3 xAxis = new_vector(camera->viewMatrix.m[0][0], camera->viewMatrix.m[1][0], camera->viewMatrix.m[2][0]);
     Vec3 yAxis = new_vector(camera->viewMatrix.m[0][1], camera->viewMatrix.m[1][1], camera->viewMatrix.m[2][1]);
 
-    camera->dir = vec_rotate(camera->dir, xAxis, xRot);
-    camera->dir = vec_rotate(camera->dir, yAxis, yRot);
+    vec_rotate(&camera->dir, &xAxis, xRot, &camera->dir);
+    vec_rotate(&camera->dir, &yAxis, yRot, &camera->dir);
 
     camera->viewMatrix = look_at(camera->pos, camera->dir, up);
 }

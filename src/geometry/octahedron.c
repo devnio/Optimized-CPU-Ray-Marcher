@@ -10,7 +10,7 @@ Params are:
  */
 double sdf_octahedron(Vec3 p, double params[])
 {
-    p = vec_abs(p);
+    vec_abs(&p);
     double m = p.x + p.y + p.z - params[0];
     Vec3 q;
 

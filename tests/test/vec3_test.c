@@ -243,7 +243,7 @@ TEST vec_reflect_test() {
       input1 = new_vector(rand(), rand(), rand());
       
 
-      output = vec_reflect(input1, normal);
+      vec_reflect(&input1, &normal, &output);
       vec_mult_scalar(&normal, vec_dot(&normal, &input1), &tmp1);
       vec_mult_scalar(&tmp1, 2.0, &tmp1);
       vec_sub(&input1, &tmp1, &tmp);

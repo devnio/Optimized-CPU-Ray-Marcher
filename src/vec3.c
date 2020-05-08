@@ -236,32 +236,30 @@ void vec_cross(const Vec3 *u, const Vec3 *v, Vec3 *res)
  * ----------------------------
  *   Computes the reflection of the vector around a normal
  * 
- *   v: of type Vec3 
- *   normal: of type Vec3 
- *
- *   returns: a new vector that is the reflection of v around the normal
+ *   v: input vector
+ *   normal: normal vector
+ *   res: result vector of the operation
  */
-Vec3 vec_reflect(Vec3 v, Vec3 normal)
+void vec_reflect(const Vec3 *v, const Vec3 *normal, Vec3 *res)
 {
-    Vec3 tmp;
-    vec_mult_scalar(&normal, vec_dot(&v, &normal), &tmp);
-    vec_mult_scalar(&tmp, 2, &tmp);
-    vec_sub(&v, &tmp, &tmp);
-    return tmp;
+    vec_mult_scalar(normal, vec_dot(v, normal), res);
+    vec_mult_scalar(res, 2, res);
+    vec_sub(v, res, res);
 }
 
 /*
  * Function: vec_abs
  * ----------------------------
- *   Computes the absolute value of vector
+ *   Computes component-wise absolute value
  *
- *   v1: of type Vec3 
- *
- *   returns: absolute valued vector
+ *   v: computes in-place abs value component-wise
+ * 
  */
-Vec3 vec_abs(Vec3 v)
+void vec_abs(Vec3 *v)
 {
-    return new_vector(fabs(v.x), fabs(v.y), fabs(v.z));
+    v->x = fabs(v->x);
+    v->y = fabs(v->y);
+    v->z = fabs(v->z);
 }
 
 
@@ -275,13 +273,11 @@ Vec3 vec_abs(Vec3 v)
  *
  *   returns: absolute valued vector
  */
-Vec3 vec_max(Vec3 v1, Vec3 v2)
+void vec_max(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
 {
-    Vec3 q;
-    q.x = max(v1.x, v2.x);
-    q.y = max(v1.y, v2.y);
-    q.z = max(v1.z, v2.z);
-    return q;
+    res->x = max(v1->x, v2->x);
+    res->y = max(v1->y, v2->y);
+    res->z = max(v1->z, v2->z);
 }
 /*
  * Function: vec_rotate
@@ -294,21 +290,19 @@ Vec3 vec_max(Vec3 v1, Vec3 v2)
  *
  *   returns: a new vecotr rotated around an axis by a given angle
  */
-Vec3 vec_rotate(Vec3 v, Vec3 k, double theta)
+void vec_rotate(Vec3 *v, Vec3 *k, double theta, Vec3 *res)
 {
     //based on Euler rodrigues formula
     double cosTheta = cos(theta);
     Vec3 first;
-    vec_mult_scalar(&v, cosTheta, &first);
+    vec_mult_scalar(v, cosTheta, &first);
     Vec3 second;
     Vec3 tmp; 
-    vec_cross(&k, &v, &tmp);
+    vec_cross(k, v, &tmp);
     vec_mult_scalar(&tmp, sin(theta), &second);
     Vec3 third;
-    vec_mult_scalar(&k, vec_dot(&k, &v) * (1 - cosTheta), &third);
+    vec_mult_scalar(k, vec_dot(k, v) * (1 - cosTheta), &third);
 
-    Vec3 tmp_add;
-    vec_add(&second, &third, &tmp_add);
-    vec_add(&first, &tmp_add, &tmp_add);
-    return tmp_add;
+    vec_add(&second, &third, res);
+    vec_add(&first, res, res);
 }

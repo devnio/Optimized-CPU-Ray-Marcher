@@ -92,7 +92,8 @@ double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
     // Light reflected on normal
     Vec3 tmp;
     vec_mult_scalar(L, -1, &tmp);
-    Vec3 R = vec_reflect(tmp, *N);
+    Vec3 R;
+    vec_reflect(&tmp, N, &R);
     vec_mult_scalar(dir, -1, &tmp);
     vec_normalize(&tmp);
     Vec3 V = tmp;
@@ -198,7 +199,8 @@ Vec3 trace(Vec3 o,
     if ((depth < MAX_RAY_DEPTH) && (mat.refl > 0))
     {
         // Compute reflected dir
-        Vec3 reflDir = vec_reflect(dir, N);
+        Vec3 reflDir;
+        vec_reflect(&dir, &N, &reflDir);
         vec_normalize(&reflDir);
 
         // Compute reflected color
