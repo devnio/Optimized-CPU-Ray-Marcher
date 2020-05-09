@@ -306,3 +306,14 @@ void vec_rotate(Vec3 *v, Vec3 *k, double theta, Vec3 *res)
     vec_add(&second, &third, res);
     vec_add(&first, res, res);
 }
+
+
+
+/*
+ * Function: vec_mode
+ * ----------------------------
+ *   modulo of vector 1 by vector 2 element wise
+ */
+Vec3 vec_mod(Vec3 v1, Vec3 v2){
+    return new_vector(mod(v1.x, v2.x), mod(v1.y, v2.y), mod(v1.z, v2.z));
+}

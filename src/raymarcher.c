@@ -20,6 +20,7 @@
 #include <string.h>
 #include <dirent.h>
 
+#include "config.h"
 #include "geometry/scene.h"
 #include "camera.h"
 #include "utility.h"
@@ -28,33 +29,17 @@
 
 #include "benchmark/benchmark.h"
 
-// ===== MACROS =====
+enum Mode
+{
+    M_RENDER = 0, 
+    M_BENCHMARK = 1
+}; 
 
-// BENCHMARKING
-#define RUN_BENCHMARK 0
+static enum Mode RUN_STATE = M_RENDER;
 
-// RENDERING
-#define MAX_RAY_DEPTH 3    // max nr. bounces
-#define MARCH_COUNT 3000   // max marching steps
-#define BBOX_AXES 100     // bounding box size
-#define INTERSECT_THRESHOLD 0.000001 // careful with this -> should be low enoguh for shadow to work
-
-// SHADING
-#define SPECULAR_COEFF 0.2
-#define MATERIAL_AMBIENT_COEFF 0.01
-#define REFLECTIVE_COEFF 0.1
-#define SHADOW_LIGHTNESS 0.0
-#define LIGHT_STR 3
-
-#define FOG 1
-#define FOG_COEFF -0.000005
-
-// PRECISION
-#define EPSILON 0.001
-#define EPSILON_NORMALS 0.0001
-
-
-
+//===============================
+//            CODE
+//===============================
 Vec3 compute_normal(Vec3 p, Scene scene)
 {
     Vec3 ch, c, n;
@@ -82,7 +67,7 @@ Vec3 compute_normal(Vec3 p, Scene scene)
     return n;
 }
 
-double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
+double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material *mat)
 {
     // Light reflected on normal
     Vec3 R, V; 
@@ -98,10 +83,10 @@ double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material* mat)
 
 void compute_shadow_coefficient(SDF_Info *sdf_info, double *ph, double *t)
 {
-    double mid = sdf_info->min_dist*sdf_info->min_dist;
-    double y = mid/(2.0*(*ph)); 
-    double d = sqrt(mid-y*y);
-    sdf_info->s = min(sdf_info->s, LIGHT_STR*d/max(0.0,(*t)-y));
+    double mid = sdf_info->min_dist * sdf_info->min_dist;
+    double y = mid / (2.0 * (*ph));
+    double d = sqrt(mid - y * y);
+    sdf_info->s = min(sdf_info->s, LIGHT_STR * d / max(0.0, (*t) - y));
     *ph = sdf_info->min_dist;
     *t += sdf_info->min_dist;
 }
@@ -279,7 +264,7 @@ Vec3 trace(Vec3 o,
  *
  *   returns: void
  */
-void render(Scene scene, char* dirName)
+void render(Scene scene)
 {
 #if DEBUG_MODE == 1
     printf("%s", "RENDERING... ");
@@ -294,8 +279,6 @@ void render(Scene scene, char* dirName)
 
     int width = scene.camera->widthPx;
     int height = scene.camera->heightPx;
-
-    create_image(&scene, width, height);
 
     for (unsigned y = 0; y < height; ++y)
     {
@@ -340,30 +323,6 @@ void render(Scene scene, char* dirName)
 #endif
         }
     }
-
-    if (RUN_BENCHMARK)
-    {   
-        // encode image: filepath is built into name
-        encodeOneStep(dirName, scene.img, width, height);
-
-    } else {
-        // Build path-name
-        char* path = RENDER_OUT;
-        char* tmp = _concat(path, scene.name); 
-        char* filename = _concat(tmp, ".png"); 
-
-        // encode image
-        encodeOneStep(filename, scene.img, width, height);
-        printf("\nImage rendered and saved in path folder %s \n", filename);
-
-        // Clean-up allocated strings
-        free(tmp);
-        free(filename);
-    }
-
-    destroy_image(&scene);
-
-
 }
 
 /*
@@ -378,11 +337,20 @@ void render_all(SceneContainer scenes_container)
 
     for (int i = 0; i < scenes_container.num_scenes; ++i)
     {
+        // Get scene and malloc output image
         Scene s = *(scenes_container.scenes)[i];
-        render(s, NULL);
+        create_image(&s, s.camera->widthPx, s.camera->heightPx);
+        
+        // Render
+        render(s);
+        save_image_to_disk(&s, NULL);
+
+        // Clean
         destroy_scene(&s);
+        destroy_image(&s);
         free((scenes_container.scenes)[i]);
     }
+    free(scenes_container.scenes);
 }
 
 int main(int argc, char **argv)
@@ -390,10 +358,12 @@ int main(int argc, char **argv)
 
     //--- Check if output directory exists, create otherwise ---//
     struct stat st = {0};
-    if (stat(OUTPUT_PATH, &st) == -1) {
-        mkdir(OUTPUT_PATH, 0700); // create directory 
-    } 
+    if (stat(OUTPUT_PATH, &st) == -1)
+    {
+        mkdir(OUTPUT_PATH, 0700); // create directory
+    }
 
+    //--- Read arguments and create scenes ---//
     SceneContainer scenes_container;
     if (argc == 1)
     {
@@ -401,34 +371,56 @@ int main(int argc, char **argv)
         add_scene(&scenes_container, "scene0", 0);
     }
     else
-    {
-        scenes_container = create_scene_container(argc - 1);
-        for (int i = 1; i < argc; i++)
+    {   
+        if (strcmp(argv[1], "benchmark") == 0)
         {
-            printf("Add scene %s into index %d.\n", argv[i], i - 1);
-            add_scene(&scenes_container, argv[i], i - 1);
+            RUN_STATE = M_BENCHMARK;
+            if (argc == 2)
+            {
+                scenes_container = create_scene_container(1);
+                add_scene(&scenes_container, "scene0", 0);
+            }
+            else
+            {
+                scenes_container = create_scene_container(argc - 2);
+            }
+
+            for (int i = 2; i < argc; i++)
+            {
+                printf("Add scene %s into index %d.\n", argv[i], i - 2);
+                add_scene(&scenes_container, argv[i], i - 2);
+            }
+            
+        }
+        else
+        {
+            scenes_container = create_scene_container(argc - 1);
+            for (int i = 1; i < argc; i++)
+            {
+                printf("Add scene %s into index %d.\n", argv[i], i - 1);
+                add_scene(&scenes_container, argv[i], i - 1);
+            }
         }
     }
 
-
-    if (!RUN_BENCHMARK)
-    {   
-        // Check if render_out directory exists, create otherwise
-        if (stat(RENDER_OUT, &st) == -1) {
-            mkdir(RENDER_OUT, 0700); // create directory 
-        } 
-        render_all(scenes_container);
-    } else
+    //--- Run benchmarking or rendering ---//
+    if (RUN_STATE == M_BENCHMARK)
     {
         //--- BENCHMARKING ---//
-        // int flops = 1;
-        // benchmark_add_trace_func(&trace, "trace_func_noOpt", flops); // benchmarks rendering functions of prototype render_func_prot
-        // benchmark_add_render_func(&render, "render_func_noOpt2", flops); // benchmarks rendering functions of prototype render_func_prot
-        // run_perf_benchmarking(scenes_container);
-        // benchmark_render(&render, scenes_container);
-        benchmark_trace(&trace, scenes_container);
+        benchmark_render(&render, scenes_container);
+        // benchmark_trace(&trace, scenes_container);
     }
+    else
+    {
+        // Check if render_out directory exists, create otherwise
+        if (stat(RENDER_OUT, &st) == -1)
+        {
+            mkdir(RENDER_OUT, 0700); // create directory
+        }
 
+        //--- RENDER ALL ---//
+        render_all(scenes_container);
+    }
 
     return 0;
 }

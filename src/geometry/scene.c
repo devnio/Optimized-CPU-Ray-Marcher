@@ -34,6 +34,10 @@ Vec3 apply_transform(Vec3 p, const Transform *transform)
     t = rotate_point_y(t, transform->orientation.y);
     t = rotate_point_z(t, transform->orientation.z);
 
+#if INFINITE_REP == 1
+    Vec3 c = new_vector(7.5,7.5,7.5);
+    t = vec_sub(vec_mod(vec_add(t, vec_mult_scalar(c, 0.5)),c), vec_mult_scalar(c, 0.5));
+#endif
     return t;
 }
 

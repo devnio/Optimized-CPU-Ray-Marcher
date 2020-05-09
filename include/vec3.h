@@ -30,4 +30,6 @@ double vec_norm(const Vec3 *v);
 double vec_dot(const Vec3 *v1, const Vec3 *v2);
 
 
+Vec3 vec_mod(Vec3 v1, Vec3 v2);
+
 #endif
