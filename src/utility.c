@@ -1,9 +1,11 @@
-#include "utility.h"
-#include "math.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <math.h>
+
+#include "utility.h"
+#include "config.h"
 
 /*
  * Function:  mix 
@@ -168,4 +170,33 @@ unsigned char* decodeOneStep(const char* filename, unsigned *out_width, unsigned
   // ERROR IS REPORTED OUTSIDE FOR CLEAN OUTPUT TERMINAL.
 
   return image;
+}
+
+/*
+    Save an image to disk.
+    If benchmark_mode is used the image will be saved to path dirName.
+    Otherwise the path will be generated automatically by the scene name.
+*/
+void save_image_to_disk(Scene *scene, char* dirName)
+{
+    if (dirName != NULL)
+    {
+        // encode image: filepath is built into name
+        encodeOneStep(dirName, scene->img, scene->camera->widthPx, scene->camera->heightPx);
+    }
+    else
+    {
+        // Build path-name
+        char *path = RENDER_OUT;
+        char *tmp = _concat(path, scene->name);
+        char *filename = _concat(tmp, ".png");
+
+        // encode image
+        encodeOneStep(filename, scene->img, scene->camera->widthPx, scene->camera->heightPx);
+        printf("\nImage rendered and saved in path folder %s \n", filename);
+
+        // Clean-up allocated strings
+        free(tmp);
+        free(filename);
+    }
 }

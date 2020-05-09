@@ -3,22 +3,7 @@
 
 #include "lodepng.h"
 #include "vec3.h"
-
-#define OUTPUT_PATH "../output"
-#define RENDER_OUT "../output/render_out/"
-
-// ANTI ALIASING
-#define AA 1
-
-//Infinite repetition
-#define INFINITE_REP 0
-
-// GAMMA CORRECTION
-#define GAMMA_CORR 1
-
-// DEBUG
-#define DEBUG_MODE 1
-
+#include "geometry/scene.h"
 
 double mix(double a, double b, double mix);
 double min(double a, double b);
@@ -33,5 +18,6 @@ double to_radians(double degrees);
 char* _concat(const char *str1, const char *str2);
 void encodeOneStep(const char *filename, const unsigned char *image, unsigned width, unsigned height);
 unsigned char* decodeOneStep(const char* filename, unsigned *out_width, unsigned *out_height, unsigned* error);
+void save_image_to_disk(Scene *scene, char* dirName);
 
 #endif
