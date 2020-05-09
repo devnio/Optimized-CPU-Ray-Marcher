@@ -1,6 +1,7 @@
 IDIR =../include
 CC=gcc
-CFLAGS= -O3 -I$(IDIR) -g
+CFLAGS= -O3 -I$(IDIR) 
+export F
 
 ODIR=obj
 LDIR =../lib
@@ -16,10 +17,10 @@ _OBJ = raymarcher.o lodepng.o vec3.o mat4.o camera.o utility.o light.o geometry/
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ)) # e.g.: OBJ = obj/lodepng.o
 
 $(ODIR)/%.o: ../src/%.c $(DEPS) # take files in obj/ that end in .o and 
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(F) $(CFLAGS)  
 
 raymarcher: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -o $@ $^ $(F) $(CFLAGS)  $(LIBS)
 
 .PHONY: clean
 

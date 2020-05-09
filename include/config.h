@@ -13,14 +13,8 @@
 // =========================
 //     BENCHMARK PARAMETERS
 // =========================
-#define CYCLES_REQUIRED 1e7
 #define REPETITIONS 4
 #define WARM_UP_REPETITIONS 0
-#define FLOPS (4. * n)
-#define EPS (1e-3)
-#define NUM_RUNS 1
-#define FREQUENCY 2.7e9
-#define CALIBRATE
 #define NR_OF_SAMPLES 30
 
 #define START_H_RESOLUTION 100 // width resolution with which we want to start with
