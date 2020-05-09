@@ -149,9 +149,9 @@ void vec_add(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
  */
 void vec_add_scalar(const Vec3 *v, const double m, Vec3* res)
 {
-    res->x = v->x * m;
-    res->y = v->y * m;
-    res->z = v->z * m;
+    res->x = v->x + m;
+    res->y = v->y + m;
+    res->z = v->z + m;
 }
 
 /*

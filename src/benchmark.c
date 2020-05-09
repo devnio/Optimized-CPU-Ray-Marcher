@@ -16,8 +16,8 @@
 //     BENCHMARK PARAMETERS
 // ================================
 #define CYCLES_REQUIRED 1e7
-#define REPETITIONS 1
-#define WARM_UP_REPETITIONS 0
+#define REPETITIONS 5
+#define WARM_UP_REPETITIONS 1
 #define FLOPS (4. * n)
 #define EPS (1e-3)
 #define NUM_RUNS 1

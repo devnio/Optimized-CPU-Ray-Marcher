@@ -84,7 +84,7 @@ TEST vec_add_test() {
       input1 = new_vector(rand(), rand(), rand());
       input2 = new_vector(rand(), rand(), rand());
 
-      output = vec_add(input1, input2);
+      vec_add(&input1, &input2, &output);
       res1 = input1.x+input2.x;
       res2 = input1.y+input2.y;
       res3 = input1.z+input2.z;
@@ -171,7 +171,7 @@ TEST vec_normalized_test() {
   srand((unsigned) time(&t));
   for(int i=0; i<REPETITIONS; ++i){
       input1 = new_vector(rand(), rand(), rand());
-      vec_normalized(&input1);
+      vec_normalize(&input1);
       output = input1;
 
       norm = sqrt(input1.x*input1.x+input1.y*input1.y+input1.z*input1.z);

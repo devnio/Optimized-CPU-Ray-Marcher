@@ -14,7 +14,7 @@
 #define GAMMA_CORR 1
 
 // DEBUG
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 
 
 double mix(double a, double b, double mix);
