@@ -84,7 +84,7 @@ double sign(double val)
     return val / fabs(val);
 }
 
-Vec3 rotate_point_xyz(Vec3 p, const double* precomp_orient)
+__attribute__((always_inline)) Vec3 rotate_point_xyz(Vec3 p, const double* precomp_orient)
 {
     Vec3 q = p;
 
