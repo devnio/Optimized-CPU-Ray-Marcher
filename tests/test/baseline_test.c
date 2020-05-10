@@ -46,7 +46,7 @@ TEST compare_2_images(char* filename0, char* filename1)
     unsigned char* image0 = decodeOneStep(filename0, &width0, &height0, &error0);
 
     if(error0) {
-        printf("  - SKIP: image not found - path: %s   | status: ", filename0);
+        printf("\n  - SKIP: image not found - path: %s   | status: ", filename0);
         SKIP();
     }
     
@@ -54,7 +54,7 @@ TEST compare_2_images(char* filename0, char* filename1)
     unsigned char* image1 = decodeOneStep(filename1, &width1, &height1, &error1);
 
     if(error1) {
-        printf("  - SKIP: image not found - path: %s   | status: ", filename1);
+        printf("\n  - SKIP: image not found - path: %s   | status: ", filename1);
         SKIP();
     }
 

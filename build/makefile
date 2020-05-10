@@ -26,3 +26,4 @@ raymarcher: $(OBJ)
 
 clean:
 	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
+	rm -f $(ODIR)/geometry/*.o *~ core $(INCDIR)/*~ 

@@ -331,6 +331,7 @@ int main(int argc, char **argv)
     SceneContainer scenes_container;
     if (argc == 1)
     {
+        printf("Add scene scene0 into index 0.\n");
         scenes_container = create_scene_container(1);
         add_scene(&scenes_container, "scene0", 0);
     }
@@ -341,6 +342,7 @@ int main(int argc, char **argv)
             RUN_STATE = M_BENCHMARK;
             if (argc == 2)
             {
+                printf("Add scene scene0 into index 0.\n");
                 scenes_container = create_scene_container(1);
                 add_scene(&scenes_container, "scene0", 0);
             }
