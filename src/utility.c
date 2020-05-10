@@ -86,7 +86,6 @@ double sign(double val)
 FORCE_INLINE Vec3 rotate_point_xyz(Vec3 p, const double* precomp_orient)
 {
     Vec3 q = p;
-
     q.y = precomp_orient[0] * p.y - precomp_orient[1] * p.z;
     q.z = precomp_orient[1] * p.y + precomp_orient[0] * p.z;
 

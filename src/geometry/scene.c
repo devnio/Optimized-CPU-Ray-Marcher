@@ -27,7 +27,7 @@ Vec3 apply_transform(Vec3 p, const Transform *tr)
 {
     // apply translation
     Vec3 t;
-    t = vec_sub(p, tr->center);
+    vec_sub(&p, &tr->center, &t);
 
     if(tr->orientation[1] != 0.0 || tr->orientation[3] != 0.0 || tr->orientation[5] != 0.0){
         // apply rotation

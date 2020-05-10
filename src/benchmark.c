@@ -223,7 +223,7 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
                             // ===================================================
                             //// --- END PERFORMANCE MEASUREMENT --- ///
                             // ===================================================
-                            tot_col = vec_add(tot_col, px_col);
+                            vec_add(&tot_col, &px_col, &tot_col);
                         }
                     }
                     Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);
@@ -245,7 +245,7 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
 #endif
 
 #if GAMMA_CORR == 1
-                    px_col = vec_pow(px_col, 0.4545);
+                    vec_pow_inplace(&px_col, 0.4545);
 #endif
 
                     // save colors computed by trace into current pixel

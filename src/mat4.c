@@ -159,9 +159,7 @@ Vec3 mult_vec_matrix(Mat4 *m, Vec3 v)
 /*
  * Function: look_at
  * ----------------------------
- *   TODO
- *
- *   returns: TODO
+ * 
  */
 Mat4 look_at(Vec3 pos, Vec3 dir, Vec3 up)
 {
@@ -173,8 +171,12 @@ Mat4 look_at(Vec3 pos, Vec3 dir, Vec3 up)
     viewMatrix.m[2][3] = pos.z;
     viewMatrix.m[3][3] = 1;
 
-    Vec3 cRight = vec_normalized(vec_cross(up, dir));
-    Vec3 cUp = vec_cross(dir, cRight);
+    Vec3 tmp_vcross; 
+    vec_cross(&up, &dir, &tmp_vcross);
+    vec_normalize(&tmp_vcross);
+    Vec3 cRight = tmp_vcross;
+    Vec3 cUp;
+    vec_cross(&dir, &cRight, &cUp);
 
     viewMatrix.m[0][0] = cRight.x;
     viewMatrix.m[1][0] = cRight.y;
