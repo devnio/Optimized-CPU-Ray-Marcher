@@ -5,7 +5,6 @@
 #include <math.h>
 
 #include "utility.h"
-#include "config.h"
 
 /*
  * Function:  mix 
@@ -84,7 +83,7 @@ double sign(double val)
     return val / fabs(val);
 }
 
-__attribute__((always_inline)) Vec3 rotate_point_xyz(Vec3 p, const double* precomp_orient)
+FORCE_INLINE Vec3 rotate_point_xyz(Vec3 p, const double* precomp_orient)
 {
     Vec3 q = p;
 

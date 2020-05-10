@@ -2,6 +2,11 @@
 #define CONFIG_H_
 
 //===============================
+//            OPTIMIZATION
+//===============================
+# define FORCE_INLINE __attribute__((always_inline)) inline
+
+//===============================
 //            MACROS
 //===============================
 // DEBUG
