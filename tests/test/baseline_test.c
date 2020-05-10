@@ -3,6 +3,7 @@
 
 SUITE(baseline_test){
     RUN_TEST(compare_scene0);
+    RUN_TEST(compare_mandelbulb);
     RUN_TEST(compare_shape1);
     RUN_TEST(compare_shape2);
     RUN_TEST(compare_shape3);
@@ -12,6 +13,11 @@ SUITE(baseline_test){
 TEST compare_scene0()
 {
     return compare_2_images("../../output/render_out/scene0.png", "../output_baseline/scene0.png");
+}
+
+TEST compare_mandelbulb()
+{
+    return compare_2_images("../../output/render_out/mandelbulb.png", "../output_baseline/mandelbulb.png");
 }
 
 TEST compare_shape0()
