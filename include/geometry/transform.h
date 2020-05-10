@@ -6,7 +6,7 @@
 typedef struct
 {
     Vec3 center;
-    Vec3 orientation;
+    double orientation[6];
 } Transform;
 
 Transform *new_transform(Vec3 center, Vec3 orientation);

@@ -30,9 +30,7 @@ Vec3 apply_transform(Vec3 p, const Transform *transform)
     t = vec_sub(p, transform->center);
 
     // apply rotation
-    t = rotate_point_x(t, transform->orientation.x);
-    t = rotate_point_y(t, transform->orientation.y);
-    t = rotate_point_z(t, transform->orientation.z);
+    t = rotate_point_xyz(t, transform->orientation);
 
 #if INFINITE_REP == 1
     Vec3 c = new_vector(7.5,7.5,7.5);
