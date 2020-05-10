@@ -23,14 +23,16 @@ void sdf(Vec3 p, Scene scene, SDF_Info *sdf_info_out)
     }
 }
 
-Vec3 apply_transform(Vec3 p, const Transform *transform)
+Vec3 apply_transform(Vec3 p, const Transform *tr)
 {
     // apply translation
     Vec3 t;
-    t = vec_sub(p, transform->center);
+    t = vec_sub(p, tr->center);
 
-    // apply rotation
-    t = rotate_point_xyz(t, transform->orientation);
+    if(tr->orientation[1] != 0.0 || tr->orientation[3] != 0.0 || tr->orientation[5] != 0.0){
+        // apply rotation
+        t = rotate_point_xyz(t, tr->orientation);
+    }
 
 #if INFINITE_REP == 1
     Vec3 c = new_vector(7.5,7.5,7.5);
