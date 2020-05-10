@@ -273,9 +273,12 @@ void render(Scene scene)
     progress += progress_step;
 #endif
 
+#if AA > 1
     double inv_AA = 1.0 / AA;
     double inv_AA2 = inv_AA / AA;
     Vec3 tot_col;
+#endif
+
 
     int width = scene.camera->widthPx;
     int height = scene.camera->heightPx;

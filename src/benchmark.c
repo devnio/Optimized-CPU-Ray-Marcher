@@ -22,7 +22,7 @@
 // ================================
 void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
 {
-    printf("\n||BENCHMARKING [RENDER FUNCTION]:");
+    printf("\n||  BENCHMARKING [RENDER FUNCTION]  ||\n|| CHECK FLAGS (did you remove -g?) ||\n||           [CLOSE APPS]           ||\n");
 
     // Create initial directory
     char *dirName = create_dir_with_current_date(OUTPUT_PATH, __func__);
@@ -75,7 +75,7 @@ void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
             char filename[300];
             sprintf(filename, "%s/out_%d_%d.png", newPathName, (unsigned int)height_, (unsigned int)width_);
 
-            printf("\n|||Starting performance on n = %d with resolution: %d x %d , filename: %s\n||||", n, (int)height_, (int)width_, filename);
+            printf("\n|||N = %d, res.: %d x %d, file: %s\n||||", n, (int)height_, (int)width_, filename);
 
             // ===================================================
             //// --- WARM-UP --- ///
@@ -133,7 +133,7 @@ void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
 // ================================
 void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
 {
-    printf("\n||BENCHMARKING [TRACE FUNCTION]:");
+    printf("\n||   BENCHMARKING [TRACE FUNCTION]  ||\n|| CHECK FLAGS (did you remove -g?) ||\n||           [CLOSE APPS]           ||\n");
 
     // Create initial directory
     char *dirName = create_dir_with_current_date(OUTPUT_PATH, __func__);
@@ -177,7 +177,7 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
             char filename[300];
             sprintf(filename, "%s/out_%d_%d.png", newPathName, (unsigned int)height_, (unsigned int)width_);
 
-            printf("\n|||Starting performance on n = %d with resolution: %d x %d , filename: %s\n||||", n, (int)height_, (int)width_, filename);
+            printf("\n|||N = %d, res.: %d x %d, file: %s\n||||", n, (int)height_, (int)width_, filename);
 
             // Set up width and height for camera and image creation
             update_width_height(scene.camera, width_, height_);
@@ -309,11 +309,8 @@ void create_params_file(char *time_, char *scneneName, char *dirName)
         fprintf(fparam, "\nScene name: %s", scneneName);
         fprintf(fparam, "\nDate: %s", time_);
 
-        fprintf(fparam, "\n\nCYCLES_REQUIRED: %f", CYCLES_REQUIRED);
         fprintf(fparam, "\nWARM_UP_REPETITIONS: %d", WARM_UP_REPETITIONS);
         fprintf(fparam, "\nREPETITIONS: %d", REPETITIONS);
-        fprintf(fparam, "\nNUM_RUNS: %d", NUM_RUNS);
-        fprintf(fparam, "\nNR_OF_SAMPLES: %d", NR_OF_SAMPLES);
         fprintf(fparam, "\nSTART_H_RESOLUTION: %d", START_H_RESOLUTION);
         fprintf(fparam, "\nEND_H_RESOLUTION: %d", END_H_RESOLUTION);
         fprintf(fparam, "\nRESOLUTION_STEPS: %d", RESOLUTION_STEPS);

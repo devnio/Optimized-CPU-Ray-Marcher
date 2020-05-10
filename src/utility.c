@@ -5,7 +5,6 @@
 #include <math.h>
 
 #include "utility.h"
-#include "config.h"
 
 /*
  * Function:  mix 
@@ -84,51 +83,27 @@ double sign(double val)
     return val / fabs(val);
 }
 
-Vec3 rotate_point_x(Vec3 p, double angle)
+FORCE_INLINE Vec3 rotate_point_xyz(Vec3 p, const double* precomp_orient)
 {
-    double a;
     Vec3 q = p;
+    q.y = precomp_orient[0] * p.y - precomp_orient[1] * p.z;
+    q.z = precomp_orient[1] * p.y + precomp_orient[0] * p.z;
 
-    a = to_radians(angle);
-    double c = cos(a);
-    double s = sin(a);
-    q.y = c * p.y - s * p.z;
-    q.z = s * p.y + c * p.z;
+    Vec3 m = q;
+    q.x = precomp_orient[2] * m.x - precomp_orient[3] * m.z;
+    q.z = precomp_orient[3] * m.x + precomp_orient[2] * m.z;
+
+    m = q;
+    q.x = precomp_orient[4] * m.x - precomp_orient[5] * m.y;
+    q.y = precomp_orient[5] * m.x + precomp_orient[4] * m.y;
 
     return q;
 }
 
-Vec3 rotate_point_y(Vec3 p, double angle)
-{
-    double a;
-    Vec3 q = p;
-  
-    a = to_radians(angle);
-    double c = cos(a);
-    double s = sin(a);
-    q.x = c * p.x - s * p.z;
-    q.z = s * p.x + c * p.z;
-
-    return q;
-}
-
-Vec3 rotate_point_z(Vec3 p, double angle)
-{
-    double a;
-    Vec3 q = p;
-  
-    a = to_radians(angle);
-    double c = cos(a);
-    double s = sin(a);
-    q.x = c * p.x - s * p.y;
-    q.y = s * p.x + c * p.y;
-
-    return q;
-}
 
 double to_radians(double degrees)
 {
-    return degrees * (M_PI / 180.0);
+    return degrees * 0.01745329251;
 }
 
 double mod(double x, double y)
