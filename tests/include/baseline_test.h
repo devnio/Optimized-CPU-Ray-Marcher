@@ -5,6 +5,7 @@
 
 SUITE(baseline_test);
 TEST compare_scene0();
+TEST compare_mandelbulb();
 TEST compare_shape0();
 TEST compare_shape1();
 TEST compare_shape2();
