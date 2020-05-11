@@ -64,5 +64,9 @@
 
 // Global Constants
 extern const Vec3 const_specularColour;
+extern const Vec3 const_eps_x;
+extern const Vec3 const_eps_y;
+extern const Vec3 const_eps_z;
+
 
 #endif // CONFIG_H_
