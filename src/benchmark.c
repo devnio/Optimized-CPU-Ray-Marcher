@@ -22,7 +22,8 @@
 // ================================
 void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
 {
-    printf("\n||  BENCHMARKING [RENDER FUNCTION]  ||\n|| CHECK FLAGS (did you remove -g?) ||\n||           [CLOSE APPS]           ||\n");
+    printf("\n||    BENCHMARKING [RENDER FUNCTION]    ||\n||  [CHECK FLAGS] (did you remove -g?)  ||\n||             [CLOSE APPS]             ||\n");
+    printf("||         [DISABLE TURBO BOOST]        ||\n");
 
     // Create initial directory
     char *dirName = create_dir_with_current_date(OUTPUT_PATH, __func__);
@@ -133,7 +134,8 @@ void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
 // ================================
 void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
 {
-    printf("\n||   BENCHMARKING [TRACE FUNCTION]  ||\n|| CHECK FLAGS (did you remove -g?) ||\n||           [CLOSE APPS]           ||\n");
+    printf("\n||    BENCHMARKING [TRACE  FUNCTION]    ||\n||  [CHECK FLAGS] (did you remove -g?)  ||\n||             [CLOSE APPS]             ||\n");
+    printf("||         [DISABLE TURBO BOOST]        ||\n");
 
     // Create initial directory
     char *dirName = create_dir_with_current_date(OUTPUT_PATH, __func__);

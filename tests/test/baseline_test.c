@@ -3,6 +3,7 @@
 
 SUITE(baseline_test){
     RUN_TEST(compare_scene0);
+    RUN_TEST(compare_mandelbulb);
     RUN_TEST(compare_shape1);
     RUN_TEST(compare_shape2);
     RUN_TEST(compare_shape3);
@@ -12,6 +13,11 @@ SUITE(baseline_test){
 TEST compare_scene0()
 {
     return compare_2_images("../../output/render_out/scene0.png", "../output_baseline/scene0.png");
+}
+
+TEST compare_mandelbulb()
+{
+    return compare_2_images("../../output/render_out/mandelbulb.png", "../output_baseline/mandelbulb.png");
 }
 
 TEST compare_shape0()
@@ -46,7 +52,7 @@ TEST compare_2_images(char* filename0, char* filename1)
     unsigned char* image0 = decodeOneStep(filename0, &width0, &height0, &error0);
 
     if(error0) {
-        printf("  - SKIP: image not found - path: %s   | status: ", filename0);
+        printf("\n  - SKIP: image not found - path: %s   | status: ", filename0);
         SKIP();
     }
     
@@ -54,7 +60,7 @@ TEST compare_2_images(char* filename0, char* filename1)
     unsigned char* image1 = decodeOneStep(filename1, &width1, &height1, &error1);
 
     if(error1) {
-        printf("  - SKIP: image not found - path: %s   | status: ", filename1);
+        printf("\n  - SKIP: image not found - path: %s   | status: ", filename1);
         SKIP();
     }
 
