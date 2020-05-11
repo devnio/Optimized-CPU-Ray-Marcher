@@ -29,6 +29,9 @@
 
 #include "benchmark/benchmark.h"
 
+// Global Constants
+const Vec3 const_specularColour = {SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF};
+
 enum Mode
 {
     M_RENDER = 0, 
@@ -151,9 +154,12 @@ Vec3 trace(Vec3 o,
     // SOME GLOBAL VARIABLES
     Vec3 ambientColor = new_vector(0, 0, 0);
     Vec3 finalColor = new_vector(0, 0, 0);
+    Vec3 specularColor = const_specularColour;
+    Vec3 diffuseColor;
 
     // temporary result vector variable 
     Vec3 tmp_res; 
+    Vec3 v_mult;
 
     // CHECK INTERSECTION WITH SCENE
     SDF_Info sdf_info = ray_march(o, dir, scene, 0);
@@ -220,9 +226,7 @@ Vec3 trace(Vec3 o,
         specular = compute_specular_coefficient(&dir, &N, &L, &mat);
     }
 
-    Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
-    Vec3 diffuseColor;
-    Vec3 v_mult;
+
 
 
     // Diffuse Colour Computation

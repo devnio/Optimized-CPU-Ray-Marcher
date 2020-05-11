@@ -1,6 +1,6 @@
 #include "vec3.h"
 #include "utility.h"
-
+#include "config.h"
 /*
  * Function: new_vector
  * ----------------------------

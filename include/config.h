@@ -1,6 +1,8 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+#include "vec3.h"
+
 //===============================
 //            OPTIMIZATION
 //===============================
@@ -60,6 +62,7 @@
 // GAMMA CORRECTION
 #define GAMMA_CORR 1
 
-
+// Global Constants
+extern const Vec3 const_specularColour;
 
 #endif // CONFIG_H_
