@@ -46,7 +46,7 @@ static enum Mode RUN_STATE = M_RENDER;
 //===============================
 //            CODE
 //===============================
-void compute_normal(Vec3 *p, Scene *scene, Vec3 *res)
+void compute_normal(Vec3 *p, const Scene *scene, Vec3 *res)
 {
     Vec3 ch, c;
     Vec3 p0, p1, p2;
@@ -70,7 +70,7 @@ void compute_normal(Vec3 *p, Scene *scene, Vec3 *res)
     vec_normalize(res);
 }
 
-double compute_specular_coefficient(Vec3 *dir, Vec3 *N, Vec3 *L, Material *mat)
+double compute_specular_coefficient(const Vec3 *dir, Vec3 *N, Vec3 *L, Material *mat)
 {
     // Light reflected on normal
     Vec3 R, V; 
@@ -94,7 +94,7 @@ void compute_shadow_coefficient(SDF_Info *sdf_info, double *ph, double *t)
     *t += sdf_info->min_dist;
 }
 
-SDF_Info ray_march(Vec3 *p, Vec3 *dir, Scene *scene, int doShadowSteps)
+SDF_Info ray_march(const Vec3 *p, const Vec3 *dir, const Scene *scene, const int doShadowSteps)
 {
     SDF_Info sdf_info;
     Vec3 march_pt = *p;
@@ -105,7 +105,7 @@ SDF_Info ray_march(Vec3 *p, Vec3 *dir, Scene *scene, int doShadowSteps)
 
     Vec3 tmp;
 
-    for (int i = 0; i < MARCH_COUNT; i++)
+    for (int i = 0; i < MARCH_COUNT; ++i)
     {
         sdf(march_pt, *scene, &sdf_info);
         vec_mult_scalar(dir, sdf_info.min_dist, &tmp);
@@ -146,35 +146,33 @@ SDF_Info ray_march(Vec3 *p, Vec3 *dir, Scene *scene, int doShadowSteps)
  *
  *   returns: the color of the pixel that generated the direction
  */
-Vec3 trace(Vec3 o,
-           Vec3 *dir,
-           Scene *scene,
-           int depth)
+Vec3 trace(const Vec3 *o,
+           const Vec3 *dir,
+           const Scene *scene,
+           const int depth)
 {
     // SOME GLOBAL VARIABLES
-    Vec3 ambientColor = new_vector(0, 0, 0);
-    Vec3 finalColor = new_vector(0, 0, 0);
+    Vec3 ambientColor; set_zero(&ambientColor);
+    Vec3 finalColor; set_zero(&finalColor);
     Vec3 specularColor = const_specularColour;
     Vec3 diffuseColor;
     Vec3 N, L; // Normal and Light direction
-
-    // temporary result vector variable 
-    Vec3 tmp_res; 
-    Vec3 v_mult;
-
+    Vec3 tmp_res; // temporary result variable
+    Vec3 v_mult; // temporary multiplication variable
     SDF_Info sdf_shadow_info, sdf_info;
-
-    double lambertian, specular = 0;
+    Material mat;
+    double lambertian = 0;
+    double specular = 0;
 
     // CHECK INTERSECTION WITH SCENE
-    sdf_info = ray_march(&o, dir, scene, 0);
+    sdf_info = ray_march(o, dir, scene, 0);
 
     // No intersection case (return black)
     if (sdf_info.intersected != 1)
         return ambientColor;
 
     // Shade intersected object
-    Material mat = *(scene->geometric_ojects[sdf_info.nearest_obj_idx]->mat);
+    mat = *(scene->geometric_ojects[sdf_info.nearest_obj_idx]->mat);
 
     // Normal
     compute_normal(&sdf_info.intersection_pt, scene, &N);
@@ -196,7 +194,7 @@ Vec3 trace(Vec3 o,
         // Compute reflected color
         vec_mult_scalar(&N, EPSILON, &tmp_res);
         vec_add(&sdf_info.intersection_pt, &tmp_res, &tmp_res);
-        reflectedCol = trace(tmp_res, &reflDir, scene, depth + 1);
+        reflectedCol = trace(&tmp_res, &reflDir, scene, depth + 1);
         vec_mult_scalar(&reflectedCol, mat.refl, &tmp_res);
         vec_mult_scalar(&tmp_res, REFLECTIVE_COEFF, &finalColor);
     }
@@ -287,6 +285,8 @@ void render(Scene scene)
     int width = scene.camera->widthPx;
     int height = scene.camera->heightPx;
 
+    Vec3 dir, px_col;
+
     for (unsigned y = 0; y < height; ++y)
     {
         for (unsigned x = 0; x < width; ++x)
@@ -308,8 +308,8 @@ void render(Scene scene)
             }
             Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);
 #else
-            Vec3 dir = shoot_ray(scene.camera, x, y);
-            Vec3 px_col = trace(scene.camera->pos, &dir, &scene, 0);
+            dir = shoot_ray(scene.camera, x, y);
+            px_col = trace(&(scene.camera->pos), &dir, &scene, 0);
 
 #endif
 

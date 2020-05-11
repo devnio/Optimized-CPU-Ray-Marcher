@@ -4,7 +4,7 @@
 #include "utility.h"
 #include "camera.h"
 
-void sdf(Vec3 p, Scene scene, SDF_Info *sdf_info_out)
+void sdf(Vec3 p, const Scene scene, SDF_Info *sdf_info_out)
 {
     // First iteration unrolled so we don't have INFINITY.
     double dist = scene.geometric_ojects[0]->sdf(apply_transform(p, scene.geometric_ojects[0]->transform), scene.geometric_ojects[0]->params);

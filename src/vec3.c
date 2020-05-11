@@ -38,6 +38,18 @@ Vec3* new_vector_p(double x, double y, double z)
 }
 
 /*
+ * Function: set_zero
+ * ----------------------------
+ *   Sets given vector components to zero
+ */
+void set_zero(Vec3 *vec)
+{
+    vec->x = 0.0;
+    vec->y = 0.0;
+    vec->z = 0.0;
+}
+
+/*
  * Function: set_vec_from_double
  * ----------------------------
  *   Sets all components of given vector to a given double

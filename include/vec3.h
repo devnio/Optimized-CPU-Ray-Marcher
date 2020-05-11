@@ -12,6 +12,7 @@ typedef struct
 Vec3 new_vector(double x, double y, double z);
 Vec3* new_vector_p(double x, double y, double z);
 
+void set_zero(Vec3 *vec);
 void vec_add(const Vec3 *v1, const Vec3 *v2, Vec3 *res);
 void vec_add_scalar(const Vec3 *v, const double m, Vec3* res);
 void vec_sub(const Vec3 *v1, const Vec3 *v2, Vec3 *res);
