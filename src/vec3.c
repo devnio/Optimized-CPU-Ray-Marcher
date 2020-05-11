@@ -42,7 +42,7 @@ Vec3* new_vector_p(double x, double y, double z)
  * ----------------------------
  *   Sets given vector components to zero
  */
-FORCE_INLINE void set_zero(Vec3 *vec)
+void set_zero(Vec3 *vec)
 {
     vec->x = 0.0;
     vec->y = 0.0;
@@ -58,7 +58,7 @@ FORCE_INLINE void set_zero(Vec3 *vec)
  *   xyz: double value
  * 
  */
-FORCE_INLINE void set_vec_from_double(Vec3* v, const double xyz)
+void set_vec_from_double(Vec3* v, const double xyz)
 {
     v->x = xyz;
     v->y = xyz;
@@ -75,7 +75,7 @@ FORCE_INLINE void set_vec_from_double(Vec3* v, const double xyz)
  *   res: result vector
  * 
  */
-FORCE_INLINE void vec_mult(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
+void vec_mult(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
 {
     res->x = v1->x * v2->x;
     res->y = v1->y * v2->y;
@@ -92,7 +92,7 @@ FORCE_INLINE void vec_mult(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
  *
  *   returns: vector elementwise power of p
  */
-FORCE_INLINE void vec_pow_inplace(Vec3 *v1, const double p)
+void vec_pow_inplace(Vec3 *v1, const double p)
 {
     v1->x = pow(v1->x, p);
     v1->y = pow(v1->y, p);
@@ -109,7 +109,7 @@ FORCE_INLINE void vec_pow_inplace(Vec3 *v1, const double p)
  *   res: result vector
  *
  */
-FORCE_INLINE void vec_pow(const Vec3 *v1, const double p, Vec3 *res)
+void vec_pow(const Vec3 *v1, const double p, Vec3 *res)
 {
     res->x = pow(v1->x, p);
     res->y = pow(v1->y, p);
@@ -126,7 +126,7 @@ FORCE_INLINE void vec_pow(const Vec3 *v1, const double p, Vec3 *res)
  *   res: result of scalar multiplication
  * 
  */
-FORCE_INLINE void vec_mult_scalar(const Vec3 *v, const double m, Vec3 *res)
+void vec_mult_scalar(const Vec3 *v, const double m, Vec3 *res)
 {
     res->x = v->x * m;
     res->y = v->y * m;
@@ -143,7 +143,7 @@ FORCE_INLINE void vec_mult_scalar(const Vec3 *v, const double m, Vec3 *res)
  *   res: result vector
  * 
  */
-FORCE_INLINE void vec_add(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
+void vec_add(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
 {
     res->x = v1->x + v2->x;
     res->y = v1->y + v2->y;
@@ -159,7 +159,7 @@ FORCE_INLINE void vec_add(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
  *   m: scalar summand 2
  *
  */
-FORCE_INLINE void vec_add_scalar(const Vec3 *v, const double m, Vec3* res)
+void vec_add_scalar(const Vec3 *v, const double m, Vec3* res)
 {
     res->x = v->x + m;
     res->y = v->y + m;
@@ -176,7 +176,7 @@ FORCE_INLINE void vec_add_scalar(const Vec3 *v, const double m, Vec3* res)
  *
  *   returns: new vector with subtraction between v1 and v2 
  */
-FORCE_INLINE void vec_sub(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
+void vec_sub(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
 {
     res->x = v1->x - v2->x;
     res->y = v1->y - v2->y;
@@ -192,7 +192,7 @@ FORCE_INLINE void vec_sub(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
  *
  *   returns: scalar norm of the given vector
  */
-FORCE_INLINE double vec_norm(const Vec3 *v)
+double vec_norm(const Vec3 *v)
 {
     return sqrt(v->x * v->x + v->y * v->y + v->z * v->z);
 }
@@ -204,7 +204,7 @@ FORCE_INLINE double vec_norm(const Vec3 *v)
  *
  *   v: Vector to be normalized
  */
-FORCE_INLINE void vec_normalize(Vec3 *v)
+void vec_normalize(Vec3 *v)
 {
     double norm = vec_norm(v);
     if (norm == 0.0 || norm == NAN)
@@ -222,7 +222,7 @@ FORCE_INLINE void vec_normalize(Vec3 *v)
  *
  *   returns: resulting scalar value of the dot operation between v1 and v2
  */
-FORCE_INLINE double vec_dot(const Vec3 *v1, const Vec3 *v2)
+double vec_dot(const Vec3 *v1, const Vec3 *v2)
 {
     return v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
 }
@@ -236,7 +236,7 @@ FORCE_INLINE double vec_dot(const Vec3 *v1, const Vec3 *v2)
  *   v: second vector
  *   res: result vector of the operation
  */
-FORCE_INLINE void vec_cross(const Vec3 *u, const Vec3 *v, Vec3 *res)
+void vec_cross(const Vec3 *u, const Vec3 *v, Vec3 *res)
 {
     res->x = u->y * v->z - v->y * u->z;
     res->y = u->z * v->x - v->z * u->x;
@@ -252,7 +252,7 @@ FORCE_INLINE void vec_cross(const Vec3 *u, const Vec3 *v, Vec3 *res)
  *   normal: normal vector
  *   res: result vector of the operation
  */
-FORCE_INLINE void vec_reflect(const Vec3 *v, const Vec3 *normal, Vec3 *res)
+void vec_reflect(const Vec3 *v, const Vec3 *normal, Vec3 *res)
 {
     vec_mult_scalar(normal, vec_dot(v, normal), res);
     vec_mult_scalar(res, 2, res);
@@ -267,7 +267,7 @@ FORCE_INLINE void vec_reflect(const Vec3 *v, const Vec3 *normal, Vec3 *res)
  *   v: computes in-place abs value component-wise
  * 
  */
-FORCE_INLINE void vec_abs(Vec3 *v)
+void vec_abs(Vec3 *v)
 {
     v->x = fabs(v->x);
     v->y = fabs(v->y);
@@ -285,7 +285,7 @@ FORCE_INLINE void vec_abs(Vec3 *v)
  *
  *   returns: absolute valued vector
  */
-FORCE_INLINE void vec_max(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
+void vec_max(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
 {
     res->x = max(v1->x, v2->x);
     res->y = max(v1->y, v2->y);
@@ -302,7 +302,7 @@ FORCE_INLINE void vec_max(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
  *
  *   returns: a new vecotr rotated around an axis by a given angle
  */
-FORCE_INLINE void vec_rotate(Vec3 *v, Vec3 *k, double theta, Vec3 *res)
+void vec_rotate(Vec3 *v, Vec3 *k, double theta, Vec3 *res)
 {
     //based on Euler rodrigues formula
     double cosTheta = cos(theta);
@@ -326,6 +326,6 @@ FORCE_INLINE void vec_rotate(Vec3 *v, Vec3 *k, double theta, Vec3 *res)
  * ----------------------------
  *   modulo of vector 1 by vector 2 element wise
  */
-FORCE_INLINE Vec3 vec_mod(Vec3 v1, Vec3 v2){
+Vec3 vec_mod(Vec3 v1, Vec3 v2){
     return new_vector(mod(v1.x, v2.x), mod(v1.y, v2.y), mod(v1.z, v2.z));
 }
