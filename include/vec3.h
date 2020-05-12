@@ -9,7 +9,7 @@ typedef struct
     double x, y, z;
 } Vec3;
 
-Vec3 new_vector(double x, double y, double z);
+void new_vector(Vec3* v, double x, double y, double z);
 Vec3* new_vector_p(double x, double y, double z);
 
 void vec_add(const Vec3 *v1, const Vec3 *v2, Vec3 *res);
@@ -28,8 +28,9 @@ void vec_abs(Vec3 *v);
 void vec_normalize(Vec3 *v);
 double vec_norm(const Vec3 *v);
 double vec_dot(const Vec3 *v1, const Vec3 *v2);
+double vec_norm_squared(const Vec3 *v);
 
 
-Vec3 vec_mod(Vec3 v1, Vec3 v2);
+void vec_mod(Vec3 *v1, Vec3 *v2, Vec3 *res);
 
 #endif

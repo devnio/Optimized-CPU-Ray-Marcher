@@ -15,15 +15,15 @@ double sdf_octahedron(Vec3 p, double params[])
     Vec3 q;
 
     if (3.0 * p.x < m)
-        q = new_vector(p.x, p.y, p.z);
+        new_vector(&q, p.x, p.y, p.z);
     else if (3.0 * p.y < m)
-        q = new_vector(p.y, p.z, p.x);
+        new_vector(&q, p.y, p.z, p.x);
     else if (3.0 * p.z < m)
-        q = new_vector(p.z, p.x, p.y);
+        new_vector(&q, p.z, p.x, p.y);
     else
         return m * 0.57735027;
 
     float k = clamp(0.5 * (q.z - q.y + params[0]), 0.0, params[0]);
-    Vec3 val = new_vector(q.x, q.y - params[0] + k, q.z - k);
-    return vec_norm(&val);
+    new_vector(&q, q.x, q.y - params[0] + k, q.z - k);
+    return vec_norm(&q);
 }

@@ -12,13 +12,11 @@
  *
  *   returns: a new vector with the specified values
  */
-Vec3 new_vector(double x, double y, double z)
+void new_vector(Vec3* v, double x, double y, double z)
 {
-    Vec3 v;
-    v.x = x;
-    v.y = y;
-    v.z = z;
-    return v;
+    v->x = x;
+    v->y = y;
+    v->z = z;
 }
 
 /*
@@ -185,6 +183,12 @@ double vec_norm(const Vec3 *v)
     return sqrt(v->x * v->x + v->y * v->y + v->z * v->z);
 }
 
+
+double vec_norm_squared(const Vec3 *v)
+{
+    return v->x * v->x + v->y * v->y + v->z * v->z;
+}
+
 /*
  * Function: vec_normalize
  * ----------------------------
@@ -314,6 +318,8 @@ void vec_rotate(Vec3 *v, Vec3 *k, double theta, Vec3 *res)
  * ----------------------------
  *   modulo of vector 1 by vector 2 element wise
  */
-Vec3 vec_mod(Vec3 v1, Vec3 v2){
-    return new_vector(mod(v1.x, v2.x), mod(v1.y, v2.y), mod(v1.z, v2.z));
+void vec_mod(Vec3 *v1, Vec3 *v2, Vec3 *res){
+    res->x = mod(v1->x, v2->x);
+    res->y = mod(v1->y, v2->y);
+    res->z = mod(v1->z, v2->z);
 }

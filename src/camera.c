@@ -37,8 +37,10 @@ void rotate_camera(Camera *camera, double xRot, double yRot)
     xRot = to_radians(xRot);
     yRot = to_radians(yRot);
 
-    Vec3 xAxis = new_vector(camera->viewMatrix.m[0][0], camera->viewMatrix.m[1][0], camera->viewMatrix.m[2][0]);
-    Vec3 yAxis = new_vector(camera->viewMatrix.m[0][1], camera->viewMatrix.m[1][1], camera->viewMatrix.m[2][1]);
+    Vec3 xAxis;
+    new_vector(&xAxis, camera->viewMatrix.m[0][0], camera->viewMatrix.m[1][0], camera->viewMatrix.m[2][0]);
+    Vec3 yAxis;
+    new_vector(&yAxis, camera->viewMatrix.m[0][1], camera->viewMatrix.m[1][1], camera->viewMatrix.m[2][1]);
 
     vec_rotate(&camera->dir, &xAxis, xRot, &camera->dir);
     vec_rotate(&camera->dir, &yAxis, yRot, &camera->dir);
@@ -58,7 +60,8 @@ Vec3 shoot_ray(Camera *camera, double i, double j)
     float x = (2 * (i + 0.5) / (float)camera->widthPx - 1) * camera->aspectRatio * camera->scale;
     float y = (1 - 2 * (j + 0.5) / (float)camera->heightPx) * camera->scale;
 
-    Vec3 dir = new_vector(x, y, camera->dir.z);
+    Vec3 dir;
+    new_vector(&dir, x, y, camera->dir.z);
 
     Vec3 sRay = mult_vec_matrix_no_homo(&(camera->viewMatrix), dir);
     vec_normalize(&sRay);
