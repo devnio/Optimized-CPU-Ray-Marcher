@@ -7,7 +7,9 @@
 typedef struct
 {
     double x, y, z;
-} Vec3;
+} Vec3; 
+
+typedef double __Vec3[3];
 
 Vec3 new_vector(double x, double y, double z);
 Vec3* new_vector_p(double x, double y, double z);
