@@ -21,7 +21,7 @@ double sdf_cone(Vec3 p, double params[])
     double vsubx = params[1] - qx;
     double vsuby = params[2] - qy;
 
-    double coeff = clamp(((vsubx*params[3] + vsuby*params[4]) / params[5]), 0.0, 1.0);
+    double coeff = clamp(((vsubx*params[3] + vsuby*params[4]) * params[5]), 0.0, 1.0);
     double tmpx = coeff * params[3];
     double tmpy = coeff * params[4];
 

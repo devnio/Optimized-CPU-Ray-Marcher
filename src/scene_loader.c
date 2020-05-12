@@ -385,7 +385,7 @@ int create_params_array(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
         params[4] = params[2] * 2.;
 
         // dot(k2,k2)
-        params[5] = params[3] * params[3] + params[4] * params[4];
+        params[5] = 1.0 / (params[3] * params[3] + params[4] * params[4]);
     }
 
     return j + 1;
