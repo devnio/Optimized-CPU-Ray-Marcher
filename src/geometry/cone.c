@@ -34,6 +34,6 @@ double sdf_cone(Vec3 p, double params[])
     double dot_ca = cax*cax + cay*cay;
     double dot_cb = cbx*cbx + cby*cby;
 
-    double s = (cbx < 0.0 && cay < 0.0) ? -1. : 1.0;
+    double s = -2*(cbx < 0.0 && cay < 0.0) +1;
     return s * sqrt(fmin(dot_ca, dot_cb));
 }
