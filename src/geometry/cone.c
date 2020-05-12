@@ -10,19 +10,35 @@ Params are:
 - params[2]: h
 -> 3 parameters in total
  */
-double sdf_cone(Vec3 p, double params[])
+double sdf_cone(const double vec_p[NR_VEC_ELEMENTS], double params[])
 {
-    Vec3 q = new_vector(sqrt(p.x * p.x + p.z * p.z), p.y, 0.0);
-    Vec3 k1 = new_vector(params[1], params[2], 0.);
-    Vec3 k2 = new_vector(params[1] - params[0], 2. * params[2], 0);
-    Vec3 ca = new_vector(q.x - fmin(q.x, (q.y < 0.) ? params[0] : params[1]), fabs(q.y) - params[2], 0.);
-    Vec3 tmp, v_sub;
-    vec_sub(&k1, &q, &v_sub);
+    double v__q[NR_VEC_ELEMENTS]; // local vector declaration
+    v__q[0] = sqrt(vec_p[0] * vec_p[0] + vec_p[2] * vec_p[2]);
+    v__q[1] = vec_p[1];
+    v__q[2] = 0.0;
 
-    vec_mult_scalar(&k2, clamp(vec_dot(&v_sub, &k2) / vec_dot(&k2, &k2), 0.0, 1.0), &tmp);
+    double v__k1[NR_VEC_ELEMENTS]; // local vector declaration
+    v__k1[0] = params[1];
+    v__k1[1] = params[2];
+    v__k1[2] = 0.0;
 
-    vec_sub(&q, &k1, &v_sub);
-    vec_add(&v_sub, &tmp, &v_sub);
-    double s = (v_sub.x < 0.0 && ca.y < 0.0) ? -1. : 1.0;
-    return s * sqrt(fmin(vec_dot(&ca, &ca), vec_dot(&v_sub, &v_sub)));
+    double v__k2[NR_VEC_ELEMENTS]; // local vector declaration
+    v__k2[0] = params[1] - params[0];
+    v__k2[1] = 2. * params[2];
+    v__k2[2] = 0.0;
+
+    double v__ca[NR_VEC_ELEMENTS]; // local vector declaration
+    v__ca[0] = v__q[0] - fmin(v__q[0], (v__q[1] < 0.) ? params[0] : params[1]);
+    v__ca[1] = fabs(v__q[1]) - params[2];
+    v__ca[2] = 0.0;
+
+    double v__tmp[NR_VEC_ELEMENTS], v__sub[NR_VEC_ELEMENTS];
+    vec_sub(v__k1, v__q, v__sub);
+
+    vec_mult_scalar(v__k2, clamp(vec_dot(v__sub, v__k2) / vec_dot(v__k2, v__k2), 0.0, 1.0), v__tmp);
+
+    vec_sub(v__q, v__k1, v__sub);
+    vec_add(v__sub, v__tmp, v__sub);
+    double s = (v__sub[0] < 0.0 && v__ca[1] < 0.0) ? -1. : 1.0;
+    return s * sqrt(fmin(vec_dot(v__ca, v__ca), vec_dot(v__sub, v__sub)));
 }

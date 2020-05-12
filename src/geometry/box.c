@@ -9,17 +9,17 @@ Params are:
 - params[0..2]: box extents, x, y, z
 -> 3 parameters in total
  */
-double sdf_box(Vec3 p, double params[])
+double sdf_box(const double vec_p[NR_VEC_ELEMENTS], double params[])
 {
-  Vec3 q;
-  q.x = (p.x < 0) ? (p.x * -1 - params[0]) : (p.x - params[0]);
-  q.y = (p.y < 0) ? (p.y * -1 - params[1]) : (p.y - params[1]);
-  q.z = (p.z < 0) ? (p.z * -1 - params[2]) : (p.z - params[2]);
+  double vec_q[NR_VEC_ELEMENTS];
+  vec_q[0] = (vec_p[0] < 0) ? (vec_p[0] * -1 - params[0]) : (vec_p[0] - params[0]);
+  vec_q[1] = (vec_p[1] < 0) ? (vec_p[1] * -1 - params[1]) : (vec_p[1] - params[1]);
+  vec_q[2] = (vec_p[2] < 0) ? (vec_p[2] * -1 - params[2]) : (vec_p[2] - params[2]);
 
-  // Vec3 zero = new_vector_one(0.0);
-  Vec3 zero;
-  set_zero(&zero);
-  Vec3 max_tmp; 
-  vec_max(&q, &zero, &max_tmp);
-  return vec_norm(&max_tmp) + min(max(q.x, max(q.y, q.z)), 0.0);
+  double vec_zero[NR_VEC_ELEMENTS];
+  set_zero(&vec_zero);
+
+  double vec_max_tmp[NR_VEC_ELEMENTS]; 
+  vec_max(&vec_q, &vec_zero, &vec_max_tmp);
+  return vec_norm(&vec_max_tmp) + min(max(vec_q[0], max(vec_q[1], vec_q[2])), 0.0);
 }

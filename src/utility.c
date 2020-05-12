@@ -83,21 +83,26 @@ double sign(double val)
     return val / fabs(val);
 }
 
-FORCE_INLINE Vec3 rotate_point_xyz(Vec3 p, const double* precomp_orient)
+FORCE_INLINE void rotate_point_xyz(const double vec_p[NR_VEC_ELEMENTS], const double* precomp_orient, double vec_res[NR_VEC_ELEMENTS])
 {
-    Vec3 q = p;
-    q.y = precomp_orient[0] * p.y - precomp_orient[1] * p.z;
-    q.z = precomp_orient[1] * p.y + precomp_orient[0] * p.z;
+    double v__q[NR_VEC_ELEMENTS];
+    v__q[0] = vec_p[0];
+    v__q[1] = vec_p[1];
+    v__q[2] = vec_p[2];
 
-    Vec3 m = q;
-    q.x = precomp_orient[2] * m.x - precomp_orient[3] * m.z;
-    q.z = precomp_orient[3] * m.x + precomp_orient[2] * m.z;
+    v__q[1] = precomp_orient[0] * vec_p[1] - precomp_orient[1] * vec_p[2];
+    v__q[2] = precomp_orient[1] * vec_p[1] + precomp_orient[0] * vec_p[2];
 
-    m = q;
-    q.x = precomp_orient[4] * m.x - precomp_orient[5] * m.y;
-    q.y = precomp_orient[5] * m.x + precomp_orient[4] * m.y;
+    double v__m[NR_VEC_ELEMENTS];
+    v__m[0] = v__q[0];
+    v__m[1] = v__q[1];
+    v__m[2] = v__q[2];
 
-    return q;
+    v__q[0] = precomp_orient[2] * v__m[0] - precomp_orient[3] * v__m[2];
+
+    vec_res[0] = precomp_orient[4] * v__q[0] - precomp_orient[5] * v__q[1];
+    vec_res[1] = precomp_orient[5] * v__q[0] + precomp_orient[4] * v__q[1];
+    vec_res[2] = precomp_orient[3] * v__m[0] + precomp_orient[2] * v__m[2];
 }
 
 

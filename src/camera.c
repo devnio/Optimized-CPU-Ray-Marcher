@@ -6,14 +6,20 @@
 #include "camera.h"
 #include "utility.h"
 
-Vec3 up = {0., 1., 0.};
+double up[NR_VEC_ELEMENTS] = {0.0, 1.0, 0.0};
+// double pos[NR_VEC_ELEMENTS] = {0.0, 0.0, 0.0};
+// double dir[NR_VEC_ELEMENTS] = {0.0, 0.0, 1.0};
 
 struct Camera *create_camera(double fov, unsigned int widthPx, unsigned int heightPx)
 {
 
     Camera *camera = malloc(sizeof(Camera));
-    camera->pos = (Vec3){0., 0., 0.};
-    camera->dir = (Vec3){0, 0, 1};
+    camera->pos[0] = 0.0;
+    camera->pos[1] = 0.0;
+    camera->pos[2] = 0.0;
+    camera->dir[0] = 0.0;
+    camera->dir[1] = 0.0;
+    camera->dir[2] = 1.0;
     camera->fov = fov;
     camera->widthPx = widthPx;
     camera->heightPx = heightPx;
@@ -25,9 +31,9 @@ struct Camera *create_camera(double fov, unsigned int widthPx, unsigned int heig
     return camera;
 }
 
-void move_camera(Camera *camera, Vec3 t)
+void move_camera(Camera *camera, double vec_t[NR_VEC_ELEMENTS])
 {
-    vec_add(&camera->pos, &t, &camera->pos );
+    vec_add(camera->pos, vec_t, camera->pos);
     camera->viewMatrix = look_at(camera->pos, camera->dir, up);
 }
 
@@ -37,11 +43,18 @@ void rotate_camera(Camera *camera, double xRot, double yRot)
     xRot = to_radians(xRot);
     yRot = to_radians(yRot);
 
-    Vec3 xAxis = new_vector(camera->viewMatrix.m[0][0], camera->viewMatrix.m[1][0], camera->viewMatrix.m[2][0]);
-    Vec3 yAxis = new_vector(camera->viewMatrix.m[0][1], camera->viewMatrix.m[1][1], camera->viewMatrix.m[2][1]);
+    double v__xAxis[NR_VEC_ELEMENTS];
+    v__xAxis[0] = camera->viewMatrix.m[0][0];
+    v__xAxis[1] = camera->viewMatrix.m[1][0];
+    v__xAxis[2] = camera->viewMatrix.m[2][0];
 
-    vec_rotate(&camera->dir, &xAxis, xRot, &camera->dir);
-    vec_rotate(&camera->dir, &yAxis, yRot, &camera->dir);
+    double v__yAxis[NR_VEC_ELEMENTS];
+    v__yAxis[0] = camera->viewMatrix.m[0][1];
+    v__yAxis[1] = camera->viewMatrix.m[1][1];
+    v__yAxis[2] = camera->viewMatrix.m[2][1];
+
+    vec_rotate(camera->dir, v__xAxis, xRot, camera->dir);
+    vec_rotate(camera->dir, v__yAxis, yRot, camera->dir);
 
     camera->viewMatrix = look_at(camera->pos, camera->dir, up);
 }
@@ -51,18 +64,21 @@ void update_width_height(Camera* camera, unsigned int width, unsigned int height
     camera->heightPx = height;
 }
 
-Vec3 shoot_ray(Camera *camera, double i, double j)
+void shoot_ray(Camera *camera, double i, double j, double vec_sRay_res[NR_VEC_ELEMENTS])
 {
 
     //Normalize screen coordinates
     float x = (2 * (i + 0.5) / (float)camera->widthPx - 1) * camera->aspectRatio * camera->scale;
     float y = (1 - 2 * (j + 0.5) / (float)camera->heightPx) * camera->scale;
 
-    Vec3 dir = new_vector(x, y, camera->dir.z);
+    double v__dir[NR_VEC_ELEMENTS];
+    v__dir[0] = x;
+    v__dir[1] = y;
+    v__dir[2] = camera->dir[2];
 
-    Vec3 sRay = mult_vec_matrix_no_homo(&(camera->viewMatrix), dir);
-    vec_normalize(&sRay);
-    return sRay;
+
+    mult_vec_matrix_no_homo(&(camera->viewMatrix), v__dir, vec_sRay_res);
+    vec_normalize(vec_sRay_res);
 }
 
 void free_camera(Camera *camera)

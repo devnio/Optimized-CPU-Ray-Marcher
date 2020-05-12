@@ -8,7 +8,7 @@ Params for plane are:
 - params[0]: radius
 -> 1 parameters in total
  */
-double sdf_sphere(Vec3 p, double params[])
+double sdf_sphere(double vec_p[NR_VEC_ELEMENTS], double params[])
 {
-    return vec_norm(&p) - params[0];
+    return vec_norm(vec_p) - params[0];
 }

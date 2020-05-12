@@ -7,7 +7,7 @@ Params for plane are:
 - params[0]: radius
 -> 1 parameters in total
  */
-double sdf_sphere(Vec3 p, double params[]);
+double sdf_sphere(double vec_p[NR_VEC_ELEMENTS], double params[]);
 extern const int nr_sphere_params;
 
 #endif

@@ -1,210 +1,198 @@
 #include "vec3.h"
 #include "utility.h"
 #include "config.h"
+
+
+
+
 /*
- * Function: new_vector
- * ----------------------------
- *   Returns a new vector allocated on stack
- *
- *   x: double value 
- *   y: double value
- *   z: double value
- *
- *   returns: a new vector with the specified values
+ *Function: new_vector
+ *----------------------------
+ *  Returns a new vector pointer pointing 
+ *  to malloced memory on heap
  */
-Vec3 new_vector(double x, double y, double z)
+double* new_vector(double x, double y, double z)
 {
-    Vec3 v;
-    v.x = x;
-    v.y = y;
-    v.z = z;
+    double *v = malloc(NR_VEC_ELEMENTS  *sizeof(double)); 
+
+    v[0] = x;
+    v[1] = y;
+    v[2] = z;
     return v;
 }
 
-/*
- * Function: new_vector
- * ----------------------------
- *   Returns a new vector pointer pointing 
- *   to malloced memory on heap
- */
-Vec3* new_vector_p(double x, double y, double z)
-{
-    Vec3* v = malloc(sizeof(Vec3));
-
-    v->x = x;
-    v->y = y;
-    v->z = z;
-    return v;
+void delete_vector(double *v) {
+    free(v);
 }
 
 /*
- * Function: set_zero
- * ----------------------------
- *   Sets given vector components to zero
+ *Function: set_zero
+ *----------------------------
+ *  Sets given vector components to zero
  */
-void set_zero(Vec3 *vec)
+void set_zero(double *vec)
 {
-    vec->x = 0.0;
-    vec->y = 0.0;
-    vec->z = 0.0;
+    vec[0] = 0.0;
+    vec[1] = 0.0;
+    vec[2] = 0.0;
 }
 
 /*
- * Function: set_vec_from_double
- * ----------------------------
- *   Sets all components of given vector to a given double
+ *Function: set_vec_from_double
+ *----------------------------
+ *  Sets all components of given vector to a given double
  *
- *   v: vector to be set to xyz value
- *   xyz: double value
- * 
+ *  v: vector to be set to xyz value
+ *  xyz: double value
+ *
  */
-void set_vec_from_double(Vec3* v, const double xyz)
+void set_vec_from_double(double *v, const double xyz)
 {
-    v->x = xyz;
-    v->y = xyz;
-    v->z = xyz;
+    v[0] = xyz;
+    v[1] = xyz;
+    v[2] = xyz;
 }
 
 /*
- * Function: vec_mult
- * ----------------------------
- *   Vector mult of v1 and v2 and result in res
+ *Function: vec_mult
+ *----------------------------
+ *  Vector mult of v1 and v2 and result in res
  *
- *   v1: multiplicannd 1
- *   v2: multiplicand 2
- *   res: result vector
- * 
+ *  v1: multiplicannd 1
+ *  v2: multiplicand 2
+ *  res: result vector
+ *
  */
-void vec_mult(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
+void vec_mult(const double *v1, const double *v2, double *res)
 {
-    res->x = v1->x * v2->x;
-    res->y = v1->y * v2->y;
-    res->z = v1->z * v2->z;
+    res[0] = v1[0]  *v2[0];
+    res[1] = v1[1]  *v2[1];
+    res[2] = v1[2]  *v2[2];
 }
 
 /*
- * Function: vec_pow_inplace
- * ----------------------------
- *   Replaces v1 with its power of p
+ *Function: vec_pow_inplace
+ *----------------------------
+ *  Replaces v1 with its power of p
  *
- *   v1: vector to raise to power
- *   p: power value
+ *  v1: vector to raise to power
+ *  p: power value
  *
- *   returns: vector elementwise power of p
+ *  returns: vector elementwise power of p
  */
-void vec_pow_inplace(Vec3 *v1, const double p)
+void vec_pow_inplace(double *v1, const double p)
 {
-    v1->x = pow(v1->x, p);
-    v1->y = pow(v1->y, p);
-    v1->z = pow(v1->z, p);
+    v1[0] = pow(v1[0], p);
+    v1[1] = pow(v1[1], p);
+    v1[2] = pow(v1[2], p);
 }
 
 /*
- * Function: vec_pow
- * ----------------------------
- *   Vector power of v1 saved in res
+ *Function: vec_pow
+ *----------------------------
+ *  Vector power of v1 saved in res
  *
- *   v1: vector to raise to power p 
- *   p: power value
- *   res: result vector
+ *  v1: vector to raise to power p 
+ *  p: power value
+ *  res: result vector
  *
  */
-void vec_pow(const Vec3 *v1, const double p, Vec3 *res)
+void vec_pow(const double *v1, const double p, double *res)
 {
-    res->x = pow(v1->x, p);
-    res->y = pow(v1->y, p);
-    res->z = pow(v1->z, p);
+    res[0] = pow(v1[0], p);
+    res[1] = pow(v1[1], p);
+    res[2] = pow(v1[2], p);
 }
 
 /*
- * Function: vec_mult_scalar
- * ----------------------------
- *   Vector multiplication with a scalar
+ *Function: vec_mult_scalar
+ *----------------------------
+ *  Vector multiplication with a scalar
  *
- *   v: vector to be multiplied
- *   m: scalar of value double
- *   res: result of scalar multiplication
- * 
+ *  v: vector to be multiplied
+ *  m: scalar of value double
+ *  res: result of scalar multiplication
+ *
  */
-void vec_mult_scalar(const Vec3 *v, const double m, Vec3 *res)
+void vec_mult_scalar(const double *v, const double m, double *res)
 {
-    res->x = v->x * m;
-    res->y = v->y * m;
-    res->z = v->z * m;
+    res[0] = v[0]  *m;
+    res[1] = v[1]  *m;
+    res[2] = v[2]  *m;
 }
 
 /*
- * Function: vec_add
- * ----------------------------
- *   Performs vector addition between two vectors
+ *Function: vec_add
+ *----------------------------
+ *  Performs vector addition between two vectors
  *
- *   v1: summand 1
- *   v2: summand 2
- *   res: result vector
- * 
+ *  v1: summand 1
+ *  v2: summand 2
+ *  res: result vector
+ *
  */
-void vec_add(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
+void vec_add(const double *v1, const double *v2, double *res)
 {
-    res->x = v1->x + v2->x;
-    res->y = v1->y + v2->y;
-    res->z = v1->z + v2->z;
+    res[0] = v1[0] + v2[0];
+    res[1] = v1[1] + v2[1];
+    res[2] = v1[2] + v2[2];
 }
 
 /*
- * Function: vec_add_scalar
- * ----------------------------
- *   Adds a scalar value to each element of the vector
+ *Function: vec_add_scalar
+ *----------------------------
+ *  Adds a scalar value to each element of the vector
  *
- *   v: vector summand 1
- *   m: scalar summand 2
+ *  v: vector summand 1
+ *  m: scalar summand 2
  *
  */
-void vec_add_scalar(const Vec3 *v, const double m, Vec3* res)
+void vec_add_scalar(const double *v, const double m, double *res)
 {
-    res->x = v->x + m;
-    res->y = v->y + m;
-    res->z = v->z + m;
+    res[0] = v[0] + m;
+    res[1] = v[1] + m;
+    res[2] = v[2] + m;
 }
 
 /*
- * Function: vec_sub
- * ----------------------------
- *   Computes vector subtraction
+ *Function: vec_sub
+ *----------------------------
+ *  Computes vector subtraction
  *
- *   v1: of type Vec3 
- *   v2: of type Vec3
+ *  v1: of type double *
+ *  v2: of type double*
  *
- *   returns: new vector with subtraction between v1 and v2 
+ *  returns: new vector with subtraction between v1 and v2 
  */
-void vec_sub(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
+void vec_sub(const double *v1, const double *v2, double *res)
 {
-    res->x = v1->x - v2->x;
-    res->y = v1->y - v2->y;
-    res->z = v1->z - v2->z;
+    res[0] = v1[0] - v2[0];
+    res[1] = v1[1] - v2[1];
+    res[2] = v1[2] - v2[2];
 }
 
 /*
- * Function: vec_norm
- * ----------------------------
- *   Computes vector norm.
+ *Function: vec_norm
+ *----------------------------
+ *  Computes vector norm.
  *
- *   v: vector of which the norm is computed
+ *  v: vector of which the norm is computed
  *
- *   returns: scalar norm of the given vector
+ *  returns: scalar norm of the given vector
  */
-double vec_norm(const Vec3 *v)
+double vec_norm(const double *v)
 {
-    return sqrt(v->x * v->x + v->y * v->y + v->z * v->z);
+    return sqrt(v[0]  *v[0] + v[1]  *v[1] + v[2]  *v[2]);
 }
 
 /*
- * Function: vec_normalize
- * ----------------------------
- *   Normalizes the given vector in-place
+ *Function: vec_normalize
+ *----------------------------
+ *  Normalizes the given vector in-place
  *
- *   v: Vector to be normalized
+ *  v: Vector to be normalized
  */
-void vec_normalize(Vec3 *v)
+void vec_normalize(double *v)
 {
     double norm = vec_norm(v);
     if (norm == 0.0 || norm == NAN)
@@ -213,46 +201,46 @@ void vec_normalize(Vec3 *v)
 }
 
 /*
- * Function: vec_dot
- * ----------------------------
- *   Computes the dot product between the two vectors
+ *Function: vec_dot
+ *----------------------------
+ *  Computes the dot product between the two vectors
  *
- *   v1: first vector
- *   v2: second vector
+ *  v1: first vector
+ *  v2: second vector
  *
- *   returns: resulting scalar value of the dot operation between v1 and v2
+ *  returns: resulting scalar value of the dot operation between v1 and v2
  */
-double vec_dot(const Vec3 *v1, const Vec3 *v2)
+double vec_dot(const double *v1, const double *v2)
 {
-    return v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
+    return v1[0]  *v2[0] + v1[1]  *v2[1] + v1[2]  *v2[2];
 }
 
 /*
- * Function: vec_cross
- * ----------------------------
- *   Computes the cross product between vectors u and v
+ *Function: vec_cross
+ *----------------------------
+ *  Computes the cross product between vectors u and v
  *
- *   u: first vector 
- *   v: second vector
- *   res: result vector of the operation
+ *  u: first vector 
+ *  v: second vector
+ *  res: result vector of the operation
  */
-void vec_cross(const Vec3 *u, const Vec3 *v, Vec3 *res)
+void vec_cross(const double *u, const double *v, double *res)
 {
-    res->x = u->y * v->z - v->y * u->z;
-    res->y = u->z * v->x - v->z * u->x;
-    res->z = u->x * v->y - v->x * u->y;
+    res[0] = u[1]  *v[2] - v[1]  *u[2];
+    res[1] = u[2]  *v[0] - v[2]  *u[0];
+    res[2] = u[0]  *v[1] - v[0]  *u[1];
 }
 
 /*
- * Function: vec_reflect
- * ----------------------------
- *   Computes the reflection of the vector around a normal
- * 
- *   v: input vector
- *   normal: normal vector
- *   res: result vector of the operation
+ *Function: vec_reflect
+ *----------------------------
+ *  Computes the reflection of the vector around a normal
+ *
+ *  v: input vector
+ *  normal: normal vector
+ *  res: result vector of the operation
  */
-void vec_reflect(const Vec3 *v, const Vec3 *normal, Vec3 *res)
+void vec_reflect(const double *v, const double *normal, double *res)
 {
     vec_mult_scalar(normal, vec_dot(v, normal), res);
     vec_mult_scalar(res, 2, res);
@@ -260,72 +248,73 @@ void vec_reflect(const Vec3 *v, const Vec3 *normal, Vec3 *res)
 }
 
 /*
- * Function: vec_abs
- * ----------------------------
- *   Computes component-wise absolute value
+ *Function: vec_abs
+ *----------------------------
+ *  Computes component-wise absolute value
  *
- *   v: computes in-place abs value component-wise
- * 
+ *  v: computes in-place abs value component-wise
+ *
  */
-void vec_abs(Vec3 *v)
+void vec_abs(double *v)
 {
-    v->x = fabs(v->x);
-    v->y = fabs(v->y);
-    v->z = fabs(v->z);
+    v[0] = fabs(v[0]);
+    v[1] = fabs(v[1]);
+    v[2] = fabs(v[2]);
 }
 
 
 /*
- * Function: vec_max
- * ----------------------------
- *   Elementwise max of 2 vectors
+ *Function: vec_max
+ *----------------------------
+ *  Elementwise max of 2 vectors
  *
- *   v1: of type Vec3 
- *   v2: of type Vec3 
+ *  v1: of type double *
+ *  v2: of type double *
  *
- *   returns: absolute valued vector
+ *  returns: absolute valued vector
  */
-void vec_max(const Vec3 *v1, const Vec3 *v2, Vec3 *res)
+void vec_max(const double *v1, const double *v2, double *res)
 {
-    res->x = max(v1->x, v2->x);
-    res->y = max(v1->y, v2->y);
-    res->z = max(v1->z, v2->z);
+    res[0] = max(v1[0], v2[0]);
+    res[1] = max(v1[1], v2[1]);
+    res[2] = max(v1[2], v2[2]);
 }
+
+
 /*
- * Function: vec_rotate
- * ----------------------------
- *   Rotates the vector around a given axis k
- * 
- *   v: of type Vec3 
- *   k: of type Vec3 
- *   theta: in radians
+ *Function: vec_rotate
+ *----------------------------
+ *  Rotates the vector around a given axis k
  *
- *   returns: a new vecotr rotated around an axis by a given angle
+ *  v: of type double *
+ *  k: of type double *
+ *  theta: in radians
+ *
+ *  returns: a new vecotr rotated around an axis by a given angle
  */
-void vec_rotate(Vec3 *v, Vec3 *k, double theta, Vec3 *res)
+void vec_rotate(double *v, double *k, double theta, double *res)
 {
     //based on Euler rodrigues formula
     double cosTheta = cos(theta);
-    Vec3 first;
+    double *first;
     vec_mult_scalar(v, cosTheta, &first);
-    Vec3 second;
-    Vec3 tmp; 
+    double *second;
+    double *tmp; 
     vec_cross(k, v, &tmp);
     vec_mult_scalar(&tmp, sin(theta), &second);
-    Vec3 third;
-    vec_mult_scalar(k, vec_dot(k, v) * (1 - cosTheta), &third);
+    double *third;
+    vec_mult_scalar(k, vec_dot(k, v)  *(1 - cosTheta), &third);
 
     vec_add(&second, &third, res);
     vec_add(&first, res, res);
 }
 
 
-
 /*
- * Function: vec_mode
- * ----------------------------
- *   modulo of vector 1 by vector 2 element wise
+ *Function: vec_mode
+ *----------------------------
+ *  modulo of vector 1 by vector 2 element wise
  */
-Vec3 vec_mod(Vec3 v1, Vec3 v2){
-    return new_vector(mod(v1.x, v2.x), mod(v1.y, v2.y), mod(v1.z, v2.z));
+double* vec_mod(double *v1, double *v2){
+    return new_vector(mod(v1[0], v2[0]), mod(v1[1], v2[1]), mod(v1[2], v2[2]));
 }

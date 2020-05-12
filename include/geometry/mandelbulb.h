@@ -10,6 +10,6 @@
 Params are:  
 - There are no params, mandelbulb spawned at position zero
  */
-double sdf_mandelbulb(Vec3 p, double params[]);
+double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[]);
 
 #endif // MANDELBULB_H_

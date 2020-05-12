@@ -3,14 +3,16 @@
 #include "geometry/transform.h"
 #include "utility.h"
 
-Transform *new_transform(Vec3 center, Vec3 orientation)
+Transform *new_transform(double vec_center[NR_VEC_ELEMENTS], double vec_orientation[NR_VEC_ELEMENTS])
 {
     Transform *transform = (Transform *)malloc(sizeof(Transform));
-    transform->center = center;
+    transform->center[0] = vec_center[0];
+    transform->center[1] = vec_center[1];
+    transform->center[2] = vec_center[2];
     
-    double a = to_radians(orientation.x);
-    double b = to_radians(orientation.y);
-    double c = to_radians(orientation.z);
+    double a = to_radians(vec_orientation[0]);
+    double b = to_radians(vec_orientation[1]);
+    double c = to_radians(vec_orientation[2]);
 
     transform->orientation[0] = cos(a);
     transform->orientation[1] = sin(a);

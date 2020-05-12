@@ -5,8 +5,9 @@
 #include "material.h"
 #include "geometry/transform.h"
 #include "light.h"
+#include "vec3.h"
 
-typedef double (*sdf_func)(Vec3 p, double params[]);
+typedef double (*sdf_func)(double vec_p[], double params[]);
 
 typedef struct
 {
@@ -41,15 +42,15 @@ typedef struct
     double min_dist;
     int nearest_obj_idx;
     int intersected;
-    Vec3 intersection_pt; // if intersected is 0, this shouldn't be used (TODO: maybe separate this?)
+    double intersection_pt[NR_VEC_ELEMENTS]; // if intersected is 0, this shouldn't be used (TODO: maybe separate this?)
     double s;
 } SDF_Info;
 
-void sdf(Vec3 p, Scene scene, SDF_Info *sdf_info_out);
+void sdf(double vec_p[NR_VEC_ELEMENTS], Scene scene, SDF_Info *sdf_info_out);
 
 Scene *build_scene(const char *name);
 
-Vec3 apply_transform(Vec3 p, const Transform *transform);
+void apply_transform(double vec_p[NR_VEC_ELEMENTS], const Transform *tr, double vec_res[NR_VEC_ELEMENTS]);
 
 void create_image(Scene* scene, unsigned int width, unsigned int height);
 

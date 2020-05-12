@@ -4,17 +4,21 @@
 #include "utility.h"
 #include "camera.h"
 
-void sdf(Vec3 p, const Scene scene, SDF_Info *sdf_info_out)
+void sdf(double vec_p[NR_VEC_ELEMENTS], const Scene scene, SDF_Info *sdf_info_out)
 {
     // First iteration unrolled so we don't have INFINITY.
-    double dist = scene.geometric_ojects[0]->sdf(apply_transform(p, scene.geometric_ojects[0]->transform), scene.geometric_ojects[0]->params);
+    double v__transformed_pt[NR_VEC_ELEMENTS];
+    apply_transform(vec_p, scene.geometric_ojects[0]->transform, v__transformed_pt);
+    double dist = scene.geometric_ojects[0]->sdf(v__transformed_pt, scene.geometric_ojects[0]->params);
     sdf_info_out->min_dist = dist;
     sdf_info_out->nearest_obj_idx = 0;
 
     // Check geometric objects
     for (int k = 1; k < scene.nr_geom_objs; k++)
     {
-        dist = scene.geometric_ojects[k]->sdf(apply_transform(p, scene.geometric_ojects[k]->transform), scene.geometric_ojects[k]->params);
+        double v__transformed_pt_[NR_VEC_ELEMENTS];
+        apply_transform(vec_p, scene.geometric_ojects[k]->transform, v__transformed_pt_);
+        dist = scene.geometric_ojects[k]->sdf(v__transformed_pt_, scene.geometric_ojects[k]->params);
         if (dist < sdf_info_out->min_dist)
         {
             sdf_info_out->min_dist = dist;
@@ -23,22 +27,21 @@ void sdf(Vec3 p, const Scene scene, SDF_Info *sdf_info_out)
     }
 }
 
-Vec3 apply_transform(Vec3 p, const Transform *tr)
+void apply_transform(double vec_p[NR_VEC_ELEMENTS], const Transform *tr, double vec_res[NR_VEC_ELEMENTS])
 {
     // apply translation
-    Vec3 t;
-    vec_sub(&p, &tr->center, &t);
+    vec_sub(vec_p, &tr->center, vec_res);
 
     if(tr->orientation[1] != 0.0 || tr->orientation[3] != 0.0 || tr->orientation[5] != 0.0){
         // apply rotation
-        t = rotate_point_xyz(t, tr->orientation);
+        rotate_point_xyz(vec_res, tr->orientation, vec_res);
     }
 
+/// TODO:
 #if INFINITE_REP == 1
     Vec3 c = new_vector(7.5,7.5,7.5);
     t = vec_sub(vec_mod(vec_add(t, vec_mult_scalar(c, 0.5)),c), vec_mult_scalar(c, 0.5));
 #endif
-    return t;
 }
 
 void create_image(Scene* scene, unsigned int width, unsigned int height) {
