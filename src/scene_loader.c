@@ -362,7 +362,7 @@ Input:
    - index where the vector is (the block, not x).
    - pointer to double array that is going to be filled.
 */
-int create_params_array(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx, double *params)
+int create_params_array(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx, double *params, char* name)
 {
     fprintf(logFile, "    +-- parsing %d params (array).\n", tokens[idx].size);
     int j = 1;
@@ -375,6 +375,17 @@ int create_params_array(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
             fprintf(logFile, "p[%d]: %f, ", step, params[step]);
         }
         j++;
+    }
+
+    // additional precomputation parameters
+    if (strcmp(name, "cone") == 0)
+    {   
+        // k2
+        params[3] = params[1] - params[0];
+        params[4] = params[2] * 2.;
+
+        // dot(k2,k2)
+        params[5] = params[3] * params[3] + params[4] * params[4];
     }
 
     return j + 1;
@@ -405,9 +416,9 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
 
         // parse refl, shininess, surface immediately in 1 iteration (we know how a transform is composed)
         fprintf(logFile, "\n+-- object %d\n", step);
+        char name[50];
         if (jsoneq(json_str, &tokens[idx + j], "name") == 0)
         {
-            char name[50];
             sprintf(name, "%.*s", tokens[idx + j + 1].end - tokens[idx + j + 1].start, json_str + tokens[idx + j + 1].start);
             fprintf(logFile, "   +-- %s: %s", "name", name);
 
@@ -467,8 +478,16 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
         }
         if (jsoneq(json_str, &tokens[idx + j], "params") == 0)
         {
-            double *params = (double *)malloc(sizeof(double) * tokens[idx + j + 1].size);
-            j += create_params_array(scene, logFile, json_str, tokens, idx + j + 1, params) + 1;
+            int params_size = tokens[idx + j + 1].size;
+
+            // check if this sdf has also constants that can be precomputed and inserted in params
+            if (strcmp(name, "cone") == 0)
+            {   
+                params_size += 3; // precomp k1, k2, k22
+            }
+
+            double *params = (double *)malloc(sizeof(double) * params_size);
+            j += create_params_array(scene, logFile, json_str, tokens, idx + j + 1, params, name) + 1;
             geom_obj->params = params;
         }
 

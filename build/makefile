@@ -1,6 +1,6 @@
 IDIR =../include
 CC=gcc
-CFLAGS= -O3 -I$(IDIR) 
+CFLAGS= -O3 -I$(IDIR) #-ffast-math -march=native
 export F
 
 ODIR=obj
