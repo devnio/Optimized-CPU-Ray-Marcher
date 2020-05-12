@@ -105,7 +105,6 @@ SDF_Info ray_march(const double vec_p[NR_VEC_ELEMENTS], const double vec_dir[NR_
     march_pt[0] = vec_p[0];
     march_pt[1] = vec_p[1];
     march_pt[2] = vec_p[2];
-    march_pt[3] = 0.0;
 
     double t = EPSILON;
     double ph = 1e20;
