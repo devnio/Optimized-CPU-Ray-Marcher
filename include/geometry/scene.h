@@ -45,7 +45,7 @@ typedef struct
     double s;
 } SDF_Info;
 
-void sdf(Vec3 p, Scene scene, SDF_Info *sdf_info_out);
+void sdf(Vec3 p, Scene* scene, SDF_Info *sdf_info_out);
 
 Scene *build_scene(const char *name);
 

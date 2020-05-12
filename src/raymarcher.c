@@ -37,16 +37,18 @@ enum Mode
 
 static enum Mode RUN_STATE = M_RENDER;
 
+Vec3 eps_0 = {EPSILON_NORMALS, 0, 0};
+Vec3 eps_1 = {0, EPSILON_NORMALS, 0};
+Vec3 eps_2 = {0, 0, EPSILON_NORMALS};
+
 //===============================
 //            CODE
 //===============================
-Vec3 compute_normal(Vec3 p, Scene scene)
+Vec3 compute_normal(Vec3 p, Scene* scene)
 {
     Vec3 ch, c, n;
     Vec3 p0, p1, p2;
-    Vec3 eps_0 = new_vector(EPSILON_NORMALS, 0, 0);
-    Vec3 eps_1 = new_vector(0, EPSILON_NORMALS, 0);
-    Vec3 eps_2 = new_vector(0, 0, EPSILON_NORMALS);
+
     vec_add(&p, &eps_0, &p0);
     vec_add(&p, &eps_1, &p1);
     vec_add(&p, &eps_2, &p2);
@@ -91,7 +93,7 @@ void compute_shadow_coefficient(SDF_Info *sdf_info, double *ph, double *t)
     *t += sdf_info->min_dist;
 }
 
-SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
+SDF_Info ray_march(Vec3 p, Vec3 dir, Scene* scene, int doShadowSteps)
 {
     SDF_Info sdf_info;
     Vec3 march_pt = p;
@@ -145,7 +147,7 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene scene, int doShadowSteps)
  */
 Vec3 trace(Vec3 o,
            Vec3 dir,
-           Scene scene,
+           Scene* scene,
            int depth)
 {
     // SOME GLOBAL VARIABLES
@@ -163,7 +165,7 @@ Vec3 trace(Vec3 o,
         return ambientColor;
 
     // Shade intersected object
-    Material mat = *(scene.geometric_ojects[sdf_info.nearest_obj_idx]->mat);
+    Material mat = *(scene->geometric_ojects[sdf_info.nearest_obj_idx]->mat);
 
     // Normal
     Vec3 N = compute_normal(sdf_info.intersection_pt, scene);
@@ -191,7 +193,7 @@ Vec3 trace(Vec3 o,
 
     // Light dir
     Vec3 L;
-    vec_sub(&scene.light->c, &sdf_info.intersection_pt, &L);
+    vec_sub(&scene->light->c, &sdf_info.intersection_pt, &L);
 
     // distance between intersection_pt and light source
     double dist = vec_norm(&L);
@@ -204,7 +206,7 @@ Vec3 trace(Vec3 o,
     */
     SDF_Info sdf_shadow_info;
     sdf_shadow_info.s = 1.0;
-    if (scene.nr_geom_objs > 1)
+    if (scene->nr_geom_objs > 1)
     {
         vec_mult_scalar(&L, EPSILON, &tmp_res);
         vec_add(&sdf_info.intersection_pt, &tmp_res, &tmp_res);
@@ -228,7 +230,7 @@ Vec3 trace(Vec3 o,
     // Diffuse Colour Computation
     vec_mult_scalar(&mat.surfCol, lambertian, &tmp_res);
     vec_mult_scalar(&tmp_res, sdf_shadow_info.s, &tmp_res);
-    vec_mult(&scene.light->emissionColor, &tmp_res, &v_mult);
+    vec_mult(&scene->light->emissionColor, &tmp_res, &v_mult);
     vec_mult_scalar(&v_mult, inv_dist, &diffuseColor); // diffuse colour result
 
     // Ambient Colour Computation
@@ -237,7 +239,7 @@ Vec3 trace(Vec3 o,
     
     // Specular Colour Computation
     vec_mult_scalar(&specularColor, specular, &tmp_res);
-    vec_mult(&scene.light->emissionColor, &tmp_res, &v_mult);
+    vec_mult(&scene->light->emissionColor, &tmp_res, &v_mult);
     vec_mult_scalar(&v_mult, sdf_shadow_info.s, &tmp_res);
     vec_mult_scalar(&tmp_res, inv_dist, &specularColor); // specular colour result
 
@@ -264,7 +266,7 @@ Vec3 trace(Vec3 o,
  *
  *   returns: void
  */
-void render(Scene scene)
+void render(Scene* scene)
 {
 #if DEBUG_MODE == 1
     printf("%s", "RENDERING... ");
@@ -280,8 +282,8 @@ void render(Scene scene)
 #endif
 
 
-    int width = scene.camera->widthPx;
-    int height = scene.camera->heightPx;
+    int width = scene->camera->widthPx;
+    int height = scene->camera->heightPx;
 
     for (unsigned y = 0; y < height; ++y)
     {
@@ -297,15 +299,15 @@ void render(Scene scene)
                     // pixel coordinates
                     double disp_x = (inv_AA * n - 0.5) + x;
                     double disp_y = (inv_AA * m - 0.5) + y;
-                    Vec3 dir = shoot_ray(scene.camera, disp_x, disp_y);
-                    Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
+                    Vec3 dir = shoot_ray(scene->camera, disp_x, disp_y);
+                    Vec3 px_col = trace(scene->camera->pos, dir, scene, 0);
                     vec_add(&tot_col, &px_col, &tot_col);
                 }
             }
             Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);
 #else
-            Vec3 dir = shoot_ray(scene.camera, x, y);
-            Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
+            Vec3 dir = shoot_ray(scene->camera, x, y);
+            Vec3 px_col = trace(scene->camera->pos, dir, scene, 0);
 
 #endif
 
@@ -313,10 +315,10 @@ void render(Scene scene)
             vec_pow_inplace(&px_col, 0.4545);
 #endif
             // save colors computed by trace into current pixel
-            scene.img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
-            scene.img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
-            scene.img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
-            scene.img[y * width * 4 + x * 4 + 3] = 255;
+            scene->img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
+            scene->img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
+            scene->img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
+            scene->img[y * width * 4 + x * 4 + 3] = 255;
 
 #if DEBUG_MODE == 1
             progress += progress_step;
@@ -341,16 +343,16 @@ void render_all(SceneContainer scenes_container)
     for (int i = 0; i < scenes_container.num_scenes; ++i)
     {
         // Get scene and malloc output image
-        Scene s = *(scenes_container.scenes)[i];
-        create_image(&s, s.camera->widthPx, s.camera->heightPx);
+        Scene* s = (scenes_container.scenes)[i];
+        create_image(s, s->camera->widthPx, s->camera->heightPx);
         
         // Render
         render(s);
-        save_image_to_disk(&s, NULL);
+        save_image_to_disk(s, NULL);
 
         // Clean
-        destroy_scene(&s);
-        destroy_image(&s);
+        destroy_scene(s);
+        destroy_image(s);
         free((scenes_container.scenes)[i]);
     }
     free(scenes_container.scenes);
