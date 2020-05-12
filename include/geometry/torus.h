@@ -9,7 +9,7 @@ Params are:
 - params[1]: r2
 -> 2 parameter in total
  */
-double sdf_torus(double vec_p[NR_VEC_ELEMENTS], double params[]);
+double sdf_torus(const double vec_p[NR_VEC_ELEMENTS], double params[]);
 extern const int nr_torus_params;
 
 #endif //TORUS_H_

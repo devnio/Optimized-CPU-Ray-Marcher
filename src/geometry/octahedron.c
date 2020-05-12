@@ -8,7 +8,7 @@ Params are:
 - params[0]: s
 -> 1 parameter in total
  */
-double sdf_octahedron(double vec_p[NR_VEC_ELEMENTS], double params[])
+double sdf_octahedron(const double vec_p[NR_VEC_ELEMENTS], double params[])
 {
 
     double v__tmp[NR_VEC_ELEMENTS];
@@ -16,7 +16,7 @@ double sdf_octahedron(double vec_p[NR_VEC_ELEMENTS], double params[])
     v__tmp[1] = vec_p[1];
     v__tmp[2] = vec_p[2];
 
-    vec_abs(&v__tmp);
+    vec_abs(v__tmp);
     double m = v__tmp[0] + v__tmp[1] + v__tmp[2] - params[0];
     double v__q[NR_VEC_ELEMENTS];
 

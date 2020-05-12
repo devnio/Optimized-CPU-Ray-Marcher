@@ -190,8 +190,8 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
             myInt64 start, end;
             double inv_AA = 1.0 / AA;
             double inv_AA2 = inv_AA / AA;
-            Vec3 tot_col;
-            Vec3 px_col;
+            double tot_col[NR_OF_SAMPLES];
+            double px_col[NR_OF_SAMPLES];
             unsigned long long cycles = 0;
 
           
@@ -230,14 +230,15 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
                     }
                     Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);
 #else
-                    Vec3 dir = shoot_ray(scene.camera, x, y);
+                    double dir[NR_OF_SAMPLES];
+                    shoot_ray(scene.camera, x, y, dir);
                     // ===================================================
                     //// --- START PERFORMANCE MEASUREMENT --- ///
                     // ===================================================
                     start = start_tsc(); // start timer
                     for (unsigned int j = 0; j < REPETITIONS; j++)
                     {
-                        px_col = f(scene.camera->pos, dir, scene, 0);
+                        f(scene.camera->pos, dir, scene, 0, px_col);
                     }
                     end = stop_tsc(start); // end timer
                     cycles += end;
@@ -247,13 +248,13 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
 #endif
 
 #if GAMMA_CORR == 1
-                    vec_pow_inplace(&px_col, 0.4545);
+                    vec_pow_inplace(px_col, 0.4545);
 #endif
 
                     // save colors computed by trace into current pixel
-                    scene.img[y * width_ * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col.x) * 255);
-                    scene.img[y * width_ * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col.y) * 255);
-                    scene.img[y * width_ * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col.z) * 255);
+                    scene.img[y * width_ * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col[0]) * 255);
+                    scene.img[y * width_ * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col[1]) * 255);
+                    scene.img[y * width_ * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col[2]) * 255);
                     scene.img[y * width_ * 4 + x * 4 + 3] = 255;
                 }
             }

@@ -63,10 +63,10 @@
 #define GAMMA_CORR 1
 
 // Global Constants
-extern const Vec3 const_specularColour;
-extern const Vec3 const_eps_x;
-extern const Vec3 const_eps_y;
-extern const Vec3 const_eps_z;
+extern const double const_specularColour[3];
+extern const double const_eps_x[3];
+extern const double const_eps_y[3];
+extern const double const_eps_z[3];
 
 
 #endif // CONFIG_H_

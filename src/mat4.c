@@ -166,11 +166,11 @@ Mat4 look_at(double pos[NR_VEC_ELEMENTS], double dir[NR_VEC_ELEMENTS], double up
     viewMatrix.m[3][3] = 1;
 
     double tmp_vcross[NR_VEC_ELEMENTS]; 
-    vec_cross(&up, &dir, &tmp_vcross);
-    vec_normalize(&tmp_vcross);
+    vec_cross(up, dir, tmp_vcross);
+    vec_normalize(tmp_vcross);
     double *cRight = tmp_vcross;
     double cUp[NR_VEC_ELEMENTS];
-    vec_cross(&dir, &cRight, &cUp);
+    vec_cross(dir, cRight, cUp);
 
     viewMatrix.m[0][0] = cRight[0];
     viewMatrix.m[1][0] = cRight[1];

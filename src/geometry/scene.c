@@ -30,7 +30,7 @@ void sdf(double vec_p[NR_VEC_ELEMENTS], const Scene scene, SDF_Info *sdf_info_ou
 void apply_transform(double vec_p[NR_VEC_ELEMENTS], const Transform *tr, double vec_res[NR_VEC_ELEMENTS])
 {
     // apply translation
-    vec_sub(vec_p, &tr->center, vec_res);
+    vec_sub(vec_p, tr->center, vec_res);
 
     if(tr->orientation[1] != 0.0 || tr->orientation[3] != 0.0 || tr->orientation[5] != 0.0){
         // apply rotation

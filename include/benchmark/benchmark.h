@@ -9,12 +9,12 @@
 #include "scene_loader.h"
 
 #ifdef _WIN32
-# define  mkdir( D, M ) mkdir( D )
+ #define  mkdir( D, M ) mkdir( D )
 #endif
 
 // Function pointers to functions that we benchmark
 typedef void(*render_func_prot)(Scene);
-typedef Vec3(*trace_func_prot)(Vec3, Vec3, Scene, int);
+typedef void(*trace_func_prot)(double *, double *, Scene, int, double *);
 
 // Benchmark functions
 void benchmark_render(render_func_prot f, SceneContainer sceneContainer);

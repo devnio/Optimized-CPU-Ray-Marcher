@@ -7,7 +7,7 @@
 #include "light.h"
 #include "vec3.h"
 
-typedef double (*sdf_func)(double vec_p[], double params[]);
+typedef double (*sdf_func)(const double *vec_p, double *params);
 
 typedef struct
 {

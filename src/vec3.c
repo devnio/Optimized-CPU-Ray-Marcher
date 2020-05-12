@@ -2,9 +2,6 @@
 #include "utility.h"
 #include "config.h"
 
-
-
-
 /*
  *Function: new_vector
  *----------------------------
@@ -65,9 +62,9 @@ void set_vec_from_double(double *v, const double xyz)
  */
 void vec_mult(const double *v1, const double *v2, double *res)
 {
-    res[0] = v1[0]  *v2[0];
-    res[1] = v1[1]  *v2[1];
-    res[2] = v1[2]  *v2[2];
+    res[0] = v1[0] * v2[0];
+    res[1] = v1[1] * v2[1];
+    res[2] = v1[2] * v2[2];
 }
 
 /*
@@ -116,9 +113,9 @@ void vec_pow(const double *v1, const double p, double *res)
  */
 void vec_mult_scalar(const double *v, const double m, double *res)
 {
-    res[0] = v[0]  *m;
-    res[1] = v[1]  *m;
-    res[2] = v[2]  *m;
+    res[0] = v[0] * m;
+    res[1] = v[1] * m;
+    res[2] = v[2] * m;
 }
 
 /*
@@ -182,7 +179,7 @@ void vec_sub(const double *v1, const double *v2, double *res)
  */
 double vec_norm(const double *v)
 {
-    return sqrt(v[0]  *v[0] + v[1]  *v[1] + v[2]  *v[2]);
+    return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
 /*
@@ -212,7 +209,7 @@ void vec_normalize(double *v)
  */
 double vec_dot(const double *v1, const double *v2)
 {
-    return v1[0]  *v2[0] + v1[1]  *v2[1] + v1[2]  *v2[2];
+    return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
 
 /*
@@ -226,9 +223,9 @@ double vec_dot(const double *v1, const double *v2)
  */
 void vec_cross(const double *u, const double *v, double *res)
 {
-    res[0] = u[1]  *v[2] - v[1]  *u[2];
-    res[1] = u[2]  *v[0] - v[2]  *u[0];
-    res[2] = u[0]  *v[1] - v[0]  *u[1];
+    res[0] = u[1] * v[2] - v[1] * u[2];
+    res[1] = u[2] * v[0] - v[2] * u[0];
+    res[2] = u[0] * v[1] - v[0] * u[1];
 }
 
 /*
@@ -296,17 +293,17 @@ void vec_rotate(double *v, double *k, double theta, double *res)
 {
     //based on Euler rodrigues formula
     double cosTheta = cos(theta);
-    double *first;
-    vec_mult_scalar(v, cosTheta, &first);
-    double *second;
-    double *tmp; 
-    vec_cross(k, v, &tmp);
-    vec_mult_scalar(&tmp, sin(theta), &second);
-    double *third;
-    vec_mult_scalar(k, vec_dot(k, v)  *(1 - cosTheta), &third);
+    double first[NR_VEC_ELEMENTS];
+    vec_mult_scalar(v, cosTheta, first);
+    double second[NR_VEC_ELEMENTS];
+    double tmp[NR_VEC_ELEMENTS]; 
+    vec_cross(k, v, tmp);
+    vec_mult_scalar(tmp, sin(theta), second);
+    double third[NR_VEC_ELEMENTS];
+    vec_mult_scalar(k, vec_dot(k, v) * (1 - cosTheta), third);
 
-    vec_add(&second, &third, res);
-    vec_add(&first, res, res);
+    vec_add(second, third, res);
+    vec_add(first, res, res);
 }
 
 

@@ -8,7 +8,7 @@ Params are:
 - params[1]: r2
 -> 2 parameter in total
  */
-double sdf_torus(double vec_p[NR_VEC_ELEMENTS], double params[])
+double sdf_torus(const double vec_p[NR_VEC_ELEMENTS], double params[])
 {
     double length = sqrt(vec_p[0] * vec_p[0] + vec_p[2] * vec_p[2]);
 

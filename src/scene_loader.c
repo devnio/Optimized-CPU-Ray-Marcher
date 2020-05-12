@@ -129,34 +129,33 @@ Input:
    - tokens.
    - index where the vector is (the block, not x).
 */
-static Vec3 parse_vec3(FILE *logFile, char *json_str, jsmntok_t *tokens, int idx)
+static void parse_vec3(FILE *logFile, char *json_str, jsmntok_t *tokens, int idx, double vec_res[NR_VEC_ELEMENTS])
 {
     fprintf(logFile, "       +-- vector: ");
-    Vec3 v;
+
     int j = 1;
     for (int step = 0; step < tokens[idx].size; step++)
     {
         if (jsoneq(json_str, &tokens[idx + j], "x") == 0)
         {
-            v.x = get_double(json_str, &tokens[idx + j + 1]);
-            fprintf(logFile, "x: %f, ", v.x);
+            vec_res[0] = get_double(json_str, &tokens[idx + j + 1]);
+            fprintf(logFile, "x: %f, ", vec_res[0]);
         }
         else if (jsoneq(json_str, &tokens[idx + j], "y") == 0)
         {
-            v.y = get_double(json_str, &tokens[idx + j + 1]);
-            fprintf(logFile, "y: %f, ", v.y);
+            vec_res[1] = get_double(json_str, &tokens[idx + j + 1]);
+            fprintf(logFile, "y: %f, ", vec_res[1]);
         }
         else if (jsoneq(json_str, &tokens[idx + j], "z") == 0)
         {
-            v.z = get_double(json_str, &tokens[idx + j + 1]);
-            fprintf(logFile, "z: %f\n", v.z);
+            vec_res[2] = get_double(json_str, &tokens[idx + j + 1]);
+            fprintf(logFile, "z: %f\n", vec_res[2]);
         }
 
         // jump onto next token holdin info at this hierarchy level
         j += 2;
     }
 
-    return v;
 }
 
 //================================================
@@ -181,8 +180,9 @@ int create_cam(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, i
     // (0: the whole camera block, 1: fov, 2: value of fox, 3: position, 4:value and so on...)
     int width, height;
     double fov;
-    Vec3 position;
-    Vec3 rotation;
+    double position[NR_VEC_ELEMENTS];
+    double rotation[NR_VEC_ELEMENTS];
+
     int j = 1;
     if (jsoneq(json_str, &tokens[idx_camera_properties + j], "width") == 0)
     {
@@ -205,19 +205,19 @@ int create_cam(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, i
     if (jsoneq(json_str, &tokens[idx_camera_properties + j], "position") == 0)
     {
         fprintf(logFile, "+-- position, size: %d\n", tokens[idx_camera_properties + j + 1].size);
-        position = parse_vec3(logFile, json_str, tokens, idx_camera_properties + j + 1);
+        parse_vec3(logFile, json_str, tokens, idx_camera_properties + j + 1, position);
         j += tokens[idx_camera_properties + j + 1].size * 2 + 2;
     }
     if (jsoneq(json_str, &tokens[idx_camera_properties + j], "rotation") == 0)
     {
         fprintf(logFile, "+-- rotation, size: %d\n", tokens[idx_camera_properties + j + 1].size);
-        rotation = parse_vec3(logFile, json_str, tokens, idx_camera_properties + j + 1);
+        parse_vec3(logFile, json_str, tokens, idx_camera_properties + j + 1, rotation);
         j += tokens[idx_camera_properties + j + 1].size * 2 + 2;
     }
 
     Camera *camera = create_camera(fov, width, height);
     move_camera(camera, position);
-    rotate_camera(camera, rotation.x, rotation.y);
+    rotate_camera(camera, rotation[0], rotation[1]);
     scene->camera = camera;
 
     return j;
@@ -237,20 +237,21 @@ int create_light(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens,
 {
     fprintf(logFile, "\n===================== LIGHT =====================\n");
     fprintf(logFile, "+-- parsing %d elements of light.\n", tokens[idx].size);
-    Vec3 center;
-    Vec3 emission;
+    double center[NR_VEC_ELEMENTS];
+    double emission[NR_VEC_ELEMENTS];
+
     int j = 1;
 
     if (jsoneq(json_str, &tokens[idx + j], "position") == 0)
     {
         fprintf(logFile, "+-- position, size: %d\n", tokens[idx + j + 1].size);
-        center = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+        parse_vec3(logFile, json_str, tokens, idx + j + 1, center);
         j += tokens[idx + j + 1].size * 2 + 2;
     }
     if (jsoneq(json_str, &tokens[idx + j], "emission") == 0)
     {
         fprintf(logFile, "+-- emission, size: %d\n", tokens[idx + j + 1].size);
-        emission = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+        parse_vec3(logFile, json_str, tokens, idx + j + 1, emission);
         j += tokens[idx + j + 1].size * 2 + 2;
     }
 
@@ -277,8 +278,9 @@ int create_transforms(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *to
     scene->nr_transforms = tokens[idx].size;
     scene->transforms = (Transform **)malloc(sizeof(Transform *) * scene->nr_transforms);
 
-    Vec3 pos;
-    Vec3 rot;
+    double pos[NR_VEC_ELEMENTS];
+    double rot[NR_VEC_ELEMENTS];
+
     int j = 2;
     for (int step = 0; step < tokens[idx].size; step++)
     {
@@ -287,13 +289,13 @@ int create_transforms(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *to
         if (jsoneq(json_str, &tokens[idx + j], "position") == 0)
         {
             fprintf(logFile, "   +-- position, size: %d\n", tokens[idx + j + 1].size);
-            pos = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+            parse_vec3(logFile, json_str, tokens, idx + j + 1, pos);
             j += tokens[idx + j + 1].size * 2 + 2;
         }
         if (jsoneq(json_str, &tokens[idx + j], "rotation") == 0)
         {
             fprintf(logFile, "   +-- rotation, size: %d\n", tokens[idx + j + 1].size);
-            rot = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+            parse_vec3(logFile, json_str, tokens, idx + j + 1, rot);
             j += tokens[idx + j + 1].size * 2 + 3;
         }
 
@@ -322,7 +324,9 @@ int create_materials(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tok
 
     double refl;
     double shininess;
-    Vec3 surfaceCol;
+
+    double surfaceCol[NR_VEC_ELEMENTS];
+
     int j = 2;
     for (int step = 0; step < tokens[idx].size; step++)
     {
@@ -343,7 +347,7 @@ int create_materials(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tok
         if (jsoneq(json_str, &tokens[idx + j], "surface") == 0)
         {
             fprintf(logFile, "   +-- surface, size: %d\n", tokens[idx + j + 1].size);
-            surfaceCol = parse_vec3(logFile, json_str, tokens, idx + j + 1);
+            parse_vec3(logFile, json_str, tokens, idx + j + 1, surfaceCol);
             j += tokens[idx + j + 1].size * 2 + 3;
         }
 
