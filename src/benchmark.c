@@ -193,7 +193,7 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
             double tot_col[NR_VEC_ELEMENTS];
             double px_col[NR_VEC_ELEMENTS];
             unsigned long long cycles = 0;
-
+            double dir[NR_VEC_ELEMENTS];
           
             // ===================================================
             //// ---  CODE --- ///
@@ -203,7 +203,7 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
                 for (unsigned x = 0; x < width_; x++)
                 {
 #if AA > 1
-                    tot_col = new_vector(0, 0, 0);
+                    set_zero(tot_col);
                     for (int m = 0; m < AA; m++)
                     {
                         for (int n = 0; n < AA; n++)
@@ -211,26 +211,27 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
                             // pixel coordinates
                             double disp_x = (inv_AA * n - 0.5) + x;
                             double disp_y = (inv_AA * m - 0.5) + y;
-                            Vec3 dir = shoot_ray(scene.camera, disp_x, disp_y);
+                            shoot_ray(scene.camera, disp_x, disp_y, dir);
                             // ===================================================
                             //// --- START PERFORMANCE MEASUREMENT --- ///
                             // ===================================================
                             start = start_tsc(); // start timer
                             for (unsigned int j = 0; j < REPETITIONS; j++)
                             {
-                                px_col = f(scene.camera->pos, dir, scene, 0);
+                                f(scene.camera->pos, dir, scene, 0, dir);
                             }
                             end = stop_tsc(start); // end timer
                             cycles += end * inv_AA2;
                             // ===================================================
                             //// --- END PERFORMANCE MEASUREMENT --- ///
                             // ===================================================
-                            vec_add(&tot_col, &px_col, &tot_col);
+                            vec_add(tot_col, px_col, tot_col);
                         }
                     }
-                    Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);
+                    double px_col[NR_VEC_ELEMENTS];
+                    vec_mult_scalar(tot_col, inv_AA2, px_col);
 #else
-                    double dir[NR_VEC_ELEMENTS];
+                    
                     shoot_ray(scene.camera, x, y, dir);
                     // ===================================================
                     //// --- START PERFORMANCE MEASUREMENT --- ///

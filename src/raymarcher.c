@@ -295,7 +295,7 @@ void render(Scene scene)
 #if AA > 1
     double inv_AA = 1.0 / AA;
     double inv_AA2 = inv_AA / AA;
-    Vec3 tot_col;
+    double tot_col[NR_VEC_ELEMENTS];
 #endif
 
 
@@ -311,7 +311,7 @@ void render(Scene scene)
         {
 
 #if AA > 1
-            tot_col = new_vector(0, 0, 0);
+            set_zero(tot_col);
             for (int m = 0; m < AA; m++)
             {
                 for (int n = 0; n < AA; n++)
@@ -319,12 +319,13 @@ void render(Scene scene)
                     // pixel coordinates
                     double disp_x = (inv_AA * n - 0.5) + x;
                     double disp_y = (inv_AA * m - 0.5) + y;
-                    Vec3 dir = shoot_ray(scene.camera, disp_x, disp_y);
-                    Vec3 px_col = trace(scene.camera->pos, dir, scene, 0);
-                    vec_add(&tot_col, &px_col, &tot_col);
+                    shoot_ray(scene.camera, disp_x, disp_y, dir);
+                    trace(scene.camera->pos, dir, &scene, 0, px_col);
+                    vec_add(tot_col, px_col, tot_col);
                 }
             }
-            Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);
+            double px_col[NR_VEC_ELEMENTS];
+            vec_mult_scalar(tot_col, inv_AA2, px_col);
 #else
             shoot_ray(scene.camera, x, y, dir); 
             trace(scene.camera->pos, dir, &scene, 0, px_col);
