@@ -31,7 +31,7 @@ Vec3 apply_transform(Vec3 p, const Transform *tr)
 
     if(tr->orientation[1] != 0.0 || tr->orientation[3] != 0.0 || tr->orientation[5] != 0.0){
         // apply rotation
-        t = rotate_point_xyz(t, tr->orientation);
+        rotate_point_xyz(&t, tr->orientation);
     }
 
 #if INFINITE_REP == 1

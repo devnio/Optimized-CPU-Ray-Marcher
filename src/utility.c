@@ -71,10 +71,8 @@ double max(double a, double b)
  */
 double clamp(double val, double min, double max)
 {
-    if (val < min)
-        return min;
-    if (val > max)
-        return max;
+    val = val > max ? max : val;
+    val = val < min ? min : val;
     return val;
 }
 
@@ -83,21 +81,17 @@ double sign(double val)
     return val / fabs(val);
 }
 
-FORCE_INLINE Vec3 rotate_point_xyz(Vec3 p, const double* precomp_orient)
+FORCE_INLINE void rotate_point_xyz(Vec3 *t, const double* precomp_orient)
 {
-    Vec3 q = p;
-    q.y = precomp_orient[0] * p.y - precomp_orient[1] * p.z;
-    q.z = precomp_orient[1] * p.y + precomp_orient[0] * p.z;
+    double qY = precomp_orient[0] * t->y - precomp_orient[1] * t->z;
+    double qZ = precomp_orient[1] * t->y + precomp_orient[0] * t->z;
 
-    Vec3 m = q;
-    q.x = precomp_orient[2] * m.x - precomp_orient[3] * m.z;
-    q.z = precomp_orient[3] * m.x + precomp_orient[2] * m.z;
+    double qX = precomp_orient[2] * t->x - precomp_orient[3] * qZ;
+    double qZ2 = precomp_orient[3] * t->x + precomp_orient[2] * qZ;
 
-    m = q;
-    q.x = precomp_orient[4] * m.x - precomp_orient[5] * m.y;
-    q.y = precomp_orient[5] * m.x + precomp_orient[4] * m.y;
-
-    return q;
+    t->x = precomp_orient[4] * qX - precomp_orient[5] * qY;
+    t->y = precomp_orient[5] * qX + precomp_orient[4] * qY;
+    t->z = qZ2;
 }
 
 

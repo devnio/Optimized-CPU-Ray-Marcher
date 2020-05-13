@@ -12,7 +12,7 @@ double max(double a, double b);
 double mod(double x, double y);
 double clamp(double val, double min, double max);
 double sign(double val);
-Vec3 rotate_point_xyz(Vec3 p, const double* precomp_orient);
+void rotate_point_xyz(Vec3 *t, const double* precomp_orient);
 double to_radians(double degrees);
 char* _concat(const char *str1, const char *str2);
 void encodeOneStep(const char *filename, const unsigned char *image, unsigned width, unsigned height);
