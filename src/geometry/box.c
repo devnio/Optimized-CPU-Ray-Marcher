@@ -17,7 +17,9 @@ double sdf_box(const double vec_p[NR_VEC_ELEMENTS], double params[])
   vec_q[2] = (vec_p[2] < 0) ? (vec_p[2] * -1 - params[2]) : (vec_p[2] - params[2]);
 
   double vec_zero[NR_VEC_ELEMENTS];
-  set_zero(vec_zero);
+  vec_zero[0] = 0.0;
+  vec_zero[1] = 0.0;
+  vec_zero[2] = 0.0;
 
   double vec_max_tmp[NR_VEC_ELEMENTS]; 
   vec_max(vec_q, vec_zero, vec_max_tmp);

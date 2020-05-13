@@ -131,7 +131,33 @@ SDF_Info ray_march(const double vec_p[NR_VEC_ELEMENTS], const double vec_dir[NR_
         if (vec_norm(march_pt) > BBOX_AXES)
         {
             sdf_info.intersected = 0;
+            break;    for (int i = 0; i < MARCH_COUNT; ++i)
+    {
+        sdf(march_pt, *scene, &sdf_info);
+        vec_mult_scalar(vec_dir, sdf_info.min_dist, v__tmp);
+        vec_add(march_pt, v__tmp, march_pt);
+
+        // TOL
+        if (sdf_info.min_dist < INTERSECT_THRESHOLD)
+        {
+            sdf_info.intersected = 1;
+            sdf_info.intersection_pt[0] = march_pt[0];
+            sdf_info.intersection_pt[1] = march_pt[1];
+            sdf_info.intersection_pt[2] = march_pt[2];
             break;
+        }
+        // BBOX CHECK
+        if (vec_norm(march_pt) > BBOX_AXES)
+        {
+            sdf_info.intersected = 0;
+            break;
+        }
+
+        if (doShadowSteps == 1)
+        {
+            compute_shadow_coefficient(&sdf_info, &ph, &t);
+        }
+    }
         }
 
         if (doShadowSteps == 1)
@@ -161,10 +187,15 @@ void trace(const double vec_origin[NR_VEC_ELEMENTS],
            const int depth, 
            double vec_res_finalColor[NR_VEC_ELEMENTS])
 {
-    // SOME GLOBAL VARIABLES
+    // GLOBAL VARIABLES
     double v__ambientColor[NR_VEC_ELEMENTS]; 
-    set_zero(v__ambientColor);
-    set_zero(vec_res_finalColor);
+    // set zero
+    v__ambientColor[0] = 0.0;
+    v__ambientColor[1] = 0.0;
+    v__ambientColor[2] = 0.0;
+    vec_res_finalColor[0] = 0.0;
+    vec_res_finalColor[0] = 0.0;
+    vec_res_finalColor[0] = 0.0;
     double v__specularColor[NR_VEC_ELEMENTS];
     v__specularColor[0] = const_specularColour[0];
     v__specularColor[1] = const_specularColour[1];
