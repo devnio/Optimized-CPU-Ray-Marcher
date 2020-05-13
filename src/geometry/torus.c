@@ -10,8 +10,7 @@ Params are:
  */
 double sdf_torus(Vec3 p, double params[])
 {
-    double length = sqrt(p.x * p.x + p.z * p.z);
-    Vec3 q;
-    new_vector(&q, length - params[0], p.y, 0.0);
-    return sqrt(q.x * q.x + q.y * q.y) - params[1];
+    double l = p.x * p.x + p.z * p.z;
+    double sqrtL = sqrt(l);
+    return sqrt(l + p.y*p.y -(sqrtL << 1) + params[0]*params[0]) - params[1];
 }
