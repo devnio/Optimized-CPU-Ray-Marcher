@@ -110,7 +110,7 @@ SDF_Info ray_march(const double vec_p[NR_VEC_ELEMENTS], const double vec_dir[NR_
     double ph = 1e20;
     sdf_info.s = 1.0;
 
-    double v__tmp[NR_OF_SAMPLES];
+    double v__tmp[NR_VEC_ELEMENTS];
 
     for (int i = 0; i < MARCH_COUNT; ++i)
     {
@@ -162,18 +162,18 @@ void trace(const double vec_origin[NR_VEC_ELEMENTS],
            double vec_res_finalColor[NR_VEC_ELEMENTS])
 {
     // SOME GLOBAL VARIABLES
-    double v__ambientColor[NR_OF_SAMPLES]; 
+    double v__ambientColor[NR_VEC_ELEMENTS]; 
     set_zero(v__ambientColor);
     set_zero(vec_res_finalColor);
     double v__specularColor[NR_VEC_ELEMENTS];
     v__specularColor[0] = const_specularColour[0];
     v__specularColor[1] = const_specularColour[1];
     v__specularColor[2] = const_specularColour[2];
-    double v__diffuseColor[NR_OF_SAMPLES];
-    double v__N[NR_OF_SAMPLES]; // Normal direction 
-    double v__L[NR_OF_SAMPLES]; // Light direction
-    double v__tmp_res[NR_OF_SAMPLES]; // temporary result variable
-    double v__vmult[NR_OF_SAMPLES]; // temporary multiplication variable
+    double v__diffuseColor[NR_VEC_ELEMENTS];
+    double v__N[NR_VEC_ELEMENTS]; // Normal direction 
+    double v__L[NR_VEC_ELEMENTS]; // Light direction
+    double v__tmp_res[NR_VEC_ELEMENTS]; // temporary result variable
+    double v__vmult[NR_VEC_ELEMENTS]; // temporary multiplication variable
     SDF_Info sdf_shadow_info, sdf_info;
     Material mat;
     double lambertian = 0;
@@ -198,10 +198,10 @@ void trace(const double vec_origin[NR_VEC_ELEMENTS],
         vec_mult_scalar(v__N, -1, v__N);
     }
 
-    if ((depth < MAX_RAY_DEPTH) && (mat.refl > 0))
+    if ((mat.refl > 0) && (depth < MAX_RAY_DEPTH))
     {
-        double v__reflDir[NR_OF_SAMPLES];
-        double v__reflectedCol[NR_OF_SAMPLES];
+        double v__reflDir[NR_VEC_ELEMENTS];
+        double v__reflectedCol[NR_VEC_ELEMENTS];
 
         // Compute reflected dir
         vec_reflect(vec_dir, v__N, v__reflDir);
@@ -302,8 +302,8 @@ void render(Scene scene)
     int width = scene.camera->widthPx;
     int height = scene.camera->heightPx;
 
-    double dir[NR_OF_SAMPLES]; 
-    double px_col[NR_OF_SAMPLES];
+    double dir[NR_VEC_ELEMENTS]; 
+    double px_col[NR_VEC_ELEMENTS];
 
     for (unsigned y = 0; y < height; ++y)
     {
@@ -326,7 +326,7 @@ void render(Scene scene)
             }
             Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);
 #else
-            shoot_ray(scene.camera, x, y, dir);
+            shoot_ray(scene.camera, x, y, dir); 
             trace(scene.camera->pos, dir, &scene, 0, px_col);
 
 #endif

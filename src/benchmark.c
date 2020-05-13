@@ -190,8 +190,8 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
             myInt64 start, end;
             double inv_AA = 1.0 / AA;
             double inv_AA2 = inv_AA / AA;
-            double tot_col[NR_OF_SAMPLES];
-            double px_col[NR_OF_SAMPLES];
+            double tot_col[NR_VEC_ELEMENTS];
+            double px_col[NR_VEC_ELEMENTS];
             unsigned long long cycles = 0;
 
           
@@ -230,7 +230,7 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
                     }
                     Vec3 px_col = vec_mult_scalar(tot_col, inv_AA2);
 #else
-                    double dir[NR_OF_SAMPLES];
+                    double dir[NR_VEC_ELEMENTS];
                     shoot_ray(scene.camera, x, y, dir);
                     // ===================================================
                     //// --- START PERFORMANCE MEASUREMENT --- ///
