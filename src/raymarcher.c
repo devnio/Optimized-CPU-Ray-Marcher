@@ -194,8 +194,8 @@ void trace(const double vec_origin[NR_VEC_ELEMENTS],
     v__ambientColor[1] = 0.0;
     v__ambientColor[2] = 0.0;
     vec_res_finalColor[0] = 0.0;
-    vec_res_finalColor[0] = 0.0;
-    vec_res_finalColor[0] = 0.0;
+    vec_res_finalColor[1] = 0.0;
+    vec_res_finalColor[2] = 0.0;
     double v__specularColor[NR_VEC_ELEMENTS];
     v__specularColor[0] = const_specularColour[0];
     v__specularColor[1] = const_specularColour[1];
