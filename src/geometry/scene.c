@@ -7,14 +7,18 @@
 void sdf(Vec3 p, Scene* scene, SDF_Info *sdf_info_out)
 {
     // First iteration unrolled so we don't have INFINITY.
-    double dist = scene->geometric_ojects[0]->sdf(apply_transform(p, scene->geometric_ojects[0]->transform), scene->geometric_ojects[0]->params);
+    Vec3 t = p;
+    apply_transform(&t, scene->geometric_ojects[0]->transform);
+    double dist = scene->geometric_ojects[0]->sdf(t, scene->geometric_ojects[0]->params);
     sdf_info_out->min_dist = dist;
     sdf_info_out->nearest_obj_idx = 0;
 
     // Check geometric objects
     for (int k = 1; k < scene->nr_geom_objs; k++)
     {
-        dist = scene->geometric_ojects[k]->sdf(apply_transform(p, scene->geometric_ojects[k]->transform), scene->geometric_ojects[k]->params);
+        t = p;
+        apply_transform(&t, scene->geometric_ojects[k]->transform);
+        dist = scene->geometric_ojects[k]->sdf(t, scene->geometric_ojects[k]->params);
         if (dist < sdf_info_out->min_dist)
         {
             sdf_info_out->min_dist = dist;
@@ -23,22 +27,20 @@ void sdf(Vec3 p, Scene* scene, SDF_Info *sdf_info_out)
     }
 }
 
-Vec3 apply_transform(Vec3 p, const Transform *tr)
+void apply_transform(Vec3 *p, const Transform *tr)
 {
     // apply translation
-    Vec3 t;
-    vec_sub(&p, &tr->center, &t);
+    vec_sub(p, &tr->center, p);
 
     if(tr->orientation[1] != 0.0 || tr->orientation[3] != 0.0 || tr->orientation[5] != 0.0){
         // apply rotation
-        rotate_point_xyz(&t, tr->orientation);
+        rotate_point_xyz(p, tr->orientation);
     }
 
 #if INFINITE_REP == 1
     Vec3 c = new_vector(7.5,7.5,7.5);
     t = vec_sub(vec_mod(vec_add(t, vec_mult_scalar(c, 0.5)),c), vec_mult_scalar(c, 0.5));
 #endif
-    return t;
 }
 
 void create_image(Scene* scene, unsigned int width, unsigned int height) {

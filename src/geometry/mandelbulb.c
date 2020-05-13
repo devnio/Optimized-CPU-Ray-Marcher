@@ -30,8 +30,8 @@ double sdf_mandelbulb(Vec3 p, double params[])
         double k4 = x2 - y2 + z2;
 
         w.x = p.x +  64.0*x*y*z*(x2-z2)*k4*(x4-6.0*x2*z2+z4)*k1*k2;
-        w.y = p.y + -16.0*y2*k3*k4*k4 + k1*k1;
-        w.z = p.z +  -8.0*y*k4*(x4*x4 - 28.0*x4*x2*z2 + 70.0*x4*z4 - 28.0*x2*z2*z4 + z4*z4)*k1*k2;
+        w.y = p.y -  16.0*y2*k3*k4*k4 + k1*k1;
+        w.z = p.z -  8.0*y*k4*(x4*x4 - 28.0*x4*x2*z2 + 70.0*x4*z4 - 28.0*x2*z2*z4 + z4*z4)*k1*k2;
 
         m = vec_dot(&w,&w);
 		if( m > 256.0 )

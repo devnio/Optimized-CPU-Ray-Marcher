@@ -16,18 +16,18 @@ double sdf_octahedron(Vec3 p, double params[])
 
     if (p.x < mC){
 
-    }    
-    else if(p.y < mC ){
-        double temp = p.x;
-        p.x = p.y;
-        p.y = p.z;
-        p.z = temp;
-    }
+    }   
     else if (p.z < mC){
         double temp = p.x;
         p.x = p.z;
         p.z = p.y;
         p.y = temp;
+    } 
+    else if(p.y < mC ){
+        double temp = p.x;
+        p.x = p.y;
+        p.y = p.z;
+        p.z = temp;
     }
     else {
         return m * 0.57735027;

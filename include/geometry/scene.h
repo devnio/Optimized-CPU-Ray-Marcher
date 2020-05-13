@@ -49,7 +49,7 @@ void sdf(Vec3 p, Scene* scene, SDF_Info *sdf_info_out);
 
 Scene *build_scene(const char *name);
 
-Vec3 apply_transform(Vec3 p, const Transform *transform);
+void apply_transform(Vec3 *p, const Transform *tr);
 
 void create_image(Scene* scene, unsigned int width, unsigned int height);
 
