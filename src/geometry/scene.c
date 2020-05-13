@@ -38,8 +38,15 @@ void apply_transform(Vec3 *p, const Transform *tr)
     }
 
 #if INFINITE_REP == 1
-    Vec3 c = new_vector(7.5,7.5,7.5);
-    t = vec_sub(vec_mod(vec_add(t, vec_mult_scalar(c, 0.5)),c), vec_mult_scalar(c, 0.5));
+    Vec3 c;
+    set_vec_from_double(&c, 7.5);
+    Vec3 period;
+    vec_mult_scalar(&c, 0.5, &period);
+    Vec3 add;
+    vec_add(&t, &period, &add);
+    Vec3 mod;
+    vec_mod(&add,&c, &mod);
+    vec_sub(&mod, &period, &t);
 #endif
 }
 

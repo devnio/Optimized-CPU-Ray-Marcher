@@ -48,7 +48,6 @@ Vec3 compute_normal(Vec3 p, Scene* scene)
 {
     Vec3 ch, c, n;
     Vec3 p0, p1, p2;
-
     vec_add(&p, &eps_0, &p0);
     vec_add(&p, &eps_1, &p1);
     vec_add(&p, &eps_2, &p2);
@@ -118,7 +117,7 @@ SDF_Info ray_march(Vec3 p, Vec3 dir, Scene* scene, int doShadowSteps)
             break;
         }
         // BBOX CHECK
-        if (vec_norm(&march_pt) > BBOX_AXES)
+        if (vec_norm_squared(&march_pt) > BBOX_AXES)
         {
             sdf_info.intersected = 0;
             break;
@@ -151,8 +150,10 @@ Vec3 trace(Vec3 o,
            int depth)
 {
     // SOME GLOBAL VARIABLES
-    Vec3 ambientColor = new_vector(0, 0, 0);
-    Vec3 finalColor = new_vector(0, 0, 0);
+    Vec3 ambientColor;
+    new_vector(&ambientColor, 0, 0, 0);
+    Vec3 finalColor;
+    new_vector(&finalColor, 0, 0, 0);
 
     // temporary result vector variable 
     Vec3 tmp_res; 
@@ -198,7 +199,7 @@ Vec3 trace(Vec3 o,
     // distance between intersection_pt and light source
     double dist = vec_norm(&L);
     double inv_dist = 1 / dist;
-    vec_normalize(&L); 
+    vec_mult_scalar(&L, inv_dist, &L);
 
     /* Before doing anything else check if shadow ray.
      * We assume that light is not in between objects. 
@@ -222,7 +223,8 @@ Vec3 trace(Vec3 o,
         specular = compute_specular_coefficient(&dir, &N, &L, &mat);
     }
 
-    Vec3 specularColor = new_vector(SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
+    Vec3 specularColor;
+    new_vector(&specularColor, SPECULAR_COEFF, SPECULAR_COEFF, SPECULAR_COEFF);
     Vec3 diffuseColor;
     Vec3 v_mult;
 
