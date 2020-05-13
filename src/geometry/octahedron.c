@@ -12,18 +12,28 @@ double sdf_octahedron(Vec3 p, double params[])
 {
     vec_abs(&p);
     double m = p.x + p.y + p.z - params[0];
-    Vec3 q;
 
-    if (3.0 * p.x < m)
-        q = new_vector(p.x, p.y, p.z);
-    else if (3.0 * p.y < m)
-        q = new_vector(p.y, p.z, p.x);
-    else if (3.0 * p.z < m)
-        q = new_vector(p.z, p.x, p.y);
-    else
+    if (3.0 * p.x < m){
+
+    }    
+    else if (3.0 * p.y < m ){
+        double temp = p.x;
+        p.x = p.y;
+        p.y = p.z;
+        p.z = temp;
+    }
+    else if (3.0 * p.z < m){
+        double temp = p.x;
+        p.x = p.z;
+        p.z = p.y;
+        p.y = temp;
+    }
+    else {
         return m * 0.57735027;
+    }
 
-    float k = clamp(0.5 * (q.z - q.y + params[0]), 0.0, params[0]);
-    Vec3 val = new_vector(q.x, q.y - params[0] + k, q.z - k);
-    return vec_norm(&val);
+    double k = clamp(0.5 * (p.z - p.y + params[0]), 0.0, params[0]);
+    p.y = p.y - params[0] + k;
+    p.z = p.z - k;
+    return vec_norm(&p);
 }
