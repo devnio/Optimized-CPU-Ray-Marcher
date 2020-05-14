@@ -24,8 +24,8 @@
 #define WARM_UP_REPETITIONS 0
 // #define NR_OF_SAMPLES 30
 
-#define START_H_RESOLUTION 100 // width resolution with which we want to start with
-#define END_H_RESOLUTION 2000   // width resolution we want to reach
+#define START_H_RESOLUTION 500 // width resolution with which we want to start with
+#define END_H_RESOLUTION 500   // width resolution we want to reach
 #define RESOLUTION_STEPS 100
 #define SCALE_RATIO 1.77777778f // scale ratio width to height of image
 
@@ -35,7 +35,7 @@
 // RENDERING
 #define MAX_RAY_DEPTH 3              // max nr. bounces
 #define MARCH_COUNT 3000             // max marching steps
-#define BBOX_AXES 100                // bounding box size
+#define BBOX_AXES 10000                // bounding box size
 #define INTERSECT_THRESHOLD 0.000001 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING

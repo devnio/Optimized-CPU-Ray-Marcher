@@ -10,7 +10,6 @@ Params are:
  */
 double sdf_octahedron(const double vec_p[NR_VEC_ELEMENTS], double params[])
 {
-
     double v__tmp[NR_VEC_ELEMENTS];
     v__tmp[0] = vec_p[0];
     v__tmp[1] = vec_p[1];
@@ -18,29 +17,30 @@ double sdf_octahedron(const double vec_p[NR_VEC_ELEMENTS], double params[])
 
     vec_abs(v__tmp);
     double m = v__tmp[0] + v__tmp[1] + v__tmp[2] - params[0];
-    double v__q[NR_VEC_ELEMENTS];
+    double mC = m*0.33333333333;
 
-    if (3.0 * v__tmp[0] < m) {
-        v__q[0] = v__tmp[0];
-        v__q[1] = v__tmp[1];
-        v__q[2] = v__tmp[2];
-    } else if (3.0 * v__tmp[1] < m){
-        v__q[0] = v__tmp[1];
-        v__q[1] = v__tmp[2];
-        v__q[2] = v__tmp[0];
-    } else if (3.0 * v__tmp[2] < m){
-        v__q[0] = v__tmp[2];
-        v__q[1] = v__tmp[0];
-        v__q[2] = v__tmp[1];    
-    } else
+    if (v__tmp[0] < mC){
+        // do nothing
+    }   
+    else if (v__tmp[2] < mC){
+        double temp = v__tmp[0];
+        v__tmp[0] = v__tmp[2];
+        v__tmp[2] = v__tmp[1];
+        v__tmp[1] = temp;
+    } 
+    else if(v__tmp[1] < mC ){
+        double temp = v__tmp[0];
+        v__tmp[0] = v__tmp[1];
+        v__tmp[1] = v__tmp[2];
+        v__tmp[2] = temp;
+    }
+    else {
         return m * 0.57735027;
+    }
 
-    float k = clamp(0.5 * (v__q[2] - v__q[1] + params[0]), 0.0, params[0]);
+    float k = clamp(0.5 * (v__tmp[2] - v__tmp[1] + params[0]), 0.0, params[0]);
+    v__tmp[1] = v__tmp[1] - params[0] + k;
+    v__tmp[2] = v__tmp[2] - k;
 
-    double v__val[NR_VEC_ELEMENTS];
-    v__val[0] = v__q[0];
-    v__val[1] = v__q[1] - params[0] + k;
-    v__val[2] = v__q[2] - k;
-
-    return vec_norm(v__val);
+    return vec_norm(v__tmp);
 }

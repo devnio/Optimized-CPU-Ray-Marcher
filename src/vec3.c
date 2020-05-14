@@ -182,6 +182,12 @@ double vec_norm(const double *v)
     return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
+
+double vec_norm_squared(const double *v)
+{
+    return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+}
+
 /*
  *Function: vec_normalize
  *----------------------------
@@ -312,6 +318,8 @@ void vec_rotate(double *v, double *k, double theta, double *res)
  *----------------------------
  *  modulo of vector 1 by vector 2 element wise
  */
-double* vec_mod(double *v1, double *v2){
-    return new_vector(mod(v1[0], v2[0]), mod(v1[1], v2[1]), mod(v1[2], v2[2]));
+void vec_mod(double *v1, double *v2, double *res){
+    res[0] = mod(v1[0], v2[0]);
+    res[1] = mod(v1[1], v2[1]);
+    res[2] = mod(v1[2], v2[2]);
 }

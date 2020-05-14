@@ -53,7 +53,7 @@ void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
         fprintf(fmeasurem, "AVG\n");
 
         // Get scene  
-        Scene scene = *(sceneContainer.scenes)[i];
+        Scene* scene = (sceneContainer.scenes)[i];
 
         // Run benchmark on specified resolutions
         for (unsigned int n = START_H_RESOLUTION; n <= END_H_RESOLUTION; n += RESOLUTION_STEPS)
@@ -67,10 +67,10 @@ void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
             unsigned long long cycles = 0;
 
             // Set up width and height for camera and image creation
-            update_width_height(scene.camera, width_, height_);
+            update_width_height(scene->camera, width_, height_);
 
             // Create image
-            create_image(&scene, scene.camera->widthPx, scene.camera->heightPx);
+            create_image(scene, scene->camera->widthPx, scene->camera->heightPx);
 
             // Build index and add to path
             char filename[300];
@@ -101,19 +101,22 @@ void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
                 
                 // Write to file
                 fprintf(fmeasurem, "%lld, ", end);
+                printf("Run %d, %lld, ", j, end);
                 fflush(fmeasurem);
+                fflush(stdout);
             }
             // ===================================================
             //// --- END PERFORMANCE MEASUREMENT --- ///
             // ===================================================
             cycles = cycles / REPETITIONS;
+            printf("AVG: %lld, ", cycles);
             fprintf(fmeasurem, "%lld\n", cycles);
 
             // Save image to disk
-            save_image_to_disk(&scene, filename);
+            save_image_to_disk(scene, filename);
             
             // Clean up
-            destroy_image(&scene);
+            destroy_image(scene);
         }
 
         // Clean-up allocated strings and handlers
@@ -121,7 +124,7 @@ void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
         free(time_);
         free(newPathName);
 
-        destroy_scene(&scene);
+        destroy_scene(scene);
         free((sceneContainer.scenes)[i]);
     }
 
@@ -163,7 +166,7 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
         fprintf(fmeasurem, "n, AVG accum. cycles (run %d times for every px)\n", REPETITIONS);
 
         // Get scene  
-        Scene scene = *(sceneContainer.scenes)[i];
+        Scene* scene = (sceneContainer.scenes)[i];
 
         // Run benchmark on specified resolutions
         for (unsigned int n = START_H_RESOLUTION; n <= END_H_RESOLUTION; n += RESOLUTION_STEPS)
@@ -182,10 +185,10 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
             printf("\n|||N = %d, res.: %d x %d, file: %s\n||||", n, (int)height_, (int)width_, filename);
 
             // Set up width and height for camera and image creation
-            update_width_height(scene.camera, width_, height_);
+            update_width_height(scene->camera, width_, height_);
             
             // Create image
-            create_image(&scene, scene.camera->widthPx, scene.camera->heightPx);
+            create_image(scene, scene->camera->widthPx, scene->camera->heightPx);
 
             myInt64 start, end;
             double inv_AA = 1.0 / AA;
@@ -232,14 +235,14 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
                     vec_mult_scalar(tot_col, inv_AA2, px_col);
 #else
                     
-                    shoot_ray(scene.camera, x, y, dir);
+                    shoot_ray(scene->camera, x, y, dir);
                     // ===================================================
                     //// --- START PERFORMANCE MEASUREMENT --- ///
                     // ===================================================
                     start = start_tsc(); // start timer
                     for (unsigned int j = 0; j < REPETITIONS; j++)
                     {
-                        f(scene.camera->pos, dir, scene, 0, px_col);
+                        f(scene->camera->pos, dir, scene, 0, px_col);
                     }
                     end = stop_tsc(start); // end timer
                     cycles += end;
@@ -253,10 +256,10 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
 #endif
 
                     // save colors computed by trace into current pixel
-                    scene.img[y * width_ * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col[0]) * 255);
-                    scene.img[y * width_ * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col[1]) * 255);
-                    scene.img[y * width_ * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col[2]) * 255);
-                    scene.img[y * width_ * 4 + x * 4 + 3] = 255;
+                    scene->img[y * width_ * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col[0]) * 255);
+                    scene->img[y * width_ * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col[1]) * 255);
+                    scene->img[y * width_ * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col[2]) * 255);
+                    scene->img[y * width_ * 4 + x * 4 + 3] = 255;
                 }
             }
             // ===================================================
@@ -269,10 +272,10 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
             fflush(fmeasurem);
 
             // Save image to disk 
-            save_image_to_disk(&scene, filename);
+            save_image_to_disk(scene, filename);
 
             // Clean up
-            destroy_image(&scene);
+            destroy_image(scene);
         }
 
         // Clean-up allocated strings and handlers
@@ -280,7 +283,7 @@ void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
         free(time_);
         free(newPathName);
 
-        destroy_scene(&scene);
+        destroy_scene(scene);
         free((sceneContainer.scenes)[i]);
     }
 

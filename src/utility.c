@@ -71,10 +71,8 @@ double max(double a, double b)
  */
 double clamp(double val, double min, double max)
 {
-    if (val < min)
-        return min;
-    if (val > max)
-        return max;
+    val = val > max ? max : val;
+    val = val < min ? min : val;
     return val;
 }
 
@@ -85,24 +83,15 @@ double sign(double val)
 
 FORCE_INLINE void rotate_point_xyz(const double vec_p[NR_VEC_ELEMENTS], const double* precomp_orient, double vec_res[NR_VEC_ELEMENTS])
 {
-    double v__q[NR_VEC_ELEMENTS];
-    v__q[0] = vec_p[0];
-    v__q[1] = vec_p[1];
-    v__q[2] = vec_p[2];
+    double qY = precomp_orient[0] * vec_p[1] - precomp_orient[1] * vec_p[2];
+    double qZ = precomp_orient[1] * vec_p[1] + precomp_orient[0] * vec_p[2];
 
-    v__q[1] = precomp_orient[0] * vec_p[1] - precomp_orient[1] * vec_p[2];
-    v__q[2] = precomp_orient[1] * vec_p[1] + precomp_orient[0] * vec_p[2];
+    double qX = precomp_orient[2] * vec_p[0] - precomp_orient[3] * qZ;
+    double qZ2 = precomp_orient[3] * vec_p[0] + precomp_orient[2] * qZ;
 
-    double v__m[NR_VEC_ELEMENTS];
-    v__m[0] = v__q[0];
-    v__m[1] = v__q[1];
-    v__m[2] = v__q[2];
-
-    v__q[0] = precomp_orient[2] * v__m[0] - precomp_orient[3] * v__m[2];
-
-    vec_res[0] = precomp_orient[4] * v__q[0] - precomp_orient[5] * v__q[1];
-    vec_res[1] = precomp_orient[5] * v__q[0] + precomp_orient[4] * v__q[1];
-    vec_res[2] = precomp_orient[3] * v__m[0] + precomp_orient[2] * v__m[2];
+    vec_res[0] = precomp_orient[4] * qX - precomp_orient[5] * qY;
+    vec_res[1] = precomp_orient[5] * qX + precomp_orient[4] * qY;
+    vec_res[2] = qZ2;
 }
 
 

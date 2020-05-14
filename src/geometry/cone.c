@@ -12,33 +12,28 @@ Params are:
  */
 double sdf_cone(const double vec_p[NR_VEC_ELEMENTS], double params[])
 {
-    double v__q[NR_VEC_ELEMENTS]; // local vector declaration
-    v__q[0] = sqrt(vec_p[0] * vec_p[0] + vec_p[2] * vec_p[2]);
-    v__q[1] = vec_p[1];
-    v__q[2] = 0.0;
+    double qx = sqrt(vec_p[0] * vec_p[0] + vec_p[2] * vec_p[2]);
+    double qy = vec_p[1];
+    
+    double cax = qx - fmin(qx, (qy < 0.) ? params[0] : params[1]);
+    double cay = fabs(qy) - params[2];
 
-    double v__k1[NR_VEC_ELEMENTS]; // local vector declaration
-    v__k1[0] = params[1];
-    v__k1[1] = params[2];
-    v__k1[2] = 0.0;
+    double vsubx = params[1] - qx;
+    double vsuby = params[2] - qy;
 
-    double v__k2[NR_VEC_ELEMENTS]; // local vector declaration
-    v__k2[0] = params[1] - params[0];
-    v__k2[1] = 2. * params[2];
-    v__k2[2] = 0.0;
+    double coeff = clamp(((vsubx*params[3] + vsuby*params[4]) * params[5]), 0.0, 1.0);
+    double tmpx = coeff * params[3];
+    double tmpy = coeff * params[4];
 
-    double v__ca[NR_VEC_ELEMENTS]; // local vector declaration
-    v__ca[0] = v__q[0] - fmin(v__q[0], (v__q[1] < 0.) ? params[0] : params[1]);
-    v__ca[1] = fabs(v__q[1]) - params[2];
-    v__ca[2] = 0.0;
+    double v_sub2x = qx - params[1];
+    double v_sub2y = qy - params[2];
 
-    double v__tmp[NR_VEC_ELEMENTS], v__sub[NR_VEC_ELEMENTS];
-    vec_sub(v__k1, v__q, v__sub);
+    double cbx = v_sub2x + tmpx;
+    double cby = v_sub2y + tmpy;
 
-    vec_mult_scalar(v__k2, clamp(vec_dot(v__sub, v__k2) / vec_dot(v__k2, v__k2), 0.0, 1.0), v__tmp);
+    double dot_ca = cax*cax + cay*cay;
+    double dot_cb = cbx*cbx + cby*cby;
 
-    vec_sub(v__q, v__k1, v__sub);
-    vec_add(v__sub, v__tmp, v__sub);
-    double s = (v__sub[0] < 0.0 && v__ca[1] < 0.0) ? -1. : 1.0;
-    return s * sqrt(fmin(vec_dot(v__ca, v__ca), vec_dot(v__sub, v__sub)));
+    double s = 1-2*(cbx < 0.0 && cay < 0.0);
+    return s * sqrt(fmin(dot_ca, dot_cb));
 }

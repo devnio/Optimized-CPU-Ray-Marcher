@@ -25,9 +25,10 @@ void vec_max(const double *v1, const double *v2, double *res);
 void vec_abs(double *v);
 void vec_normalize(double *v);
 double vec_norm(const double *v);
+double vec_norm_squared(const double *v);
 double vec_dot(const double *v1, const double *v2);
 
 
-double *vec_mod(double *v1, double *v2);
+void vec_mod(double *v1, double *v2, double *res);
 
 #endif

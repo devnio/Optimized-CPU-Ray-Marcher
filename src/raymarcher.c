@@ -59,14 +59,14 @@ void compute_normal(double vec_p[NR_VEC_ELEMENTS], const Scene *scene, double re
     vec_add(vec_p, const_eps_z, v__p2);
 
     SDF_Info sdf_info;
-    sdf(vec_p, *scene, &sdf_info);
+    sdf(vec_p, scene, &sdf_info);
     set_vec_from_double(v__c, sdf_info.min_dist);
 
-    sdf(v__p0, *scene, &sdf_info);
+    sdf(v__p0, scene, &sdf_info);
     v__ch[0] = sdf_info.min_dist;
-    sdf(v__p1, *scene, &sdf_info);
+    sdf(v__p1, scene, &sdf_info);
     v__ch[1]= sdf_info.min_dist;
-    sdf(v__p2, *scene, &sdf_info);
+    sdf(v__p2, scene, &sdf_info);
     v__ch[2] = sdf_info.min_dist;
 
     vec_sub(v__ch, v__c, res);
@@ -114,7 +114,7 @@ SDF_Info ray_march(const double vec_p[NR_VEC_ELEMENTS], const double vec_dir[NR_
 
     for (int i = 0; i < MARCH_COUNT; ++i)
     {
-        sdf(march_pt, *scene, &sdf_info);
+        sdf(march_pt, scene, &sdf_info);
         vec_mult_scalar(vec_dir, sdf_info.min_dist, v__tmp);
         vec_add(march_pt, v__tmp, march_pt);
 
@@ -127,37 +127,12 @@ SDF_Info ray_march(const double vec_p[NR_VEC_ELEMENTS], const double vec_dir[NR_
             sdf_info.intersection_pt[2] = march_pt[2];
             break;
         }
+        
         // BBOX CHECK
-        if (vec_norm(march_pt) > BBOX_AXES)
-        {
-            sdf_info.intersected = 0;
-            break;    for (int i = 0; i < MARCH_COUNT; ++i)
-    {
-        sdf(march_pt, *scene, &sdf_info);
-        vec_mult_scalar(vec_dir, sdf_info.min_dist, v__tmp);
-        vec_add(march_pt, v__tmp, march_pt);
-
-        // TOL
-        if (sdf_info.min_dist < INTERSECT_THRESHOLD)
-        {
-            sdf_info.intersected = 1;
-            sdf_info.intersection_pt[0] = march_pt[0];
-            sdf_info.intersection_pt[1] = march_pt[1];
-            sdf_info.intersection_pt[2] = march_pt[2];
-            break;
-        }
-        // BBOX CHECK
-        if (vec_norm(march_pt) > BBOX_AXES)
+        if (vec_norm_squared(march_pt) > BBOX_AXES)
         {
             sdf_info.intersected = 0;
             break;
-        }
-
-        if (doShadowSteps == 1)
-        {
-            compute_shadow_coefficient(&sdf_info, &ph, &t);
-        }
-    }
         }
 
         if (doShadowSteps == 1)
@@ -254,7 +229,7 @@ void trace(const double vec_origin[NR_VEC_ELEMENTS],
     // distance between intersection_pt and light source
     double dist = vec_norm(v__L);
     double inv_dist = 1 / dist;
-    vec_normalize(v__L); 
+    vec_mult_scalar(v__L, inv_dist, v__L);
 
     /* Before doing anything else check if shadow ray.
      * We assume that light is not in between objects. 
@@ -314,7 +289,7 @@ void trace(const double vec_origin[NR_VEC_ELEMENTS],
  *
  *   returns: void
  */
-void render(Scene scene)
+void render(Scene* scene)
 {
 #if DEBUG_MODE == 1
     printf("%s", "RENDERING... ");
@@ -330,8 +305,8 @@ void render(Scene scene)
 #endif
 
 
-    int width = scene.camera->widthPx;
-    int height = scene.camera->heightPx;
+    int width = scene->camera->widthPx;
+    int height = scene->camera->heightPx;
 
     double dir[NR_VEC_ELEMENTS]; 
     double px_col[NR_VEC_ELEMENTS];
@@ -350,16 +325,16 @@ void render(Scene scene)
                     // pixel coordinates
                     double disp_x = (inv_AA * n - 0.5) + x;
                     double disp_y = (inv_AA * m - 0.5) + y;
-                    shoot_ray(scene.camera, disp_x, disp_y, dir);
-                    trace(scene.camera->pos, dir, &scene, 0, px_col);
+                    shoot_ray(scene->camera, disp_x, disp_y, dir);
+                    trace(scene->camera->pos, dir, &scene, 0, px_col);
                     vec_add(tot_col, px_col, tot_col);
                 }
             }
             double px_col[NR_VEC_ELEMENTS];
             vec_mult_scalar(tot_col, inv_AA2, px_col);
 #else
-            shoot_ray(scene.camera, x, y, dir); 
-            trace(scene.camera->pos, dir, &scene, 0, px_col);
+            shoot_ray(scene->camera, x, y, dir); 
+            trace(scene->camera->pos, dir, scene, 0, px_col);
 
 #endif
 
@@ -367,10 +342,10 @@ void render(Scene scene)
             vec_pow_inplace(px_col, 0.4545);
 #endif
             // save colors computed by trace into current pixel
-            scene.img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col[0]) * 255);
-            scene.img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col[1]) * 255);
-            scene.img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col[2]) * 255);
-            scene.img[y * width * 4 + x * 4 + 3] = 255;
+            scene->img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col[0]) * 255);
+            scene->img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col[1]) * 255);
+            scene->img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col[2]) * 255);
+            scene->img[y * width * 4 + x * 4 + 3] = 255;
 
 #if DEBUG_MODE == 1
             progress += progress_step;
@@ -395,16 +370,16 @@ void render_all(SceneContainer scenes_container)
     for (int i = 0; i < scenes_container.num_scenes; ++i)
     {
         // Get scene and malloc output image
-        Scene s = *(scenes_container.scenes)[i];
-        create_image(&s, s.camera->widthPx, s.camera->heightPx);
+        Scene* s = (scenes_container.scenes)[i];
+        create_image(s, s->camera->widthPx, s->camera->heightPx);
         
         // Render
         render(s);
-        save_image_to_disk(&s, NULL);
+        save_image_to_disk(s, NULL);
 
         // Clean
-        destroy_scene(&s);
-        destroy_image(&s);
+        destroy_scene(s);
+        destroy_image(s);
         free((scenes_container.scenes)[i]);
     }
     free(scenes_container.scenes);
