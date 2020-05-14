@@ -31,6 +31,9 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     double y4 = y2*y2;
     double z4 = z2*z2;
 
+    double x2z2 = x2*z2;
+    double x4z4 = x4 + z4;
+
     double a = x2 + z2;
     double a2 = a*a;
     
@@ -38,15 +41,15 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     double b = 1.0/(a*a2*sqrt(a)); // changing from a*a*a*a*a*a*a to a*a2*a4 incurred some floating point errors
 
     // OLD: double c = x4 + y4 + z4 - 6.0*y2*z2 - 6.0*x2*y2 + 2.0*z2*x2;  NEW:
-    double c = x4 + y4 + z4 - 6.0*y2*(z2 + x2) + 2.0*z2*x2; // incurred some floating point errors
+    double c = x4z4 + y4 - 6.0*y2*a + 2.0*x2z2; // incurred some floating point errors
     
     double d = x2 - y2 + z2;
     
     double cb = c*b;
 
-    x = vec_p[0] + 64.0*x*y*z*(x2 - z2)*d*(x4-6.0*x2*z2 + z4)*cb;
+    x = vec_p[0] + 64.0*x*y*z*(x2 - z2)*d*(x4 - 6.0*x2z2 + z4)*cb;
     // z = vec_p[2] +  -8.0*y*d*(x4*x4 - 28.0*x4*x2*z2 + 70.0*x4*z4 - 28.0*x2*z2*z4 + z4*z4)*c*b; // old
-    z = vec_p[2] + 8.0*y*d*(28.0*x2*z2*(x4 + z4) - (70.0*x4 + z4)*z4 - x4*x4)*cb;
+    z = vec_p[2] + 8.0*y*d*(28.0*x2z2*x4z4 - (70.0*x4 + z4)*z4 - x4*x4)*cb;
     y = vec_p[1] - 16.0*y2*a*d*d + c*c;
 
     x2 = x*x;
@@ -54,7 +57,7 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     z2 = z*z;
     m = x2 + y2 + z2;
 
-    if( m > 256.0 ) return 0.25*log(m)*sqrt(m)/dz;
+    if(m > 256.0) return 0.25*log(m)*sqrt(m)/dz;
 
 
     // ==============================//
@@ -67,15 +70,18 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     y4 = y2*y2;
     z4 = z2*z2;
 
+    x2z2 = x2*z2;
+    x4z4 = x4 + z4;
+
     a = x2 + z2;
     a2 = a*a;
     b = 1.0/(a*a2*sqrt(a));
-    c = x4 + y4 + z4 - 6.0*y2*(z2 + x2) + 2.0*z2*x2; 
+    c = x4z4 + y4 - 6.0*y2*a + 2.0*x2z2; 
     d = x2 - y2 + z2;  
     cb = c*b;
 
-    x = vec_p[0] + 64.0*x*y*z*(x2 - z2)*d*(x4-6.0*x2*z2 + z4)*cb;
-    z = vec_p[2] + 8.0*y*d*(28.0*x2*z2*(x4 + z4) - (70.0*x4 + z4)*z4 - x4*x4)*cb;
+    x = vec_p[0] + 64.0*x*y*z*(x2 - z2)*d*(x4 - 6.0*x2z2 + z4)*cb;
+    z = vec_p[2] + 8.0*y*d*(28.0*x2z2*x4z4 - (70.0*x4 + z4)*z4 - x4*x4)*cb;
     y = vec_p[1] - 16.0*y2*a*d*d + c*c;
 
     x2 = x*x;
@@ -83,7 +89,7 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     z2 = z*z;
     m = x2 + y2 + z2;
 
-    if( m > 256.0 ) return 0.25*log(m)*sqrt(m)/dz;
+    if(m > 256.0) return 0.25*log(m)*sqrt(m)/dz;
 
     // ==============================//
     // ---- Unrolled Loop Body 3 --- //
@@ -95,15 +101,18 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     y4 = y2*y2;
     z4 = z2*z2;
 
+    x2z2 = x2*z2;
+    x4z4 = x4 + z4;
+
     a = x2 + z2;
     a2 = a*a;
     b = 1.0/(a*a2*sqrt(a));
-    c = x4 + y4 + z4 - 6.0*y2*(z2 + x2) + 2.0*z2*x2; 
+    c = x4z4 + y4 - 6.0*y2*a + 2.0*x2z2; 
     d = x2 - y2 + z2;  
     cb = c*b;
 
-    x = vec_p[0] + 64.0*x*y*z*(x2 - z2)*d*(x4-6.0*x2*z2 + z4)*cb;
-    z = vec_p[2] + 8.0*y*d*(28.0*x2*z2*(x4 + z4) - (70.0*x4 + z4)*z4 - x4*x4)*cb;
+    x = vec_p[0] + 64.0*x*y*z*(x2 - z2)*d*(x4 - 6.0*x2z2 + z4)*cb;
+    z = vec_p[2] + 8.0*y*d*(28.0*x2z2*x4z4 - (70.0*x4 + z4)*z4 - x4*x4)*cb;
     y = vec_p[1] - 16.0*y2*a*d*d + c*c;
 
     x2 = x*x;
@@ -111,7 +120,7 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     z2 = z*z;
     m = x2 + y2 + z2;
 
-    if( m > 256.0 ) return 0.25*log(m)*sqrt(m)/dz; 
+    if(m > 256.) return 0.25*log(m)*sqrt(m)/dz; 
 
     // ==============================//
     // ---- Unrolled Loop Body 4 --- //
@@ -123,15 +132,18 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     y4 = y2*y2;
     z4 = z2*z2;
 
+    x2z2 = x2*z2;
+    x4z4 = x4 + z4;
+
     a = x2 + z2;
     a2 = a*a;
     b = 1.0/(a*a2*sqrt(a));
-    c = x4 + y4 + z4 - 6.0*y2*(z2 + x2) + 2.0*z2*x2; 
+    c = x4z4 + y4 - 6.0*y2*a + 2.0*x2z2; 
     d = x2 - y2 + z2;  
     cb = c*b;
 
-    x = vec_p[0] + 64.0*x*y*z*(x2 - z2)*d*(x4-6.0*x2*z2 + z4)*cb;
-    z = vec_p[2] + 8.0*y*d*(28.0*x2*z2*(x4 + z4) - (70.0*x4 + z4)*z4 - x4*x4)*cb;
+    x = vec_p[0] + 64.0*x*y*z*(x2 - z2)*d*(x4 - 6.0*x2z2 + z4)*cb;
+    z = vec_p[2] + 8.0*y*d*(28.0*x2z2*x4z4 - (70.0*x4 + z4)*z4 - x4*x4)*cb;
     y = vec_p[1] - 16.0*y2*a*d*d + c*c;
 
     m = x*x + y*y + z*z;
