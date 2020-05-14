@@ -48,7 +48,10 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     z = vec_p[2] + 8.0*y*d*( 28.0*x2*z2*(x4 + z4)  - (70.0*x4 + z4)*z4 - x4*x4 )*cb;
     y = vec_p[1] - 16.0*y2*a*d*d + c*c;
 
-    m = x*x + y*y + z*z;
+    x2 = x*x;
+    y2 = y*y;
+    z2 = z*z;
+    m = x2 + y2 + z2;
 
     if( m > 256.0 ) return 0.25*log(m)*sqrt(m)/dz;
 
@@ -60,9 +63,9 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     m4 = m2*m2;
     dz = 8.0*sqrt(m4*m2*m)*dz + 1.0;
 
-    x2 = x*x; x4 = x2*x2;
-    y2 = y*y; y4 = y2*y2;
-    z2 = z*z; z4 = z2*z2;
+    x4 = x2*x2;
+    y4 = y2*y2;
+    z4 = z2*z2;
 
     a = x2 + z2;
     a2 = a*a;
@@ -76,7 +79,10 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     z = vec_p[2] + 8.0*y*d*( 28.0*x2*z2*(x4 + z4)  - (70.0*x4 + z4)*z4 - x4*x4 )*cb;
     y = vec_p[1] - 16.0*y2*a*d*d + c*c;
 
-    m = x*x + y*y + z*z;
+    x2 = x*x;
+    y2 = y*y;
+    z2 = z*z;
+    m = x2 + y2 + z2;
 
     if( m > 256.0 ) return 0.25*log(m)*sqrt(m)/dz;
 
@@ -87,9 +93,9 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     m4 = m2*m2;
     dz = 8.0*sqrt(m4*m2*m)*dz + 1.0;
 
-    x2 = x*x; x4 = x2*x2;
-    y2 = y*y; y4 = y2*y2;
-    z2 = z*z; z4 = z2*z2;
+    x4 = x2*x2;
+    y4 = y2*y2;
+    z4 = z2*z2;
 
     a = x2 + z2;
     a2 = a*a;
@@ -103,7 +109,10 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     z = vec_p[2] + 8.0*y*d*( 28.0*x2*z2*(x4 + z4)  - (70.0*x4 + z4)*z4 - x4*x4 )*cb;
     y = vec_p[1] - 16.0*y2*a*d*d + c*c;
 
-    m = x*x + y*y + z*z;
+    x2 = x*x;
+    y2 = y*y;
+    z2 = z*z;
+    m = x2 + y2 + z2;
 
     if( m > 256.0 ) return 0.25*log(m)*sqrt(m)/dz; 
 
@@ -114,9 +123,9 @@ double sdf_mandelbulb(const double vec_p[NR_VEC_ELEMENTS], double params[])
     m4 = m2*m2;
     dz = 8.0*sqrt(m4*m2*m)*dz + 1.0;
 
-    x2 = x*x; x4 = x2*x2;
-    y2 = y*y; y4 = y2*y2;
-    z2 = z*z; z4 = z2*z2;
+    x4 = x2*x2;
+    y4 = y2*y2;
+    z4 = z2*z2;
 
     a = x2 + z2;
     a2 = a*a;
