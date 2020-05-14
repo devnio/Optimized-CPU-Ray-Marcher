@@ -73,10 +73,10 @@ TEST compare_2_images(char* filename0, char* filename1)
     {
         for (int x = 0; x < width0; x++)
         {
-            ASSERT_EQ(image0[y * width0 * 4 + x * 4 + 0], image1[y * width0 * 4 + x * 4 + 0]);
-            ASSERT_EQ(image0[y * width0 * 4 + x * 4 + 1], image1[y * width0 * 4 + x * 4 + 1]);
-            ASSERT_EQ(image0[y * width0 * 4 + x * 4 + 2], image1[y * width0 * 4 + x * 4 + 2]);
-            ASSERT_EQ(image0[y * width0 * 4 + x * 4 + 3], image1[y * width0 * 4 + x * 4 + 3]);
+            ASSERT_EQ_FMT(image0[y * width0 * 4 + x * 4 + 0], image1[y * width0 * 4 + x * 4 + 0], "%d");
+            ASSERT_EQ_FMT(image0[y * width0 * 4 + x * 4 + 1], image1[y * width0 * 4 + x * 4 + 1], "%d");
+            ASSERT_EQ_FMT(image0[y * width0 * 4 + x * 4 + 2], image1[y * width0 * 4 + x * 4 + 2], "%d");
+            ASSERT_EQ_FMT(image0[y * width0 * 4 + x * 4 + 3], image1[y * width0 * 4 + x * 4 + 3], "%d");
         }
     }
 
