@@ -23,7 +23,7 @@ $(ODIR)/%.o: ../../src/%.c $(OUT_DEPS)
 # INSIDE FILES  [change if you need files inside tests]
 # ======================================
 # Define path of dependencies from inside
-_DEPS = vec3_test.h baseline_test.h
+_DEPS = vec3_test.h baseline_test.h approx_baseline_test.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 # Create objects for files from test
@@ -33,7 +33,7 @@ $(ODIR)/%.o: ../test/%.c $(DEPS)
 # ======================================
 # Run program with create objects [Add new objects also here]
 # ======================================
-_OBJ = lodepng.o utility.o vec3.o vec3_test.o baseline_test.o tests.o
+_OBJ = lodepng.o utility.o vec3.o vec3_test.o baseline_test.o approx_baseline_test.o tests.o 
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ)) 
 
 test: $(OBJ)
