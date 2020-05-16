@@ -1,6 +1,81 @@
+#include <stdio.h>
+#include <stdalign.h>
+
 #include "vec3.h"
 #include "utility.h"
 #include "config.h"
+#include "simd.h"
+
+/* Some function for SIMD. */ // TODO: change code so that this is not needed.
+void debug_simd_vec(const SIMD_VEC* simd_vec)
+{
+    alignas(32) double x[NR_SIMD_VEC_ELEMS];
+    alignas(32) double y[NR_SIMD_VEC_ELEMS];
+    alignas(32) double z[NR_SIMD_VEC_ELEMS];
+    STORE_PD(x, simd_vec->x);
+    STORE_PD(y, simd_vec->y);
+    STORE_PD(z, simd_vec->z);
+    printf("\n\n%f, %f, %f, %f \n", x[0], x[1], x[2], x[3]);
+    printf("%f, %f, %f, %f \n", y[0], y[1], y[2], y[3]);
+    printf("%f, %f, %f, %f \n", z[0], z[1], z[2], z[3]);
+    fflush(stdout);
+}
+
+void debug_simd_mmd(const SIMD_MMD* simd_mmd)
+{
+    alignas(32) double v[NR_SIMD_VEC_ELEMS];
+    STORE_PD(v, *simd_mmd);
+    printf("\n\nDEBUG SIMD_MMD\n%f, %f, %f, %f", v[0], v[1], v[2], v[3]);
+}
+
+void create_vec_x(double *v0, double *v1, double *v2, double *v3, double *res)
+{
+    res[0] = v0[0];
+    res[1] = v1[0];
+    res[2] = v2[0];
+    res[3] = v3[0];
+}
+void create_vec_y(double *v0, double *v1, double *v2, double *v3, double *res)
+{
+    res[0] = v0[1];
+    res[1] = v1[1];
+    res[2] = v2[1];
+    res[3] = v3[1];
+}
+void create_vec_z(double *v0, double *v1, double *v2, double *v3, double *res)
+{
+    res[0] = v0[2];
+    res[1] = v1[2];
+    res[2] = v2[2];
+    res[3] = v3[2];
+}
+
+void simd_vec_mult(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res)
+{
+    simd_vec_res->x = MULT_PD(simd_vec0->x, simd_vec1->x);
+    simd_vec_res->y = MULT_PD(simd_vec0->y, simd_vec1->y);
+    simd_vec_res->z = MULT_PD(simd_vec0->z, simd_vec1->z);
+}
+
+void simd_vec_add(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res)
+{
+    simd_vec_res->x = ADD_PD(simd_vec0->x, simd_vec1->x);
+    simd_vec_res->y = ADD_PD(simd_vec0->y, simd_vec1->y);
+    simd_vec_res->z = ADD_PD(simd_vec0->z, simd_vec1->z);
+}
+
+void simd_vec_sub(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res)
+{
+    simd_vec_res->x = SUB_PD(simd_vec0->x, simd_vec1->x);
+    simd_vec_res->y = SUB_PD(simd_vec0->y, simd_vec1->y);
+    simd_vec_res->z = SUB_PD(simd_vec0->z, simd_vec1->z);
+}
+void simd_vec_norm(const SIMD_VEC* simd_vec, SIMD_MMD* simd_mmd_out)
+{
+    *simd_mmd_out = SQRT_PD(ADD_PD(ADD_PD(MULT_PD(simd_vec->x, simd_vec->x), MULT_PD(simd_vec->y, simd_vec->y)), MULT_PD(simd_vec->z, simd_vec->z)));
+}
+
+
 
 /*
  *Function: new_vector

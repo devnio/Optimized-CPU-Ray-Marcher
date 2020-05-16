@@ -2,10 +2,11 @@
 #define TRANSFORM_H_
 
 #include "vec3.h"
+#include "simd.h"
 
 typedef struct
 {
-    double center[NR_VEC_ELEMENTS];
+    SIMD_VEC center; //TODO: maybe better to use a pointer | also could keep as vec and use SET1_PD when needed
     double orientation[6];
 } Transform;
 

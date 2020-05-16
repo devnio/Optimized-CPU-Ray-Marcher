@@ -39,18 +39,20 @@ typedef struct
 
 typedef struct
 {
-    double min_dist;
-    int nearest_obj_idx;
-    int intersected;
-    double intersection_pt[NR_VEC_ELEMENTS]; // if intersected is 0, this shouldn't be used (TODO: maybe separate this?)
-    double s;
+    SIMD_MMD min_dist;
+    SIMD_MMD nearest_obj_idx;
+    SIMD_MMD intersected;
+    double intersection_pt[NR_VEC_ELEMENTS]; // TODO: change this to be a SIMD_VEC
+    SIMD_MMD s;
 } SDF_Info;
 
-void sdf(double vec_p[NR_VEC_ELEMENTS], const Scene *scene, SDF_Info *sdf_info_out);
+// void sdf(double vec_p[NR_VEC_ELEMENTS], const Scene *scene, SDF_Info *sdf_info_out);
+void sdf(SIMD_VEC *simd_vec_p, const Scene *scene, SDF_Info *sdf_info_out);
 
 Scene *build_scene(const char *name);
 
-void apply_transform(double vec_p[NR_VEC_ELEMENTS], const Transform *tr, double vec_res[NR_VEC_ELEMENTS]);
+// void apply_transform(double vec_p[NR_VEC_ELEMENTS], const Transform *tr, double vec_res[NR_VEC_ELEMENTS]);
+void apply_transform(SIMD_VEC* simd_vec_p, const Transform *tr, SIMD_VEC* simd_vec_transf_pt);
 
 void create_image(Scene* scene, unsigned int width, unsigned int height);
 

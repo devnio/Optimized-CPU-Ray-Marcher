@@ -3,8 +3,23 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include "simd.h"
 
 #define NR_VEC_ELEMENTS 3
+
+void debug_simd_vec(const SIMD_VEC* simd_vec);
+void debug_simd_mmd(const SIMD_MMD* simd_mmd);
+
+void simd_vec_norm(const SIMD_VEC* simd_vec, SIMD_MMD* simd_mmd_out);
+void simd_vec_sub(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res);
+void simd_vec_add(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res);
+void simd_vec_mult(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res);
+
+
+void create_vec_x(double *v0, double *v1, double *v2, double *v3, double *res);
+void create_vec_y(double *v0, double *v1, double *v2, double *v3, double *res);
+void create_vec_z(double *v0, double *v1, double *v2, double *v3, double *res);
+
 
 double *new_vector(double x, double y, double z);
 void delete_vector(double *v);
