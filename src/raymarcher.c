@@ -49,65 +49,58 @@ static enum Mode RUN_STATE = M_RENDER;
 //===============================
 //            CODE
 //===============================
-void compute_normal(double vec_p[NR_VEC_ELEMENTS], const Scene *scene, double res[NR_VEC_ELEMENTS])
+void compute_normal(const SIMD_VEC* simd_vec_p, const Scene *scene, SIMD_VEC* simd_vec_normals_out)
 {
-    SIMD_VEC simd_vec_p;
-    simd_vec_p.x = SET1_PD(vec_p[0]);
-    simd_vec_p.y = SET1_PD(vec_p[1]);
-    simd_vec_p.z = SET1_PD(vec_p[2]);
-
-    double v__ch[NR_VEC_ELEMENTS];
-    double v__c[NR_VEC_ELEMENTS];
-    // double v__p0[NR_VEC_ELEMENTS];
-    // double v__p1[NR_VEC_ELEMENTS];
-    // double v__p2[NR_VEC_ELEMENTS];
+    // TODO: preallocate this
+    SIMD_MMD SIMD_MMD_EPSILON = SET1_PD(EPSILON_NORMALS);
 
     SIMD_VEC simd_vec_p0;
-    simd_vec_p0.x = SET1_PD(vec_p[0] + EPSILON_NORMALS);
-    simd_vec_p0.y = SET1_PD(vec_p[1]);
-    simd_vec_p0.z = SET1_PD(vec_p[2]);
-    SIMD_VEC simd_vec_p1;
-    simd_vec_p1.x = SET1_PD(vec_p[0]);
-    simd_vec_p1.y = SET1_PD(vec_p[1] + EPSILON_NORMALS);
-    simd_vec_p1.z = SET1_PD(vec_p[2]);
-    SIMD_VEC simd_vec_p2;
-    simd_vec_p2.x = SET1_PD(vec_p[0]);
-    simd_vec_p2.y = SET1_PD(vec_p[1]);
-    simd_vec_p2.z = SET1_PD(vec_p[2] + EPSILON_NORMALS);
+    simd_vec_p0.x = ADD_PD(simd_vec_p->x, SIMD_MMD_EPSILON);
+    simd_vec_p0.y = simd_vec_p->y;
+    simd_vec_p0.z = simd_vec_p->z;
 
-    // vec_add(vec_p, const_eps_x, v__p0);
-    // vec_add(vec_p, const_eps_y, v__p1);
-    // vec_add(vec_p, const_eps_z, v__p2);
+    SIMD_VEC simd_vec_p1;
+    simd_vec_p1.x = simd_vec_p->x;
+    simd_vec_p1.y = ADD_PD(simd_vec_p->y, SIMD_MMD_EPSILON);
+    simd_vec_p1.z = simd_vec_p->z;
+
+    SIMD_VEC simd_vec_p2;
+    simd_vec_p2.x = simd_vec_p->x; 
+    simd_vec_p2.y = simd_vec_p->y;
+    simd_vec_p2.z = ADD_PD(simd_vec_p->z, SIMD_MMD_EPSILON);
+
+    // SIMD_VEC for min_dist of normal points
+    SIMD_VEC simd_vec_min_dist_p;
+    
+    // SIMD_VEC min_dist of shifted points
+    SIMD_VEC simd_vec_min_dist_p_eps;
 
     SDF_Info sdf_info;
     sdf_info.finish_ray_mask = SET1_PD(0.0);
     sdf_info.finish_ray_mask_int = 0;
 
-    sdf(&simd_vec_p, scene, &sdf_info);
+    // Compute sdf for normal points (4 points)
+    sdf(simd_vec_p, scene, &sdf_info);
+    simd_vec_min_dist_p.x = sdf_info.min_dist;
+    simd_vec_min_dist_p.y = sdf_info.min_dist;
+    simd_vec_min_dist_p.z = sdf_info.min_dist;
 
-
-    // ============================
-    // DEBUG
-    // ============================
-    alignas(32) double min_d[NR_SIMD_VEC_ELEMS]; STORE_PD(min_d, sdf_info.min_dist);
-    set_vec_from_double(v__c, min_d[0]); // TODO: make work for 4
-
+    // Compute sdf for shifted x
     sdf(&simd_vec_p0, scene, &sdf_info);
-    STORE_PD(min_d, sdf_info.min_dist);
-    v__ch[0] = min_d[0];
+    simd_vec_min_dist_p_eps.x = sdf_info.min_dist;
 
-
+    // Compute sdf for shifted y
     sdf(&simd_vec_p1, scene, &sdf_info);
-    STORE_PD(min_d, sdf_info.min_dist);
-    v__ch[1] = min_d[0];
-
-
+    simd_vec_min_dist_p_eps.y = sdf_info.min_dist;
+    
+    // Compute sdf for shifted z
     sdf(&simd_vec_p2, scene, &sdf_info);
-    STORE_PD(min_d, sdf_info.min_dist);
-    v__ch[2] = min_d[0];
+    simd_vec_min_dist_p_eps.z = sdf_info.min_dist;
 
-    vec_sub(v__ch, v__c, res);
-    vec_normalize(res);
+    SIMD_VEC sub_res;
+    simd_vec_sub(&simd_vec_min_dist_p_eps, &simd_vec_min_dist_p, &sub_res);
+
+    simd_vec_normalize(&sub_res, simd_vec_normals_out);
 }
 
 double compute_specular_coefficient(const double dir[NR_VEC_ELEMENTS], double N[NR_VEC_ELEMENTS], double L[NR_VEC_ELEMENTS], Material *mat)
@@ -221,43 +214,6 @@ void ray_march(SIMD_VEC *simd_vec_orig, SIMD_VEC *simd_vec_dir, const Scene *sce
             sdf_info_out->intersection_pt = simd_vec_march_pt;
             break;
         }
-        
-        // =======================================
-        // DEBUG
-        // =======================================
-        // alignas(32) double out_x[NR_SIMD_VEC_ELEMS]; STORE_PD(out_x, simd_vec_march_pt.x);
-        // alignas(32) double out_y[NR_SIMD_VEC_ELEMS]; STORE_PD(out_y, simd_vec_march_pt.y);
-        // alignas(32) double out_z[NR_SIMD_VEC_ELEMS]; STORE_PD(out_z, simd_vec_march_pt.z);
-        // double march_pt[NR_VEC_ELEMENTS];
-        // march_pt[0] = out_x[0];
-        // march_pt[1] = out_y[0];
-        // march_pt[2] = out_z[0]; 
-
-
-        // alignas(32) double min_dist[NR_SIMD_VEC_ELEMS]; STORE_PD(min_dist, sdf_info.min_dist);
-        // printf("i=%d, MARCH POINT: %f %f %f | MIN DIST: %f", i, march_pt[0], march_pt[1],  march_pt[2], min_dist[0]);
-
-        // TOL
-        // if (min_dist[0] < INTERSECT_THRESHOLD) // TODO: make work for 4
-        // {
-        //     sdf_info.intersected = SET1_PD(1.0);
-        //     sdf_info.intersection_pt[0] = march_pt[0];
-        //     sdf_info.intersection_pt[1] = march_pt[1];
-        //     sdf_info.intersection_pt[2] = march_pt[2];
-        //     break;
-        // }
-        
-        // // BBOX CHECK
-        // if (vec_norm_squared(march_pt) > BBOX_AXES)
-        // {
-        //     sdf_info.intersected = SET1_PD(0.0);
-        //     break;
-        // }
-
-        // if (doShadowSteps == 1)
-        // {
-        //     compute_shadow_coefficient(&sdf_info, &ph, &t);
-        // }
     }
 }
 
@@ -293,7 +249,7 @@ void trace(SIMD_VEC *simd_vec_orig,
     v__specularColor[1] = const_specularColour[1];
     v__specularColor[2] = const_specularColour[2];
     double v__diffuseColor[NR_VEC_ELEMENTS];
-    double v__N[NR_VEC_ELEMENTS]; // Normal direction 
+    // double v__N[NR_VEC_ELEMENTS]; // Normal direction 
     double v__L[NR_VEC_ELEMENTS]; // Light direction
     double v__tmp_res[NR_VEC_ELEMENTS]; // temporary result variable
     double v__vmult[NR_VEC_ELEMENTS]; // temporary multiplication variable
@@ -352,7 +308,24 @@ void trace(SIMD_VEC *simd_vec_orig,
     mat = *(scene->geometric_ojects[(int)nearest_obj_idx[0]]->mat); //*(scene->geometric_ojects[sdf_info.nearest_obj_idx]->mat);
 
     // Normal
-    compute_normal(intersection_pt, scene, v__N);
+    SIMD_VEC simd_vec_normals;
+    compute_normal(&sdf_info.intersection_pt, scene, &simd_vec_normals);
+
+    //=============================================
+    // DEBUG: get normal to a vector to check if it's right
+    //=============================================
+    alignas(32) double v__N_x[NR_SIMD_VEC_ELEMS];
+    alignas(32) double v__N_y[NR_SIMD_VEC_ELEMS];
+    alignas(32) double v__N_z[NR_SIMD_VEC_ELEMS];
+    STORE_PD(v__N_x, simd_vec_normals.x);
+    STORE_PD(v__N_y, simd_vec_normals.y);
+    STORE_PD(v__N_z, simd_vec_normals.z);
+    double v__N[NR_VEC_ELEMENTS];
+    v__N[0] = v__N_x[0];
+    v__N[1] = v__N_y[0];
+    v__N[2] = v__N_z[0];
+    //=============================================
+    //=============================================
 
     // In theory not necessary if normals are computed outwards
     if (vec_dot(vec_dir, v__N) > 0)

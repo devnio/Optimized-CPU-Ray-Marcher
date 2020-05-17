@@ -7,7 +7,7 @@
 #include "camera.h"
 
 // TODO: change SDF_INFO to contain a mask of finished rays, so we can compute final values on the fly
-void sdf(SIMD_VEC *simd_vec_p, const Scene *scene, SDF_Info *sdf_info_out)
+void sdf(const SIMD_VEC *simd_vec_p, const Scene *scene, SDF_Info *sdf_info_out)
 {
     // Apply transform
     SIMD_VEC simd_vec_transformed_pt;
@@ -44,7 +44,7 @@ void sdf(SIMD_VEC *simd_vec_p, const Scene *scene, SDF_Info *sdf_info_out)
     }
 }
 
-void apply_transform(SIMD_VEC* simd_vec_p, const Transform *tr, SIMD_VEC* simd_vec_transf_pt)
+void apply_transform(const SIMD_VEC* simd_vec_p, const Transform *tr, SIMD_VEC* simd_vec_transf_pt)
 {
     // apply translation
     // vec_sub(vec_p, tr->center, vec_res);

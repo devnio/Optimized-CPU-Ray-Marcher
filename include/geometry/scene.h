@@ -50,12 +50,12 @@ typedef struct
 } SDF_Info;
 
 // void sdf(double vec_p[NR_VEC_ELEMENTS], const Scene *scene, SDF_Info *sdf_info_out);
-void sdf(SIMD_VEC *simd_vec_p, const Scene *scene, SDF_Info *sdf_info_out);
+void sdf(const SIMD_VEC *simd_vec_p, const Scene *scene, SDF_Info *sdf_info_out);
 
 Scene *build_scene(const char *name);
 
 // void apply_transform(double vec_p[NR_VEC_ELEMENTS], const Transform *tr, double vec_res[NR_VEC_ELEMENTS]);
-void apply_transform(SIMD_VEC* simd_vec_p, const Transform *tr, SIMD_VEC* simd_vec_transf_pt);
+void apply_transform(const SIMD_VEC* simd_vec_p, const Transform *tr, SIMD_VEC* simd_vec_transf_pt);
 
 void create_image(Scene* scene, unsigned int width, unsigned int height);
 

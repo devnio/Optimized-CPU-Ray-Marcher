@@ -70,6 +70,16 @@ void simd_vec_sub(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC
     simd_vec_res->y = SUB_PD(simd_vec0->y, simd_vec1->y);
     simd_vec_res->z = SUB_PD(simd_vec0->z, simd_vec1->z);
 }
+void simd_vec_normalize(const SIMD_VEC* simd_vec0, SIMD_VEC* simd_vec0_normalized)
+{
+    SIMD_MMD norm;
+    simd_vec_norm(simd_vec0, &norm);
+    SIMD_MMD inv_norm = DIV_PD(SET1_PD(1.0), norm);
+
+    simd_vec0_normalized->x = MULT_PD(simd_vec0->x, inv_norm);
+    simd_vec0_normalized->y = MULT_PD(simd_vec0->y, inv_norm);
+    simd_vec0_normalized->z = MULT_PD(simd_vec0->z, inv_norm);
+}
 void simd_vec_norm(const SIMD_VEC* simd_vec, SIMD_MMD* simd_mmd_out)
 {
     *simd_mmd_out = SQRT_PD(ADD_PD(ADD_PD(MULT_PD(simd_vec->x, simd_vec->x), MULT_PD(simd_vec->y, simd_vec->y)), MULT_PD(simd_vec->z, simd_vec->z)));
