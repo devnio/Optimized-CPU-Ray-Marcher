@@ -25,7 +25,7 @@ void debug_simd_mmd(const SIMD_MMD* simd_mmd)
 {
     alignas(32) double v[NR_SIMD_VEC_ELEMS];
     STORE_PD(v, *simd_mmd);
-    printf("\n\nDEBUG SIMD_MMD\n%f, %f, %f, %f", v[0], v[1], v[2], v[3]);
+    printf("\nDEBUG SIMD_MMD\n%f, %f, %f, %f\n", v[0], v[1], v[2], v[3]);
 }
 
 void create_vec_x(double *v0, double *v1, double *v2, double *v3, double *res)

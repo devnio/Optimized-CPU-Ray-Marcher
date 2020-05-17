@@ -3,6 +3,7 @@
 
 SUITE(baseline_test){
     RUN_TEST(compare_scene0);
+    RUN_TEST(compare_shape0);
     // RUN_TEST(compare_mandelbulb);
     RUN_TEST(compare_shape1);
     RUN_TEST(compare_shape2);

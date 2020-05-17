@@ -62,6 +62,7 @@ void destroy_scene(Scene *scene)
     // free transforms
     for (int i = 0; i < scene->nr_transforms; i++)
     {
+        free(scene->transforms[i]->center); // TODO: check if this works
         free(scene->transforms[i]);
     }
     free(scene->transforms);
@@ -444,27 +445,37 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
             }
             else if (strcmp(name, "box") == 0)
             {
-                geom_obj->sdf = &sdf_box;
+                // geom_obj->sdf = &sdf_box;
+                printf("TODO: VECTORIZE BOX");
+                fflush(stdout);
                 fprintf(logFile, " => assigned sdf of %s\n", "box");
             }
             else if (strcmp(name, "cone") == 0)
             {
-                geom_obj->sdf = &sdf_cone;
+                // geom_obj->sdf = &sdf_cone;
+                printf("TODO: VECTORIZE CONE");
+                fflush(stdout);
                 fprintf(logFile, " => assigned sdf of %s\n", "cone");
             }
             else if (strcmp(name, "octahedron") == 0)
             {
-                geom_obj->sdf = &sdf_octahedron;
+                // geom_obj->sdf = &sdf_octahedron;
+                printf("TODO: VECTORIZE OCTAHEDRON");
+                fflush(stdout);
                 fprintf(logFile, " => assigned sdf of %s\n", "octahedron");
             }
             else if (strcmp(name, "torus") == 0)
             {
-                geom_obj->sdf = &sdf_torus;
+                // geom_obj->sdf = &sdf_torus;
+                printf("TODO: VECTORIZE TORUS");
+                fflush(stdout);
                 fprintf(logFile, " => assigned sdf of %s\n", "torus");
             }
             else if (strcmp(name, "mandelbulb") == 0)
             {
-                geom_obj->sdf = &sdf_mandelbulb;
+                // geom_obj->sdf = &sdf_mandelbulb;
+                printf("TODO: VECTORIZE MANDELBULB");
+                fflush(stdout);
                 fprintf(logFile, " => assigned sdf of %s\n", "mandelbulb");
             }
 

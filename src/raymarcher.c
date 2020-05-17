@@ -137,20 +137,17 @@ SDF_Info ray_march(SIMD_VEC *simd_vec_orig, SIMD_VEC *simd_vec_dir, const Scene 
     SDF_Info sdf_info;
     sdf_info.intersected = SET1_PD(0.0);
 
-    SIMD_MMD simd_mmd_THRESHOLD = SET1_PD(INTERSECT_THRESHOLD);
-
-    // copy origin point -> we will be changing this point (maybe we can skip this if no problem arises)
-    SIMD_VEC simd_vec_march_pt = *simd_vec_orig;
-
     SIMD_MMD t = SET1_PD(EPSILON);
     SIMD_MMD ph = SET1_PD(1e20);
-    // sdf_info.s = 1.0; // TODO: soft shadows later
+    sdf_info.s = SET1_PD(1.0);
+    SIMD_MMD simd_mmd_THRESHOLD = SET1_PD(INTERSECT_THRESHOLD);
 
-    // double v__tmp[NR_VEC_ELEMENTS];
-
+    // Create marching point
+    SIMD_VEC simd_vec_march_pt = *simd_vec_orig;
 
     for (int i = 0; i < MARCH_COUNT; ++i)
     {
+        // Populate sdf_info.min_dist with min distances for the 4 rays
         sdf(&simd_vec_march_pt, scene, &sdf_info);
 
         // March
@@ -263,6 +260,9 @@ void trace(SIMD_VEC *simd_vec_orig,
     alignas(32) double intersected[NR_SIMD_VEC_ELEMS];
     STORE_PD(intersected, sdf_info.intersected);
 
+    alignas(32) double nearest_obj_idx[NR_SIMD_VEC_ELEMS];
+    STORE_PD(nearest_obj_idx, sdf_info.nearest_obj_idx);
+
     // ============================================
     // END DEBUG
     // ============================================
@@ -272,7 +272,7 @@ void trace(SIMD_VEC *simd_vec_orig,
         return;
 
     // Shade intersected object TODO: remove hardcoded part
-    mat =  *(scene->geometric_ojects[0]->mat); //*(scene->geometric_ojects[sdf_info.nearest_obj_idx]->mat);
+    mat = *(scene->geometric_ojects[(int)nearest_obj_idx[0]]->mat); //*(scene->geometric_ojects[sdf_info.nearest_obj_idx]->mat);
 
     // Normal
     compute_normal(sdf_info.intersection_pt, scene, v__N);

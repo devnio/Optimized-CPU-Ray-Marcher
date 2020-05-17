@@ -50,6 +50,8 @@ typedef struct
 #define AND_PD _mm256_and_pd
 #define ANDNOT_PD _mm256_andnot_pd
 
+#define CMP_PD _mm256_cmp_pd
+
 
 #elif SIMD_V == 1
 // Add AVX-512 if our machine support it

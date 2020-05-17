@@ -1,7 +1,7 @@
 IDIR =../include
 OUT_IDIR =../../include
 CC=gcc
-CFLAGS= -O3 -I$(IDIR) -I$(OUT_IDIR) -g #-Wall #-pedantic # -Werror 
+CFLAGS= -O3 -I$(IDIR) -I$(OUT_IDIR) -g -mavx #-Wall #-pedantic # -Werror 
 
 ODIR=obj
 LDIR =../lib

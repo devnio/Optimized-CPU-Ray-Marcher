@@ -8,6 +8,7 @@
 SUITE(approx_baseline_test){
     RUN_TEST(approx_compare_scene0);
     RUN_TEST(approx_compare_mandelbulb);
+    RUN_TEST(approx_compare_shape0);
     RUN_TEST(approx_compare_shape1);
     RUN_TEST(approx_compare_shape2);
     RUN_TEST(approx_compare_shape3);

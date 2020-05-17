@@ -10,7 +10,9 @@ Params for plane are:
 - params[3]: displacement of plane
 -> 4 parameters in total
  */
-double sdf_plane(const double vec_p[NR_VEC_ELEMENTS], double params[]);
+// double sdf_plane(const double vec_p[NR_VEC_ELEMENTS], double params[]);
+void sdf_plane(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_mmd_dists);
+
 
 /*
 For variables use extern keyword so that it only gets declared (NOT yet initialized).
