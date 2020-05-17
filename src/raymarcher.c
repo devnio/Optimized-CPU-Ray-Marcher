@@ -80,6 +80,9 @@ void compute_normal(double vec_p[NR_VEC_ELEMENTS], const Scene *scene, double re
     // vec_add(vec_p, const_eps_z, v__p2);
 
     SDF_Info sdf_info;
+    sdf_info.finish_ray_mask = SET1_PD(0.0);
+    sdf_info.finish_ray_mask_int = 0;
+
     sdf(&simd_vec_p, scene, &sdf_info);
 
 
@@ -132,15 +135,28 @@ double compute_specular_coefficient(const double dir[NR_VEC_ELEMENTS], double N[
 //     *t += sdf_info->min_dist;
 // }
 
-SDF_Info ray_march(SIMD_VEC *simd_vec_orig, SIMD_VEC *simd_vec_dir, const Scene *scene, const int doShadowSteps)
+void ray_march(SIMD_VEC *simd_vec_orig, SIMD_VEC *simd_vec_dir, const Scene *scene, const int doShadowSteps, SDF_Info* sdf_info_out)
 {
-    SDF_Info sdf_info;
-    sdf_info.intersected = SET1_PD(0.0);
+    sdf_info_out->finish_ray_mask_int = 0;
+    sdf_info_out->finish_ray_mask = SET1_PD(0.0);
+    sdf_info_out->intersected_mask = SET1_PD(0.0);
 
     SIMD_MMD t = SET1_PD(EPSILON);
     SIMD_MMD ph = SET1_PD(1e20);
-    sdf_info.s = SET1_PD(1.0);
+    sdf_info_out->s = SET1_PD(1.0);
+
     SIMD_MMD simd_mmd_THRESHOLD = SET1_PD(INTERSECT_THRESHOLD);
+    SIMD_MMD simd_mmd_BBOX_AXES = SET1_PD(BBOX_AXES);
+
+    SIMD_MMD intersection_mask;
+    int current_int_intersection_mask = 0;
+
+    SIMD_MMD simd_mmd_norm_sq;
+    SIMD_MMD overshoot_mask;
+    SIMD_MMD current_overshoot_mask = SET1_PD(0.0);
+    int current_int_overshoot_mask = 0;
+
+    SIMD_MMD min_dist_for_marching; // has 0 for points that finished
 
     // Create marching point
     SIMD_VEC simd_vec_march_pt = *simd_vec_orig;
@@ -148,52 +164,101 @@ SDF_Info ray_march(SIMD_VEC *simd_vec_orig, SIMD_VEC *simd_vec_dir, const Scene 
     for (int i = 0; i < MARCH_COUNT; ++i)
     {
         // Populate sdf_info.min_dist with min distances for the 4 rays
-        sdf(&simd_vec_march_pt, scene, &sdf_info);
+        sdf(&simd_vec_march_pt, scene, sdf_info_out);
+
+        // Compute intersection mask
+        // debug_simd_mmd(&sdf_info.min_dist);
+        intersection_mask = CMP_PD(sdf_info_out->min_dist, simd_mmd_THRESHOLD, _CMP_LT_OS);
+        int int_intersection_mask = MOVEMASK_PD(intersection_mask);
+        
+        // Don't march with intersected or overshooted rays
+        sdf_info_out->finish_ray_mask = OR_PD(sdf_info_out->intersected_mask, current_overshoot_mask);
+        min_dist_for_marching = ANDNOT_PD(sdf_info_out->finish_ray_mask, sdf_info_out->min_dist);
 
         // March
-        simd_vec_march_pt.x = ADD_PD(simd_vec_march_pt.x, MULT_PD(simd_vec_dir->x, sdf_info.min_dist));
-        simd_vec_march_pt.y = ADD_PD(simd_vec_march_pt.y, MULT_PD(simd_vec_dir->y, sdf_info.min_dist));
-        simd_vec_march_pt.z = ADD_PD(simd_vec_march_pt.z, MULT_PD(simd_vec_dir->z, sdf_info.min_dist));
+        simd_vec_march_pt.x = ADD_PD(simd_vec_march_pt.x, MULT_PD(simd_vec_dir->x, min_dist_for_marching));
+        simd_vec_march_pt.y = ADD_PD(simd_vec_march_pt.y, MULT_PD(simd_vec_dir->y, min_dist_for_marching));
+        simd_vec_march_pt.z = ADD_PD(simd_vec_march_pt.z, MULT_PD(simd_vec_dir->z, min_dist_for_marching));
+
+        // EXIT CONDITIONS [TODO: can move before march to precompute final_mask | but we do it like this now like we always did]
+        // Check intersection
+        if (current_int_intersection_mask != int_intersection_mask)
+        {
+            current_int_intersection_mask = int_intersection_mask;
+            sdf_info_out->intersected_mask = intersection_mask;
+
+            // printf("\n\n current_int_intersection_mask is: %d", current_int_intersection_mask);
+            if (current_int_intersection_mask == 0b1111)
+            {
+                // Save intersected ray (min_dist and nearest_obj_idx should already be right)
+                sdf_info_out->intersection_pt = simd_vec_march_pt;
+                break;
+            }
+        }
+
+        // Check overshoot
+        simd_vec_norm_squared(&simd_vec_march_pt, &simd_mmd_norm_sq);
+        overshoot_mask = CMP_PD(simd_mmd_norm_sq, simd_mmd_BBOX_AXES, _CMP_GT_OS);
+        int int_overshoot_mask = MOVEMASK_PD(overshoot_mask);
+        if (current_int_overshoot_mask != int_overshoot_mask)
+        {
+            current_overshoot_mask = overshoot_mask;
+            current_int_overshoot_mask = int_overshoot_mask;
+
+            if (current_int_overshoot_mask == 0b1111)
+            {
+                // Save intersected ray (min_dist and nearest_obj_idx should already be right)
+                sdf_info_out->intersection_pt = simd_vec_march_pt;
+                break;
+            }
+        }
+
+        // Check combination
+        // If all ray in state intersected or overshooted -> exit
+        sdf_info_out->finish_ray_mask_int = MOVEMASK_PD(sdf_info_out->finish_ray_mask);
+        if (sdf_info_out->finish_ray_mask_int == 0b1111)
+        {
+            sdf_info_out->intersection_pt = simd_vec_march_pt;
+            break;
+        }
         
         // =======================================
         // DEBUG
         // =======================================
-        alignas(32) double out_x[NR_SIMD_VEC_ELEMS]; STORE_PD(out_x, simd_vec_march_pt.x);
-        alignas(32) double out_y[NR_SIMD_VEC_ELEMS]; STORE_PD(out_y, simd_vec_march_pt.y);
-        alignas(32) double out_z[NR_SIMD_VEC_ELEMS]; STORE_PD(out_z, simd_vec_march_pt.z);
-        double march_pt[NR_VEC_ELEMENTS];
-        march_pt[0] = out_x[0];
-        march_pt[1] = out_y[0];
-        march_pt[2] = out_z[0]; 
+        // alignas(32) double out_x[NR_SIMD_VEC_ELEMS]; STORE_PD(out_x, simd_vec_march_pt.x);
+        // alignas(32) double out_y[NR_SIMD_VEC_ELEMS]; STORE_PD(out_y, simd_vec_march_pt.y);
+        // alignas(32) double out_z[NR_SIMD_VEC_ELEMS]; STORE_PD(out_z, simd_vec_march_pt.z);
+        // double march_pt[NR_VEC_ELEMENTS];
+        // march_pt[0] = out_x[0];
+        // march_pt[1] = out_y[0];
+        // march_pt[2] = out_z[0]; 
 
 
-        alignas(32) double min_dist[NR_SIMD_VEC_ELEMS]; STORE_PD(min_dist, sdf_info.min_dist);
+        // alignas(32) double min_dist[NR_SIMD_VEC_ELEMS]; STORE_PD(min_dist, sdf_info.min_dist);
         // printf("i=%d, MARCH POINT: %f %f %f | MIN DIST: %f", i, march_pt[0], march_pt[1],  march_pt[2], min_dist[0]);
 
         // TOL
-        if (min_dist[0] < INTERSECT_THRESHOLD) // TODO: make work for 4
-        {
-            sdf_info.intersected = SET1_PD(1.0);
-            sdf_info.intersection_pt[0] = march_pt[0];
-            sdf_info.intersection_pt[1] = march_pt[1];
-            sdf_info.intersection_pt[2] = march_pt[2];
-            break;
-        }
+        // if (min_dist[0] < INTERSECT_THRESHOLD) // TODO: make work for 4
+        // {
+        //     sdf_info.intersected = SET1_PD(1.0);
+        //     sdf_info.intersection_pt[0] = march_pt[0];
+        //     sdf_info.intersection_pt[1] = march_pt[1];
+        //     sdf_info.intersection_pt[2] = march_pt[2];
+        //     break;
+        // }
         
-        // BBOX CHECK
-        if (vec_norm_squared(march_pt) > BBOX_AXES)
-        {
-            sdf_info.intersected = SET1_PD(0.0);
-            break;
-        }
+        // // BBOX CHECK
+        // if (vec_norm_squared(march_pt) > BBOX_AXES)
+        // {
+        //     sdf_info.intersected = SET1_PD(0.0);
+        //     break;
+        // }
 
         // if (doShadowSteps == 1)
         // {
         //     compute_shadow_coefficient(&sdf_info, &ph, &t);
         // }
     }
-
-    return sdf_info;
 }
 
 /*
@@ -252,30 +317,42 @@ void trace(SIMD_VEC *simd_vec_orig,
     vec_dir[2] = vec_dir_z[0];
 
     // CHECK INTERSECTION WITH SCENE
-    sdf_info = ray_march(simd_vec_orig, simd_vec_dir, scene, 0);
+    ray_march(simd_vec_orig, simd_vec_dir, scene, 0, &sdf_info);
 
     // ============================================
     // REST OF FUNCTION IS SCALAR IN ORDER TO DEBUG
     // ============================================
     alignas(32) double intersected[NR_SIMD_VEC_ELEMS];
-    STORE_PD(intersected, sdf_info.intersected);
+    STORE_PD(intersected, sdf_info.intersected_mask);
 
     alignas(32) double nearest_obj_idx[NR_SIMD_VEC_ELEMS];
     STORE_PD(nearest_obj_idx, sdf_info.nearest_obj_idx);
+
+
+    alignas(32) double inter_pt_x[NR_SIMD_VEC_ELEMS];
+    alignas(32) double inter_pt_y[NR_SIMD_VEC_ELEMS];
+    alignas(32) double inter_pt_z[NR_SIMD_VEC_ELEMS];
+    STORE_PD(inter_pt_x, sdf_info.intersection_pt.x);
+    STORE_PD(inter_pt_y, sdf_info.intersection_pt.y);
+    STORE_PD(inter_pt_z, sdf_info.intersection_pt.z);
+    double intersection_pt[NR_VEC_ELEMENTS];
+    intersection_pt[0] = inter_pt_x[0];
+    intersection_pt[1] = inter_pt_y[0];
+    intersection_pt[2] = inter_pt_z[0];
 
     // ============================================
     // END DEBUG
     // ============================================
 
     // No intersection case (return black)
-    if (intersected[0] != 1)
+    if (intersected[0] == 0)
         return;
 
     // Shade intersected object TODO: remove hardcoded part
     mat = *(scene->geometric_ojects[(int)nearest_obj_idx[0]]->mat); //*(scene->geometric_ojects[sdf_info.nearest_obj_idx]->mat);
 
     // Normal
-    compute_normal(sdf_info.intersection_pt, scene, v__N);
+    compute_normal(intersection_pt, scene, v__N);
 
     // In theory not necessary if normals are computed outwards
     if (vec_dot(vec_dir, v__N) > 0)
@@ -304,7 +381,7 @@ void trace(SIMD_VEC *simd_vec_orig,
     // }
 
     // Light dir L
-    vec_sub(scene->light->c, sdf_info.intersection_pt, v__L);
+    vec_sub(scene->light->c, intersection_pt, v__L);
 
     // distance between intersection_pt and light source
     double dist = vec_norm(v__L);
@@ -350,7 +427,7 @@ void trace(SIMD_VEC *simd_vec_orig,
     vec_add(vec_res_finalColor, v__tmp_res, vec_res_finalColor); // final colour result
 
 #if FOG == 1
-    double t = vec_norm(sdf_info.intersection_pt);
+    double t = vec_norm(intersection_pt);
     vec_mult_scalar(vec_res_finalColor, exp(FOG_COEFF * t * t * t), vec_res_finalColor);
 #endif
 

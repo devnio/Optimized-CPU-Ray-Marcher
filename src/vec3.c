@@ -74,6 +74,10 @@ void simd_vec_norm(const SIMD_VEC* simd_vec, SIMD_MMD* simd_mmd_out)
 {
     *simd_mmd_out = SQRT_PD(ADD_PD(ADD_PD(MULT_PD(simd_vec->x, simd_vec->x), MULT_PD(simd_vec->y, simd_vec->y)), MULT_PD(simd_vec->z, simd_vec->z)));
 }
+void simd_vec_norm_squared(const SIMD_VEC* simd_vec, SIMD_MMD* simd_mmd_out)
+{
+    *simd_mmd_out = ADD_PD(ADD_PD(MULT_PD(simd_vec->x, simd_vec->x), MULT_PD(simd_vec->y, simd_vec->y)), MULT_PD(simd_vec->z, simd_vec->z));
+}
 
 
 

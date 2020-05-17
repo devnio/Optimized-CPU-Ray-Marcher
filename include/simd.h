@@ -47,10 +47,14 @@ typedef struct
 #define MULT_PD _mm256_mul_pd
 #define SQRT_PD _mm256_sqrt_pd
 
+#define BLENDV_PD _mm256_blendv_pd
+#define BLEND_PD _mm256_blend_pd
+#define OR_PD _mm256_or_pd
 #define AND_PD _mm256_and_pd
 #define ANDNOT_PD _mm256_andnot_pd
 
 #define CMP_PD _mm256_cmp_pd
+#define MOVEMASK_PD _mm256_movemask_pd
 
 
 #elif SIMD_V == 1

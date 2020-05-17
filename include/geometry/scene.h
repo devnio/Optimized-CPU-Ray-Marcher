@@ -40,10 +40,12 @@ typedef struct
 
 typedef struct
 {
+    int finish_ray_mask_int; 
+    SIMD_MMD finish_ray_mask; // 1 if a ray is done -> don't change other values for this entry
     SIMD_MMD min_dist;
     SIMD_MMD nearest_obj_idx;
-    SIMD_MMD intersected;
-    double intersection_pt[NR_VEC_ELEMENTS]; // TODO: change this to be a SIMD_VEC
+    SIMD_MMD intersected_mask;
+    SIMD_VEC intersection_pt; 
     SIMD_MMD s;
 } SDF_Info;
 
