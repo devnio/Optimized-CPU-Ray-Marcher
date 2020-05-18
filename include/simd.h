@@ -11,13 +11,29 @@
 
 #define NR_SIMD_VEC_ELEMS 4
 
-#define SIMD_MMD __m256d
+
+#define SIMD_MMS __m256
+#define SIMD_MMD __m256d 
+#define SIMD_MMI __m256i
+
 typedef struct
 {
     SIMD_MMD x;
     SIMD_MMD y;
     SIMD_MMD z;
 } SIMD_VEC;
+// Single precision
+#define LOAD_PS _mm256_load_ps
+#define STORE_PS _mm256_store_ps
+
+#define SET_PS _mm256_set_ps
+#define SET1_PS _mm256_set1_ps
+
+#define ADD_PS _mm256_add_ps
+#define SUB_PS _mm256_sub_ps
+#define MULT_PS _mm256_mul_ps
+#define DIV_PS _mm256_div_ps
+#define SQRT_PS _mm256_sqrt_ps
 
 // Double precision
 #define LOAD_PD _mm256_load_pd
@@ -29,6 +45,7 @@ typedef struct
 #define ADD_PD _mm256_add_pd
 #define SUB_PD _mm256_sub_pd
 #define MULT_PD _mm256_mul_pd
+#define FMA_PD _mm256_fmadd_pd
 #define DIV_PD _mm256_div_pd
 #define SQRT_PD _mm256_sqrt_pd
 

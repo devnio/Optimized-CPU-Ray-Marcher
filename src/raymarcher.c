@@ -466,6 +466,7 @@ void render(Scene* scene)
             double dir2[NR_VEC_ELEMENTS]; 
             double dir3[NR_VEC_ELEMENTS]; 
 
+            // shoot_rays()
             shoot_ray(scene->camera, x, y, dir0); 
             shoot_ray(scene->camera, x+1, y, dir1); 
             shoot_ray(scene->camera, x+2, y, dir2); 

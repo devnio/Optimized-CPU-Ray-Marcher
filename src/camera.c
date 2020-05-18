@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include <math.h>
-
+#include <stdalign.h>
 #include "camera.h"
 #include "utility.h"
 
@@ -76,10 +76,72 @@ void shoot_ray(Camera *camera, double i, double j, double vec_sRay_res[NR_VEC_EL
     v__dir[1] = y;
     v__dir[2] = camera->dir[2];
 
-
     mult_vec_matrix_no_homo(&(camera->viewMatrix), v__dir, vec_sRay_res);
     vec_normalize(vec_sRay_res);
 }
+
+void shoot_rays(Camera *camera, double i, double j, SIMD_VEC *simd_vec_dir)
+{
+    //Normalize screen coordinates
+    
+    SIMD_MMD simd_vec_scale, simd_vec_aspectRatio, simd_vec_widthPx;
+    SIMD_MMD tmp1, tmp2, tmp3, tmp4, x__, y__, z__;
+    SIMD_MMD const1;
+    SIMD_MMD const2;
+
+    const1 = SET_PD(3, 2, 1, 0);
+
+    // float x0 = (2 * (i + 0.5) / (float)camera->widthPx - 1) * camera->aspectRatio * camera->scale;
+    // float x1 = (2 * ((i + 1) + 0.5) / (float)camera->widthPx - 1) * camera->aspectRatio * camera->scale;
+    // float x2 = (2 * ((i + 2) + 0.5) / (float)camera->widthPx - 1) * camera->aspectRatio * camera->scale;
+    // float x3 = (2 * ((i + 3) + 0.5) / (float)camera->widthPx - 1) * camera->aspectRatio * camera->scale;
+
+    simd_vec_scale = SET1_PD(camera->scale);
+    simd_vec_aspectRatio = SET1_PD(camera->scale);
+    simd_vec_widthPx = SET1_PD(camera->scale);
+    tmp1 = MULT_PD(simd_vec_scale, simd_vec_aspectRatio);
+    tmp2 = SUB_PD(simd_vec_widthPx, SET1_PD(1));
+    tmp3 = DIV_PD(SET1_PD(2), tmp2);
+    tmp4 = ADD_PD(SET1_PD(i), const1);
+    tmp4 = ADD_PD(SET1_PD(0.5), tmp4);
+    tmp4 = MULT_PD(tmp4, tmp3);
+    x__ = MULT_PD(tmp4, tmp1);
+
+
+    float y = (1 - 2 * (j + 0.5) / (float)camera->heightPx) * camera->scale;
+    y__ = SET1_PD((double) y);
+
+    z__ = SET1_PD(camera->dir[2]);
+
+    SIMD_MMD tmp_res_xxxx, tmp_res_yyyy, tmp_res_zzzz;
+
+    Mat4 *m = &(camera->viewMatrix);
+
+    tmp_res_xxxx = FMA_PD(x__, SET1_PD(m->m[0][0]), y__); // xxxx
+    tmp_res_yyyy = FMA_PD(x__, SET1_PD(m->m[1][0]), y__); // yyyy
+    tmp_res_zzzz = FMA_PD(x__, SET1_PD(m->m[2][0]), y__); // zzzz
+
+    tmp_res_xxxx = FMA_PD(tmp_res_xxxx, SET1_PD(m->m[0][1]), z__); // xxxx
+    tmp_res_yyyy = FMA_PD(tmp_res_yyyy, SET1_PD(m->m[1][1]), z__); // yyyy
+    tmp_res_zzzz = FMA_PD(tmp_res_zzzz, SET1_PD(m->m[2][1]), z__); // zzzz
+
+    tmp_res_xxxx = MULT_PD(tmp_res_xxxx, SET1_PD(m->m[0][2])); // xxxx
+    tmp_res_yyyy = MULT_PD(tmp_res_xxxx, SET1_PD(m->m[1][2])); // yyyy
+    tmp_res_zzzz = MULT_PD(tmp_res_zzzz, SET1_PD(m->m[2][2])); // zzzz
+
+
+    vec_normalize(vec_sRay_res);
+    vec_normalize(vec_sRay_res + NR_VEC_ELEMENTS);
+    vec_normalize(vec_sRay_res + 2*NR_VEC_ELEMENTS);
+    vec_normalize(vec_sRay_res + 3*NR_VEC_ELEMENTS);
+
+
+
+    // STORE_PD(simd_vec_dir->x, tmp_res_xxxx);
+    // STORE_PD(simd_vec_dir->y, tmp_res_yyyy);
+    // STORE_PD(simd_vec_dir->z, tmp_res_zzzz);
+}
+
 
 void free_camera(Camera *camera)
 {

@@ -117,9 +117,9 @@
 void mult_vec_matrix_no_homo(Mat4 *m, double v[NR_VEC_ELEMENTS], double res[NR_VEC_ELEMENTS])
 {
     double x, y, z, w;
-    res[0] = v[0] * m->m[0][0] + v[1] * m->m[0][1] + v[2] * m->m[0][2];
-    res[1] = v[0] * m->m[1][0] + v[1] * m->m[1][1] + v[2] * m->m[1][2];
-    res[2] = v[0] * m->m[2][0] + v[1] * m->m[2][1] + v[2] * m->m[2][2];
+    res[0] = v[0] * m->m[0][0] + v[1] * m->m[0][1] + v[2] * m->m[0][2]; // xxxx
+    res[1] = v[0] * m->m[1][0] + v[1] * m->m[1][1] + v[2] * m->m[1][2]; // yyyy
+    res[2] = v[0] * m->m[2][0] + v[1] * m->m[2][1] + v[2] * m->m[2][2]; // zzzz
 }
 
 /*
