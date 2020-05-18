@@ -14,7 +14,7 @@
 
 #define SIMD_MMS __m256
 #define SIMD_MMD __m256d 
-#define SIMD_MMI __m256i
+#define SIMD_MMI __m128i
 
 typedef struct
 {
@@ -22,6 +22,17 @@ typedef struct
     SIMD_MMD y;
     SIMD_MMD z;
 } SIMD_VEC;
+
+// Integers
+#define MASKLOAD_EPI _mm_maskload_epi32
+#define MASKSTORE_EPI _mm_maskstore_epi32
+
+#define SET_EPI _mm_set_epi32
+#define SET1_EPI _mm_set1_epi32
+
+#define MIN_EPI _mm_min_epi32
+
+
 // Single precision
 #define LOAD_PS _mm256_load_ps
 #define STORE_PS _mm256_store_ps
@@ -57,6 +68,8 @@ typedef struct
 #define ANDNOT_PD _mm256_andnot_pd
 #define MAX_PD _mm256_max_pd
 #define MIN_PD _mm256_min_pd
+
+#define CONV_PD_TO_EPI _mm256_cvtpd_epi32
 
 #define CMP_PD _mm256_cmp_pd
 #define MOVEMASK_PD _mm256_movemask_pd

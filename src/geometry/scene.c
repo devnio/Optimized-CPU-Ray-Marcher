@@ -73,7 +73,9 @@ void apply_transform(const SIMD_VEC* simd_vec_p, const Transform *tr, SIMD_VEC* 
 
 void create_image(Scene* scene, unsigned int width, unsigned int height) {
     size_t png_img_size = width * height * 4 * sizeof(unsigned char);
-    scene->img = (unsigned char *)malloc(png_img_size);
+    // scene->img = (unsigned char *)malloc(png_img_size);
+    scene->img = (unsigned char *)aligned_alloc(32, png_img_size);
+
 }
 
 void destroy_image(Scene* scene) {

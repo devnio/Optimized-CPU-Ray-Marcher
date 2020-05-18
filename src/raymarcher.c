@@ -498,6 +498,8 @@ void render(Scene* scene)
 
     for (unsigned y = 0; y < height; ++y)
     {
+        int y_w_4 = y * width * 4;
+
         for (unsigned x = 0; x < width; x+=4) 
         {
 
@@ -532,44 +534,66 @@ void render(Scene* scene)
             simd_vec_finalColor.x = SET_ZERO_PD(); 
             simd_vec_finalColor.y = SET_ZERO_PD();
             simd_vec_finalColor.z = SET_ZERO_PD();
-            trace(&simd_vec_orig, &simd_vec_dir, scene, 0, &simd_vec_finalColor);
 
-            // TODO: vectorize this
-            alignas(32) double px_col_x[NR_SIMD_VEC_ELEMS];
-            alignas(32) double px_col_y[NR_SIMD_VEC_ELEMS];
-            alignas(32) double px_col_z[NR_SIMD_VEC_ELEMS];
-            STORE_PD(px_col_x, simd_vec_finalColor.x);
-            STORE_PD(px_col_y, simd_vec_finalColor.y);
-            STORE_PD(px_col_z, simd_vec_finalColor.z);
+            trace(&simd_vec_orig, &simd_vec_dir, scene, 0, &simd_vec_finalColor);
 
 #endif
 
 #if GAMMA_CORR == 1
             // vec_pow_inplace(px_col, 0.4545);
-            px_col_x[0] = pow(px_col_x[0], 0.4545); px_col_x[1] = pow(px_col_x[1], 0.4545); px_col_x[2] = pow(px_col_x[2], 0.4545); px_col_x[3] = pow(px_col_x[3], 0.4545);
-            px_col_y[0] = pow(px_col_y[0], 0.4545); px_col_y[1] = pow(px_col_y[1], 0.4545); px_col_y[2] = pow(px_col_y[2], 0.4545); px_col_y[3] = pow(px_col_y[3], 0.4545);
-            px_col_z[0] = pow(px_col_z[0], 0.4545); px_col_z[1] = pow(px_col_z[1], 0.4545); px_col_z[2] = pow(px_col_z[2], 0.4545); px_col_z[3] = pow(px_col_z[3], 0.4545);
+            SIMD_MMD _const_pd = SET1_PD(0.4545);
+            simd_mmd_pow_func(&simd_vec_finalColor.x, &_const_pd, &simd_vec_finalColor.x);
+            simd_mmd_pow_func(&simd_vec_finalColor.y, &_const_pd, &simd_vec_finalColor.y);
+            simd_mmd_pow_func(&simd_vec_finalColor.z, &_const_pd, &simd_vec_finalColor.z);
 #endif
+            // TODO: vectorize this
+            alignas(32) double px_col_x[NR_SIMD_VEC_ELEMS];
+            alignas(32) double px_col_y[NR_SIMD_VEC_ELEMS];
+            alignas(32) double px_col_z[NR_SIMD_VEC_ELEMS];
+
+            SIMD_MMD _m_255 = SET1_PD(255);
+            SIMD_MMD _min_color_x = MIN_PD(SET1_PD(1.0), simd_vec_finalColor.x);
+            SIMD_MMD _min_color_y = MIN_PD(SET1_PD(1.0), simd_vec_finalColor.y);
+            SIMD_MMD _min_color_z = MIN_PD(SET1_PD(1.0), simd_vec_finalColor.z);
+
+            SIMD_MMD color_x_i = MULT_PD(_min_color_x, _m_255);
+            SIMD_MMD color_y_i = MULT_PD(_min_color_y, _m_255);
+            SIMD_MMD color_z_i = MULT_PD(_min_color_z, _m_255);
+
+            SIMD_MMI c_x = CONV_PD_TO_EPI(color_x_i);
+            SIMD_MMI c_y = CONV_PD_TO_EPI(color_x_i);
+            SIMD_MMI c_z = CONV_PD_TO_EPI(color_x_i);
+
+            STORE_PD(px_col_x, color_x_i);
+            STORE_PD(px_col_y, color_y_i);
+            STORE_PD(px_col_z, color_z_i);
+
+            // SIMD_MMI mask_all_1 = SET1_EPI(1);
+
+            // MASKSTORE_EPI(px_col_x, mask_all_1 ,c_x);
+            // MASKSTORE_EPI(px_col_y, mask_all_1 ,c_y);
+            // MASKSTORE_EPI(px_col_z, SET1_EPI(1) ,c_z);
+
             // save colors computed by trace into current pixel
-            scene->img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col_x[0]) * 255);
-            scene->img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col_y[0]) * 255);
-            scene->img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col_z[0]) * 255);
-            scene->img[y * width * 4 + x * 4 + 3] = 255;
+            scene->img[y_w_4 + x * 4 + 0] = (unsigned char)(px_col_x[0]);
+            scene->img[y_w_4 + x * 4 + 1] = (unsigned char)(px_col_y[0]);
+            scene->img[y_w_4 + x * 4 + 2] = (unsigned char)(px_col_z[0]);
+            scene->img[y_w_4 + x * 4 + 3] = 255;
 
-            scene->img[y * width * 4 + (x+1) * 4 + 0] = (unsigned char)(min(1, px_col_x[1]) * 255);
-            scene->img[y * width * 4 + (x+1) * 4 + 1] = (unsigned char)(min(1, px_col_y[1]) * 255);
-            scene->img[y * width * 4 + (x+1) * 4 + 2] = (unsigned char)(min(1, px_col_z[1]) * 255);
-            scene->img[y * width * 4 + (x+1) * 4 + 3] = 255;
+            scene->img[y_w_4 + (x+1) * 4 + 0] = (unsigned char)(px_col_x[1]);
+            scene->img[y_w_4 + (x+1) * 4 + 1] = (unsigned char)(px_col_y[1]);
+            scene->img[y_w_4 + (x+1) * 4 + 2] = (unsigned char)(px_col_z[1]);
+            scene->img[y_w_4 + (x+1) * 4 + 3] = 255;
 
-            scene->img[y * width * 4 + (x+2) * 4 + 0] = (unsigned char)(min(1, px_col_x[2]) * 255);
-            scene->img[y * width * 4 + (x+2) * 4 + 1] = (unsigned char)(min(1, px_col_y[2]) * 255);
-            scene->img[y * width * 4 + (x+2) * 4 + 2] = (unsigned char)(min(1, px_col_z[2]) * 255);
-            scene->img[y * width * 4 + (x+2) * 4 + 3] = 255;
+            scene->img[y_w_4 + (x+2) * 4 + 0] = (unsigned char)(px_col_x[2]);
+            scene->img[y_w_4 + (x+2) * 4 + 1] = (unsigned char)(px_col_y[2]);
+            scene->img[y_w_4 + (x+2) * 4 + 2] = (unsigned char)(px_col_z[2]);
+            scene->img[y_w_4 + (x+2) * 4 + 3] = 255;
 
-            scene->img[y * width * 4 + (x+3) * 4 + 0] = (unsigned char)(min(1, px_col_x[3]) * 255);
-            scene->img[y * width * 4 + (x+3) * 4 + 1] = (unsigned char)(min(1, px_col_y[3]) * 255);
-            scene->img[y * width * 4 + (x+3) * 4 + 2] = (unsigned char)(min(1, px_col_z[3]) * 255);
-            scene->img[y * width * 4 + (x+3) * 4 + 3] = 255;
+            scene->img[y_w_4 + (x+3) * 4 + 0] = (unsigned char)(px_col_x[3]);
+            scene->img[y_w_4 + (x+3) * 4 + 1] = (unsigned char)(px_col_y[3]);
+            scene->img[y_w_4 + (x+3) * 4 + 2] = (unsigned char)(px_col_z[3]);
+            scene->img[y_w_4 + (x+3) * 4 + 3] = 255;
 
 #if DEBUG_MODE == 1
             progress += progress_step;
