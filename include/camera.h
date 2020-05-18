@@ -4,6 +4,9 @@
 #include "mat4.h"
 #include "vec3.h"
 
+extern float _div_widthPx;
+extern float _div_heightPx;
+
 typedef struct Camera
 {
     double pos[NR_VEC_ELEMENTS];    // position of camera

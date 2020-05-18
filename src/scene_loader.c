@@ -24,6 +24,9 @@
 #define SCENES_PATH "../scenes/"
 #define JSON_PARSER_LOG_PATH "../scenes/log_parser.txt"
 
+float _div_widthPx;
+float _div_heightPx;
+
 /*
 Creates a scene container containing and empty array of nr_scenes scenes.
 */
@@ -220,6 +223,10 @@ int create_cam(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, i
     move_camera(camera, position);
     rotate_camera(camera, rotation[0], rotation[1]);
     scene->camera = camera;
+    
+    // Assuming width and height of camera doesn't change
+    _div_widthPx = 2 / (float) width; // pre-compute
+    _div_heightPx = 2 / (float) height; // pre-compute
 
     return j;
 }
