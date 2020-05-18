@@ -5,8 +5,8 @@
 
 typedef struct
 {
-    double c[NR_VEC_ELEMENTS];
-    double emissionColor[NR_VEC_ELEMENTS];
+    SIMD_VEC* c;
+    SIMD_VEC* emissionColor;
 } PointLight;
 
 PointLight *create_pointlight(double vec_center[NR_VEC_ELEMENTS], double vec_emissionColor[NR_VEC_ELEMENTS]);

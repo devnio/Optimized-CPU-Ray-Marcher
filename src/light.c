@@ -5,13 +5,17 @@ PointLight *create_pointlight(double vec_center[NR_VEC_ELEMENTS], double vec_emi
 {
     PointLight *light = malloc(sizeof(PointLight));
 
-    light->c[0] = vec_center[0];
-    light->c[1] = vec_center[1];
-    light->c[2] = vec_center[2];
+    // Instantiate light center
+    light->c = (SIMD_VEC*)aligned_alloc(32, sizeof(SIMD_VEC));
+    light->c->x = SET1_PD(vec_center[0]);
+    light->c->y = SET1_PD(vec_center[1]);
+    light->c->z = SET1_PD(vec_center[2]);
 
-    light->emissionColor[0] = vec_emissionColor[0];
-    light->emissionColor[1] = vec_emissionColor[1];
-    light->emissionColor[2] = vec_emissionColor[2];
-    
+    // Instantiate light emission color
+    light->emissionColor = (SIMD_VEC*)aligned_alloc(32, sizeof(SIMD_VEC));
+    light->emissionColor->x = SET1_PD(vec_emissionColor[0]);
+    light->emissionColor->y = SET1_PD(vec_emissionColor[1]);
+    light->emissionColor->z = SET1_PD(vec_emissionColor[2]);
+
     return light;
 }
