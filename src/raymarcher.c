@@ -256,6 +256,8 @@ void ray_march(SIMD_VEC *simd_vec_orig, SIMD_VEC *simd_vec_dir, const Scene *sce
         // Shadow
         if (doShadowSteps == 1)
         {
+            // Update the finish ray mask for this iteration
+            sdf_info_out->finish_ray_mask = OR_PD(sdf_info_out->intersected_mask, overshoot_mask);
             compute_simd_shadow_coefficient(sdf_info_out, &ph, &t);
         }
     }
