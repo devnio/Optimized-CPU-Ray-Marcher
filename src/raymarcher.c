@@ -162,7 +162,7 @@ void compute_simd_shadow_coefficient(SDF_Info *sdf_info, SIMD_MMD* ph, SIMD_MMD*
     SIMD_MMD simd_mmd_tmp0 = MULT_PD(SET1_PD(LIGHT_STR), simd_mmd_d);
     SIMD_MMD simd_mmd_tmp1 = MAX_PD(SET_ZERO_PD(), SUB_PD(*t, simd_mmd_y));
 
-    sdf_info->s = MIN_PD(sdf_info->s, DIV_PD(simd_mmd_tmp0, simd_mmd_tmp1));
+    sdf_info->s = BLENDV_PD(MIN_PD(sdf_info->s, DIV_PD(simd_mmd_tmp0, simd_mmd_tmp1)), sdf_info->s, sdf_info->finish_ray_mask);
 
     *ph = sdf_info->min_dist;
     *t = ADD_PD(*t, sdf_info->min_dist);
@@ -240,8 +240,6 @@ void ray_march(SIMD_VEC *simd_vec_orig, SIMD_VEC *simd_vec_dir, const Scene *sce
 
             if (current_int_overshoot_mask == 0b1111)
             {
-                // Save intersected ray (min_dist and nearest_obj_idx should already be right)
-                sdf_info_out->intersection_pt = simd_vec_march_pt;
                 break;
             }
         }
@@ -388,6 +386,7 @@ void trace(SIMD_VEC *simd_vec_orig,
     if (MOVEMASK_PD(simd_mmd_lambertian_mask) != 0b0000)
     {
         compute_simd_specular_coefficient(simd_vec_dir, &simd_vec_N, &simd_vec_L, &simd_mmd_mat_shininess, &simd_mmd_specular);
+        simd_mmd_specular = AND_PD(simd_mmd_specular, simd_mmd_lambertian_mask);
     }
 
     // START 0 - Compute diffuse color computation
