@@ -5,7 +5,6 @@
 #include <math.h>
 
 #include "utility.h"
-
 /*
  * Function:  mix 
  * --------------------
@@ -74,6 +73,14 @@ double clamp(double val, double min, double max)
     val = val > max ? max : val;
     val = val < min ? min : val;
     return val;
+}
+void simd_clamp(SIMD_MMD* val, SIMD_MMD min, SIMD_MMD max, SIMD_MMD* res)
+{
+    SIMD_MMD mask = _mm256_cmp_pd(*val, max, _CMP_GT_OQ);
+    *res = _mm256_blendv_pd(*val, max, mask);
+    SIMD_MMD mask2 = _mm256_cmp_pd(*val, max, _CMP_LT_OQ);
+    *res = _mm256_blendv_pd(*val, min, mask2);
+
 }
 
 double sign(double val)

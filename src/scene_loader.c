@@ -455,9 +455,7 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
             }
             else if (strcmp(name, "box") == 0)
             {
-                // geom_obj->sdf = &sdf_box;
-                printf("TODO: VECTORIZE BOX");
-                fflush(stdout);
+                geom_obj->sdf = &sdf_box;
                 fprintf(logFile, " => assigned sdf of %s\n", "box");
             }
             else if (strcmp(name, "cone") == 0)
@@ -469,16 +467,14 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
             }
             else if (strcmp(name, "octahedron") == 0)
             {
-                // geom_obj->sdf = &sdf_octahedron;
-                printf("TODO: VECTORIZE OCTAHEDRON");
-                fflush(stdout);
+                geom_obj->sdf = &sdf_octahedron;
+                // printf("TODO: VECTORIZE OCTAHEDRON");
+                // fflush(stdout);
                 fprintf(logFile, " => assigned sdf of %s\n", "octahedron");
             }
             else if (strcmp(name, "torus") == 0)
             {
-                // geom_obj->sdf = &sdf_torus;
-                printf("TODO: VECTORIZE TORUS");
-                fflush(stdout);
+                geom_obj->sdf = &sdf_torus;
                 fprintf(logFile, " => assigned sdf of %s\n", "torus");
             }
             else if (strcmp(name, "mandelbulb") == 0)

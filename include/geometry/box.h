@@ -8,7 +8,7 @@ Params are:
 - params[0..2]: box extents, x, y, z
 -> 3 parameters in total
  */
-double sdf_box(const double vec_p[NR_VEC_ELEMENTS], double params[]);
+void sdf_box(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_mmd_dists);
 extern const int nr_box_params;
 
 #endif // BOX_H_

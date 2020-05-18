@@ -5,6 +5,7 @@
 #include "vec3.h"
 #include "geometry/scene.h"
 #include "config.h"
+#include "simd.h"
 
 double mix(double a, double b, double mix);
 double min(double a, double b);
@@ -19,4 +20,6 @@ void encodeOneStep(const char *filename, const unsigned char *image, unsigned wi
 unsigned char* decodeOneStep(const char* filename, unsigned *out_width, unsigned *out_height, unsigned* error);
 void save_image_to_disk(Scene *scene, char* dirName);
 
+
+void simd_clamp(SIMD_MMD* val, SIMD_MMD min, SIMD_MMD max, SIMD_MMD* res);
 #endif

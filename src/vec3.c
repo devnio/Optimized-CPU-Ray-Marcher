@@ -49,7 +49,16 @@ void create_vec_z(double *v0, double *v1, double *v2, double *v3, double *res)
     res[2] = v2[2];
     res[3] = v3[2];
 }
-
+void simd_set_zero(SIMD_VEC* simd_vec0){
+    simd_vec0->x = _mm256_setzero_pd();
+    simd_vec0->y = _mm256_setzero_pd();
+    simd_vec0->z = _mm256_setzero_pd();
+}
+void simd_set_vec_from_double(SIMD_VEC* simd_vec0, const SIMD_MMD* xyz){
+    simd_vec0->x = *xyz;
+    simd_vec0->y = *xyz;
+    simd_vec0->z = *xyz;
+}
 void simd_vec_mult(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res)
 {
     simd_vec_res->x = MULT_PD(simd_vec0->x, simd_vec1->x);
@@ -62,6 +71,12 @@ void simd_vec_add(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC
     simd_vec_res->x = ADD_PD(simd_vec0->x, simd_vec1->x);
     simd_vec_res->y = ADD_PD(simd_vec0->y, simd_vec1->y);
     simd_vec_res->z = ADD_PD(simd_vec0->z, simd_vec1->z);
+}
+void simd_vec_add_scalar(const SIMD_VEC* simd_vec0, const SIMD_MMD* p, SIMD_VEC* simd_vec_res)
+{
+    simd_vec_res->x = ADD_PD(simd_vec0->x, *p);
+    simd_vec_res->y = ADD_PD(simd_vec0->y, *p);
+    simd_vec_res->z = ADD_PD(simd_vec0->z, *p);
 }
 
 void simd_vec_sub(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res)
@@ -88,10 +103,102 @@ void simd_vec_norm_squared(const SIMD_VEC* simd_vec, SIMD_MMD* simd_mmd_out)
 {
     *simd_mmd_out = ADD_PD(ADD_PD(MULT_PD(simd_vec->x, simd_vec->x), MULT_PD(simd_vec->y, simd_vec->y)), MULT_PD(simd_vec->z, simd_vec->z));
 }
-void simd_vec_dot(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_MMD* simd_mmd_out)
+void simd_vec_dot(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_MMD* simd_vec_res) // TODO: use this code if more performant for vec_norm and vec_normalize and vec_norm_squared
 {
-    *simd_mmd_out = ADD_PD(ADD_PD(MULT_PD(simd_vec0->x, simd_vec1->x), MULT_PD(simd_vec0->y, simd_vec1->y)), MULT_PD(simd_vec0->z, simd_vec1->z));
+    SIMD_MMD tmpx  = MULT_PD(simd_vec0->x, simd_vec1->x);
+    SIMD_MMD tmpyx = FMADD_PD(simd_vec0->y, simd_vec1->y, tmpx);
+    *simd_vec_res =  FMADD_PD(simd_vec0->z, simd_vec1->z, tmpyx);
 }
+/*void simd_vec_pow(const SIMD_VEC* simd_vec, SIMD_MMD* p, SIMD_VEC* simd_vec_res) // TODO: fix gcc not recognizing pow
+{
+    simd_vec_res->x = POW_PD(simd_vec->x,*p);
+    simd_vec_res->y = POW_PD(simd_vec->y,*p);
+    simd_vec_res->z = POW_PD(simd_vec->z,*p);
+}*/
+void simd_vec_mult_scalar(const SIMD_VEC* simd_vec, SIMD_MMD* p, SIMD_VEC* simd_vec_res)
+{
+    simd_vec_res->x = MULT_PD(simd_vec->x, *p);
+    simd_vec_res->y = MULT_PD(simd_vec->y, *p);
+    simd_vec_res->z = MULT_PD(simd_vec->z, *p);
+}
+
+void simd_vec_cross(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res)
+{
+    SIMD_MMD tmpx = MULT_PD(simd_vec0->z, simd_vec1->y);
+    SIMD_MMD tmpy = MULT_PD(simd_vec0->x, simd_vec1->z);
+    SIMD_MMD tmpz = MULT_PD(simd_vec0->y, simd_vec1->x);
+
+    simd_vec_res->x = FMSUB_PD(simd_vec0->y, simd_vec1->z, tmpx);
+    simd_vec_res->y = FMSUB_PD(simd_vec0->z, simd_vec1->x, tmpy);
+    simd_vec_res->z = FMSUB_PD(simd_vec0->x, simd_vec1->y , tmpz);
+}
+void simd_vec_abs(SIMD_VEC* simd_vec0) // TODO: if not fast enough try other method: https://stackoverflow.com/questions/25590602/how-do-i-perform-absolute-value-on-double-using-intrinsics
+{
+    const __m256d mask = _mm256_castsi256_pd (_mm256_set1_epi64x (0x7FFFFFFFFFFFFFFF));
+    simd_vec0->x = AND_PD (mask, simd_vec0->x);
+    simd_vec0->y = AND_PD (mask, simd_vec0->y);
+    simd_vec0->z = AND_PD (mask, simd_vec0->z);
+}
+// void simd_vec_reflect(const SIMD_VEC* v, const SIMD_VEC* normal, SIMD_VEC* res)
+// {
+//     SIMD_MMD tmp;
+//     simd_vec_dot(v, normal, &tmp);
+//     simd_vec_mult_scalar(normal, &tmp, res);
+//     SIMD_MMD scalar = SET1_PD(2.);
+//     simd_vec_mult_scalar(res, &scalar, res);
+//     simd_vec_sub(v, res, res);
+
+// }
+void simd_vec_max(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res)
+{
+    simd_vec_res->x = MAX_PD(simd_vec0->x, simd_vec1->x);
+    simd_vec_res->y = MAX_PD(simd_vec0->y, simd_vec1->y);
+    simd_vec_res->z = MAX_PD(simd_vec0->z, simd_vec1->z);
+}
+/*void simd_vec_rotate(const SIMD_VEC* simd_vec0, const SIMD_VEC* k, SIMD_MMD* theta, SIMD_VEC* simd_vec_res)
+{
+
+    SIMD_MMD cosTheta = COS_PD(*theta);
+    SIMD_VEC first;
+    simd_vec_mult_scalar(simd_vec0, &cosTheta, &first);
+    
+    SIMD_VEC second;
+    SIMD_VEC tmp; 
+    simd_vec_cross(k, simd_vec0, &tmp);
+    SIMD_MMD sinTheta = SIN_PD(*theta);
+    simd_vec_mult_scalar(&tmp, &sinTheta, &second);
+    SIMD_VEC third;
+
+    SIMD_MMD ct = SUB_PD(SET1_PD(1.), cosTheta);
+    SIMD_MMD pres;
+    simd_vec_dot(k,simd_vec0, &pres);
+    SIMD_MMD _tmp = MULT_PD(pres, ct); // todo finish vec_dot 
+    simd_vec_mult_scalar(k, &_tmp, &third);
+
+    simd_vec_add(&second, &third, simd_vec_res);
+    simd_vec_add(&first, simd_vec_res, simd_vec_res);
+
+}*/
+
+void simd_vec_mod(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res)
+{
+    simd_vec_res->x = MULT_PD(simd_vec1->x, _mm256_floor_pd(_mm256_div_pd(simd_vec0->x,simd_vec1->x)));
+    simd_vec_res->y = MULT_PD(simd_vec1->y, _mm256_floor_pd(_mm256_div_pd(simd_vec0->y,simd_vec1->y)));
+    simd_vec_res->z = MULT_PD(simd_vec1->z, _mm256_floor_pd(_mm256_div_pd(simd_vec0->z,simd_vec1->z)));
+
+    simd_vec_res->x = SUB_PD(simd_vec0->x, simd_vec_res->x);
+    simd_vec_res->y = SUB_PD(simd_vec0->y, simd_vec_res->y);
+    simd_vec_res->z = SUB_PD(simd_vec0->z, simd_vec_res->z);  
+
+}
+
+
+
+// TODO remove
+// void simd_vec_dot(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_MMD* simd_mmd_out)
+// {
+//     *simd_mmd_out = ADD_PD(ADD_PD(MULT_PD(simd_vec0->x, simd_vec1->x), MULT_PD(simd_vec0->y, simd_vec1->y)), MULT_PD(simd_vec0->z, simd_vec1->z));
+// }
 void simd_vec_reflect(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec_N, SIMD_VEC* simd_reflected_vec_out)
 {
     SIMD_MMD dot;
@@ -100,7 +207,7 @@ void simd_vec_reflect(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec_N, SIM
     SIMD_MMD r_x = MULT_PD(dot, simd_vec_N->x);
     SIMD_MMD r_y = MULT_PD(dot, simd_vec_N->y);
     SIMD_MMD r_z = MULT_PD(dot, simd_vec_N->z);
-
+    
     r_x = MULT_PD(r_x, SET1_PD(2.0));
     r_y = MULT_PD(r_y, SET1_PD(2.0));
     r_z = MULT_PD(r_z, SET1_PD(2.0));

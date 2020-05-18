@@ -10,30 +10,30 @@ Params are:
 - params[2]: h
 -> 3 parameters in total
  */
-double sdf_cone(const double vec_p[NR_VEC_ELEMENTS], double params[])
+void sdf_cone(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_mmd_dists)
 {
-    double qx = sqrt(vec_p[0] * vec_p[0] + vec_p[2] * vec_p[2]);
-    double qy = vec_p[1];
+    /*SIMD_MMD qx = SQRT_PD(ADD_PD(MULT_PD(simd_vec_p->x, simd_vec_p->x), MULT_PD(simd_vec_p->z, simd_vec_p->z)));
+    SIMD_MMD qy = simd_vec_p->y;
     
-    double cax = qx - fmin(qx, (qy < 0.) ? params[0] : params[1]);
-    double cay = fabs(qy) - params[2];
+    SIMD_MMD cax = qx - fmin(qx, (qy < 0.) ? params[0] : params[1]);
+    SIMD_MMD cay = fabs(qy) - params[2];
 
-    double vsubx = params[1] - qx;
-    double vsuby = params[2] - qy;
+    SIMD_MMD vsubx = params[1] - qx;
+    SIMD_MMD vsuby = params[2] - qy;
 
-    double coeff = clamp(((vsubx*params[3] + vsuby*params[4]) * params[5]), 0.0, 1.0);
-    double tmpx = coeff * params[3];
-    double tmpy = coeff * params[4];
+    SIMD_MMD coeff = clamp(((vsubx*params[3] + vsuby*params[4]) * params[5]), 0.0, 1.0);
+    SIMD_MMD tmpx = coeff * params[3];
+    SIMD_MMD tmpy = coeff * params[4];
 
-    double v_sub2x = qx - params[1];
-    double v_sub2y = qy - params[2];
+    SIMD_MMD v_sub2x = qx - params[1];
+    SIMD_MMD v_sub2y = qy - params[2];
 
-    double cbx = v_sub2x + tmpx;
-    double cby = v_sub2y + tmpy;
+    SIMD_MMD cbx = v_sub2x + tmpx;
+    SIMD_MMD cby = v_sub2y + tmpy;
 
-    double dot_ca = cax*cax + cay*cay;
-    double dot_cb = cbx*cbx + cby*cby;
+    SIMD_MMD dot_ca = cax*cax + cay*cay;
+    SIMD_MMD dot_cb = cbx*cbx + cby*cby;
 
-    double s = 1-2*(cbx < 0.0 && cay < 0.0);
-    return s * sqrt(fmin(dot_ca, dot_cb));
+    SIMD_MMD s = 1-2*(cbx < 0.0 && cay < 0.0);
+    *simd_mmd_dists =  s * sqrt(fmin(dot_ca, dot_cb));*/
 }

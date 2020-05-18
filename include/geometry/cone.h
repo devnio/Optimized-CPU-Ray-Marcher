@@ -10,7 +10,7 @@ Params are:
 - params[2]: h
 -> 3 parameters in total
  */
-double sdf_cone(const double vec_p[NR_VEC_ELEMENTS], double params[]);
+void sdf_cone(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_mmd_dists);
 extern const int nr_cone_params;
 
 #endif

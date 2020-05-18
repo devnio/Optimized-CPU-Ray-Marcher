@@ -60,6 +60,14 @@ typedef struct
 #define FMA_PD _mm256_fmadd_pd
 #define DIV_PD _mm256_div_pd
 #define SQRT_PD _mm256_sqrt_pd
+#define FMADD_PD _mm256_fmadd_pd
+#define FMSUB_PD _mm256_fmsub_pd
+//#define POW_PD _mm256_pow_pd
+#define MAX_PD _mm256_max_pd
+//#define COS_PD _mm256_cos_pd
+//#define SIN_PD _mm256_sin_pd
+
+//#define LOG_PD _mm256_log_pd
 
 #define BLENDV_PD _mm256_blendv_pd
 #define BLEND_PD _mm256_blend_pd
@@ -70,7 +78,6 @@ typedef struct
 #define MIN_PD _mm256_min_pd
 
 #define CONV_PD_TO_EPI _mm256_cvtpd_epi32
-
 #define CMP_PD _mm256_cmp_pd
 #define MOVEMASK_PD _mm256_movemask_pd
 
