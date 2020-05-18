@@ -556,23 +556,13 @@ void render(Scene* scene)
             SIMD_MMD _min_color_y = MIN_PD(SET1_PD(1.0), simd_vec_finalColor.y);
             SIMD_MMD _min_color_z = MIN_PD(SET1_PD(1.0), simd_vec_finalColor.z);
 
-            SIMD_MMD color_x_i = MULT_PD(_min_color_x, _m_255);
-            SIMD_MMD color_y_i = MULT_PD(_min_color_y, _m_255);
-            SIMD_MMD color_z_i = MULT_PD(_min_color_z, _m_255);
+            SIMD_MMD color_x = MULT_PD(_min_color_x, _m_255);
+            SIMD_MMD color_y = MULT_PD(_min_color_y, _m_255);
+            SIMD_MMD color_z = MULT_PD(_min_color_z, _m_255);
 
-            SIMD_MMI c_x = CONV_PD_TO_EPI(color_x_i);
-            SIMD_MMI c_y = CONV_PD_TO_EPI(color_x_i);
-            SIMD_MMI c_z = CONV_PD_TO_EPI(color_x_i);
-
-            STORE_PD(px_col_x, color_x_i);
-            STORE_PD(px_col_y, color_y_i);
-            STORE_PD(px_col_z, color_z_i);
-
-            // SIMD_MMI mask_all_1 = SET1_EPI(1);
-
-            // MASKSTORE_EPI(px_col_x, mask_all_1 ,c_x);
-            // MASKSTORE_EPI(px_col_y, mask_all_1 ,c_y);
-            // MASKSTORE_EPI(px_col_z, SET1_EPI(1) ,c_z);
+            STORE_PD(px_col_x, color_x);
+            STORE_PD(px_col_y, color_y);
+            STORE_PD(px_col_z, color_z);
 
             // save colors computed by trace into current pixel
             scene->img[y_w_4 + x * 4 + 0] = (unsigned char)(px_col_x[0]);
