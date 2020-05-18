@@ -88,8 +88,38 @@ void simd_vec_norm_squared(const SIMD_VEC* simd_vec, SIMD_MMD* simd_mmd_out)
 {
     *simd_mmd_out = ADD_PD(ADD_PD(MULT_PD(simd_vec->x, simd_vec->x), MULT_PD(simd_vec->y, simd_vec->y)), MULT_PD(simd_vec->z, simd_vec->z));
 }
+void simd_vec_dot(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_MMD* simd_mmd_out)
+{
+    *simd_mmd_out = ADD_PD(ADD_PD(MULT_PD(simd_vec0->x, simd_vec1->x), MULT_PD(simd_vec0->y, simd_vec1->y)), MULT_PD(simd_vec0->z, simd_vec1->z));
+}
+void simd_vec_reflect(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec_N, SIMD_VEC* simd_reflected_vec_out)
+{
+    SIMD_MMD dot;
+    simd_vec_dot(simd_vec0, simd_vec_N, &dot);
 
+    SIMD_MMD r_x = MULT_PD(dot, simd_vec_N->x);
+    SIMD_MMD r_y = MULT_PD(dot, simd_vec_N->y);
+    SIMD_MMD r_z = MULT_PD(dot, simd_vec_N->z);
 
+    r_x = MULT_PD(r_x, SET1_PD(2.0));
+    r_y = MULT_PD(r_y, SET1_PD(2.0));
+    r_z = MULT_PD(r_z, SET1_PD(2.0));
+
+    simd_reflected_vec_out->x = SUB_PD(simd_vec0->x, r_x);
+    simd_reflected_vec_out->y = SUB_PD(simd_vec0->y, r_y);
+    simd_reflected_vec_out->z = SUB_PD(simd_vec0->z, r_z);
+}
+void simd_mmd_pow_func(const SIMD_MMD* simd_mmd0, const SIMD_MMD* simd_mmd_pow0, SIMD_MMD* out_mmd)
+{
+    // TODO: do a proper pow using an approximation, e.g. taylor for exp and log and combine
+    alignas(32) double v[NR_SIMD_VEC_ELEMS];
+    STORE_PD(v, *simd_mmd0);
+
+    alignas(32) double val[NR_SIMD_VEC_ELEMS];
+    STORE_PD(val, *simd_mmd_pow0);
+
+    *out_mmd = SET_PD(pow(v[3], val[3]), pow(v[2], val[2]), pow(v[1], val[1]), pow(v[0], val[0]));
+}
 
 /*
  *Function: new_vector

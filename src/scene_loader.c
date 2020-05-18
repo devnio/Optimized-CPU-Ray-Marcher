@@ -50,6 +50,9 @@ void destroy_scene(Scene *scene)
 {
     free(scene->name);
     free(scene->camera);
+
+    free(scene->light->c);
+    free(scene->light->emissionColor);
     free(scene->light);
 
     // free materials

@@ -103,20 +103,45 @@ void compute_normal(const SIMD_VEC* simd_vec_p, const Scene *scene, SIMD_VEC* si
     simd_vec_normalize(&sub_res, simd_vec_normals_out);
 }
 
-double compute_specular_coefficient(const double dir[NR_VEC_ELEMENTS], double N[NR_VEC_ELEMENTS], double L[NR_VEC_ELEMENTS], Material *mat)
-{
-    // Light reflected on normal
-    double __R[NR_VEC_ELEMENTS];
-    double __V[NR_VEC_ELEMENTS];
-    vec_mult_scalar(L, -1, __V);
-    vec_reflect(__V, N, __R);
-    vec_mult_scalar(dir, -1, __V);
-    vec_normalize(__V);
+// double compute_specular_coefficient(const double dir[NR_VEC_ELEMENTS], double N[NR_VEC_ELEMENTS], double L[NR_VEC_ELEMENTS], Material *mat)
+// {
+//     // Light reflected on normal
+//     double __R[NR_VEC_ELEMENTS];
+//     double __V[NR_VEC_ELEMENTS];
+//     vec_mult_scalar(L, -1, __V);
+//     vec_reflect(__V, N, __R);
+//     vec_mult_scalar(dir, -1, __V);
+//     vec_normalize(__V);
 
-    // Specular term
-    double specAngle = max(vec_dot(__R, __V), 0.0);
-    return pow(specAngle, (*mat).shininess);
+//     // Specular term
+//     double specAngle = max(vec_dot(__R, __V), 0.0);
+//     return pow(specAngle, (*mat).shininess);
+// }
+
+void compute_simd_specular_coefficient(const SIMD_VEC* simd_vec_dir, const SIMD_VEC* N, const SIMD_VEC* L, const SIMD_MMD* mat_shininess, SIMD_MMD* spec_coeff_out)
+{
+    SIMD_VEC R;
+    SIMD_VEC V;
+    V.x = MULT_PD(SET1_PD(-1.0), L->x);
+    V.y = MULT_PD(SET1_PD(-1.0), L->y);
+    V.z = MULT_PD(SET1_PD(-1.0), L->z);
+
+    simd_vec_reflect(&V, N, &R);
+
+    V.x = MULT_PD(SET1_PD(-1.0), simd_vec_dir->x);
+    V.y = MULT_PD(SET1_PD(-1.0), simd_vec_dir->y);
+    V.z = MULT_PD(SET1_PD(-1.0), simd_vec_dir->z);
+
+    SIMD_VEC V_normalized;
+    simd_vec_normalize(&V, &V_normalized);
+
+    SIMD_MMD dot;
+    simd_vec_dot(&R, &V_normalized, &dot);
+    dot = MAX_PD(dot, SET_ZERO_PD());
+
+    simd_mmd_pow_func(&dot, mat_shininess, spec_coeff_out);
 }
+
 
 // void compute_shadow_coefficient(SDF_Info *sdf_info, double *ph, double *t)
 // {
@@ -127,6 +152,21 @@ double compute_specular_coefficient(const double dir[NR_VEC_ELEMENTS], double N[
 //     *ph = sdf_info->min_dist;
 //     *t += sdf_info->min_dist;
 // }
+
+void compute_simd_shadow_coefficient(SDF_Info *sdf_info, SIMD_MMD* ph, SIMD_MMD* t)
+{
+    SIMD_MMD simd_mmd_mid = MULT_PD(sdf_info->min_dist, sdf_info->min_dist);
+    SIMD_MMD simd_mmd_y = DIV_PD(simd_mmd_mid, MULT_PD(*ph, SET1_PD(2.0)));
+    SIMD_MMD simd_mmd_d = SQRT_PD(SUB_PD(simd_mmd_mid, MULT_PD(simd_mmd_y, simd_mmd_y)));
+
+    SIMD_MMD simd_mmd_tmp0 = MULT_PD(SET1_PD(LIGHT_STR), simd_mmd_d);
+    SIMD_MMD simd_mmd_tmp1 = MAX_PD(SET_ZERO_PD(), SUB_PD(*t, simd_mmd_y));
+
+    sdf_info->s = MIN_PD(sdf_info->s, DIV_PD(simd_mmd_tmp0, simd_mmd_tmp1));
+
+    *ph = sdf_info->min_dist;
+    *t = ADD_PD(*t, sdf_info->min_dist);
+}
 
 void ray_march(SIMD_VEC *simd_vec_orig, SIMD_VEC *simd_vec_dir, const Scene *scene, const int doShadowSteps, SDF_Info* sdf_info_out)
 {
@@ -214,6 +254,12 @@ void ray_march(SIMD_VEC *simd_vec_orig, SIMD_VEC *simd_vec_dir, const Scene *sce
             sdf_info_out->intersection_pt = simd_vec_march_pt;
             break;
         }
+
+        // Shadow
+        if (doShadowSteps == 1)
+        {
+            compute_simd_shadow_coefficient(sdf_info_out, &ph, &t);
+        }
     }
 }
 
@@ -233,104 +279,51 @@ void trace(SIMD_VEC *simd_vec_orig,
            SIMD_VEC *simd_vec_dir,
            const Scene *scene,
            const int depth, 
-           double vec_res_finalColor[NR_VEC_ELEMENTS])
+           SIMD_VEC* simd_vec_finalColor)
 {
-    // GLOBAL VARIABLES
-    double v__ambientColor[NR_VEC_ELEMENTS]; 
-    // set zero
-    v__ambientColor[0] = 0.0;
-    v__ambientColor[1] = 0.0;
-    v__ambientColor[2] = 0.0;
-    vec_res_finalColor[0] = 0.0;
-    vec_res_finalColor[1] = 0.0;
-    vec_res_finalColor[2] = 0.0;
-    double v__specularColor[NR_VEC_ELEMENTS];
-    v__specularColor[0] = const_specularColour[0];
-    v__specularColor[1] = const_specularColour[1];
-    v__specularColor[2] = const_specularColour[2];
-    double v__diffuseColor[NR_VEC_ELEMENTS];
-    // double v__N[NR_VEC_ELEMENTS]; // Normal direction 
-    double v__L[NR_VEC_ELEMENTS]; // Light direction
-    double v__tmp_res[NR_VEC_ELEMENTS]; // temporary result variable
-    double v__vmult[NR_VEC_ELEMENTS]; // temporary multiplication variable
-    SDF_Info sdf_shadow_info, sdf_info;
-    Material mat;
-    double lambertian = 0;
-    double specular = 0;
-
-    // debug_simd_vec(simd_vec_dir);
-    // debug_simd_vec(simd_vec_orig);
-
-    double vec_dir[NR_VEC_ELEMENTS];
-    alignas(32) double vec_dir_x[NR_SIMD_VEC_ELEMS];
-    alignas(32) double vec_dir_y[NR_SIMD_VEC_ELEMS];
-    alignas(32) double vec_dir_z[NR_SIMD_VEC_ELEMS];
-    STORE_PD(vec_dir_x, simd_vec_dir->x);
-    STORE_PD(vec_dir_y, simd_vec_dir->y);
-    STORE_PD(vec_dir_z, simd_vec_dir->z);
-    vec_dir[0] = vec_dir_x[0];
-    vec_dir[1] = vec_dir_y[0];
-    vec_dir[2] = vec_dir_z[0];
-
     // CHECK INTERSECTION WITH SCENE
+    SDF_Info sdf_info;
     ray_march(simd_vec_orig, simd_vec_dir, scene, 0, &sdf_info);
 
-    // ============================================
-    // REST OF FUNCTION IS SCALAR IN ORDER TO DEBUG
-    // ============================================
-    alignas(32) double intersected[NR_SIMD_VEC_ELEMS];
-    STORE_PD(intersected, sdf_info.intersected_mask);
-
-    alignas(32) double nearest_obj_idx[NR_SIMD_VEC_ELEMS];
-    STORE_PD(nearest_obj_idx, sdf_info.nearest_obj_idx);
-
-
-    alignas(32) double inter_pt_x[NR_SIMD_VEC_ELEMS];
-    alignas(32) double inter_pt_y[NR_SIMD_VEC_ELEMS];
-    alignas(32) double inter_pt_z[NR_SIMD_VEC_ELEMS];
-    STORE_PD(inter_pt_x, sdf_info.intersection_pt.x);
-    STORE_PD(inter_pt_y, sdf_info.intersection_pt.y);
-    STORE_PD(inter_pt_z, sdf_info.intersection_pt.z);
-    double intersection_pt[NR_VEC_ELEMENTS];
-    intersection_pt[0] = inter_pt_x[0];
-    intersection_pt[1] = inter_pt_y[0];
-    intersection_pt[2] = inter_pt_z[0];
-
-    // ============================================
-    // END DEBUG
-    // ============================================
-
-    // No intersection case (return black)
-    if (intersected[0] == 0)
-        return;
-
-    // Shade intersected object TODO: remove hardcoded part
-    mat = *(scene->geometric_ojects[(int)nearest_obj_idx[0]]->mat); //*(scene->geometric_ojects[sdf_info.nearest_obj_idx]->mat);
-
-    // Normal
-    SIMD_VEC simd_vec_normals;
-    compute_normal(&sdf_info.intersection_pt, scene, &simd_vec_normals);
-
-    //=============================================
-    // DEBUG: get normal to a vector to check if it's right
-    //=============================================
-    alignas(32) double v__N_x[NR_SIMD_VEC_ELEMS];
-    alignas(32) double v__N_y[NR_SIMD_VEC_ELEMS];
-    alignas(32) double v__N_z[NR_SIMD_VEC_ELEMS];
-    STORE_PD(v__N_x, simd_vec_normals.x);
-    STORE_PD(v__N_y, simd_vec_normals.y);
-    STORE_PD(v__N_z, simd_vec_normals.z);
-    double v__N[NR_VEC_ELEMENTS];
-    v__N[0] = v__N_x[0];
-    v__N[1] = v__N_y[0];
-    v__N[2] = v__N_z[0];
-    //=============================================
-    //=============================================
-
-    // In theory not necessary if normals are computed outwards
-    if (vec_dot(vec_dir, v__N) > 0)
+    // Check if at least one intersection
+    if (MOVEMASK_PD(sdf_info.intersected_mask) == 0b0000)
     {
-        vec_mult_scalar(v__N, -1, v__N);
+        return;
+    }
+
+    // Get the materials
+    alignas(32) double nearest_obj_idx[NR_SIMD_VEC_ELEMS]; 
+    STORE_PD(nearest_obj_idx, sdf_info.nearest_obj_idx); // TODO: transform nearest_obj_idx into integer simd vec
+    Material mat0 = *(scene->geometric_ojects[(int)nearest_obj_idx[0]]->mat);
+    Material mat1 = *(scene->geometric_ojects[(int)nearest_obj_idx[1]]->mat);
+    Material mat2 = *(scene->geometric_ojects[(int)nearest_obj_idx[2]]->mat);
+    Material mat3 = *(scene->geometric_ojects[(int)nearest_obj_idx[3]]->mat);
+
+    // Create simd vectors for the material properties
+    SIMD_MMD simd_mmd_mat_shininess = SET_PD(mat3.shininess, mat2.shininess, mat1.shininess, mat0.shininess);
+    SIMD_MMD simd_mmd_mat_refl = SET_PD(mat3.refl, mat2.refl, mat1.refl, mat0.refl);
+    SIMD_VEC simd_vec_mat_surfCol;
+    simd_vec_mat_surfCol.x = SET_PD(mat3.surfCol[0], mat2.surfCol[0], mat1.surfCol[0], mat0.surfCol[0]);
+    simd_vec_mat_surfCol.y = SET_PD(mat3.surfCol[1], mat2.surfCol[1], mat1.surfCol[1], mat0.surfCol[1]);
+    simd_vec_mat_surfCol.z = SET_PD(mat3.surfCol[2], mat2.surfCol[2], mat1.surfCol[2], mat0.surfCol[2]);
+
+    // Normals
+    SIMD_VEC simd_vec_N;
+    compute_normal(&sdf_info.intersection_pt, scene, &simd_vec_N);
+
+    // Flip normals simd vectors
+    SIMD_MMD simd_mmd_normals_dot;
+    simd_vec_dot(simd_vec_dir, &simd_vec_N, &simd_mmd_normals_dot);
+    SIMD_MMD simd_mmd_flip_normals_mask = CMP_PD(simd_mmd_normals_dot, SET1_PD(0.0), _CMP_GT_OS);
+    
+    // Flip normals check for all simd
+    if (MOVEMASK_PD(simd_mmd_flip_normals_mask) != 0b0000) 
+    {
+        // Masked mult scalar
+        SIMD_MMD simd_vec_minus_one = SET1_PD(-1.0);
+        simd_vec_N.x = BLENDV_PD(simd_vec_N.x, MULT_PD(simd_vec_N.x, simd_vec_minus_one), simd_mmd_flip_normals_mask);
+        simd_vec_N.y = BLENDV_PD(simd_vec_N.y, MULT_PD(simd_vec_N.y, simd_vec_minus_one), simd_mmd_flip_normals_mask);
+        simd_vec_N.z = BLENDV_PD(simd_vec_N.z, MULT_PD(simd_vec_N.z, simd_vec_minus_one), simd_mmd_flip_normals_mask);
     }
 
     // TODO: REFLECTION
@@ -353,57 +346,125 @@ void trace(SIMD_VEC *simd_vec_orig,
     //     vec_mult_scalar(v__tmp_res, REFLECTIVE_COEFF, vec_res_finalColor);
     // }
 
-    // Light dir L
-    vec_sub(scene->light->c, intersection_pt, v__L);
+    SIMD_VEC simd_vec_L;
+    simd_vec_sub(scene->light->c, &sdf_info.intersection_pt, &simd_vec_L);
 
-    // distance between intersection_pt and light source
-    double dist = vec_norm(v__L);
-    double inv_dist = 1 / dist;
-    vec_mult_scalar(v__L, inv_dist, v__L);
+    // Distance between intersection_pt and light source
+    SIMD_MMD simd_mmd_light_dist;
+    simd_vec_norm(&simd_vec_L, &simd_mmd_light_dist);
+
+    SIMD_MMD simd_mmd_light_inv_dist = DIV_PD(SET1_PD(1.0), simd_mmd_light_dist); // TODO: use rcp operation
+
+    // Normalize light direction
+    simd_vec_L.x = MULT_PD(simd_vec_L.x, simd_mmd_light_inv_dist);
+    simd_vec_L.y = MULT_PD(simd_vec_L.y, simd_mmd_light_inv_dist);
+    simd_vec_L.z = MULT_PD(simd_vec_L.z, simd_mmd_light_inv_dist);
 
     // TODO: SHADOWS
-    // sdf_shadow_info.s = 1.0;
-    // if (scene->nr_geom_objs > 1)
-    // {
-    //     vec_mult_scalar(v__L, EPSILON, v__tmp_res);
-    //     vec_add(sdf_info.intersection_pt, v__tmp_res, v__tmp_res);
-    //     sdf_shadow_info = ray_march(v__tmp_res, v__L, scene, 1);
-    //     sdf_shadow_info.s = clamp(sdf_shadow_info.s, SHADOW_LIGHTNESS, 1.0);
-    // }
-
-    // Lamber's cosine law
-    lambertian = max(vec_dot(v__N, v__L), 0.0);
-    if (lambertian > 0.0)
+    SDF_Info sdf_shadow_info;
+    if (scene->nr_geom_objs > 1)
     {
-        specular = compute_specular_coefficient(vec_dir, v__N, v__L, &mat);
+        SIMD_VEC simd_mmd_offset_towards_L;
+        simd_mmd_offset_towards_L.x = MULT_PD(SET1_PD(EPSILON), simd_vec_L.x);
+        simd_mmd_offset_towards_L.y = MULT_PD(SET1_PD(EPSILON), simd_vec_L.y);
+        simd_mmd_offset_towards_L.z = MULT_PD(SET1_PD(EPSILON), simd_vec_L.z);
+
+        simd_mmd_offset_towards_L.x = ADD_PD(sdf_info.intersection_pt.x, simd_mmd_offset_towards_L.x);
+        simd_mmd_offset_towards_L.y = ADD_PD(sdf_info.intersection_pt.y, simd_mmd_offset_towards_L.y);
+        simd_mmd_offset_towards_L.z = ADD_PD(sdf_info.intersection_pt.z, simd_mmd_offset_towards_L.z);
+        
+        ray_march(&simd_mmd_offset_towards_L, &simd_vec_L, scene, 1, &sdf_shadow_info);
+        sdf_shadow_info.s = MIN_PD(MAX_PD(sdf_shadow_info.s, SET1_PD(SHADOW_LIGHTNESS)), SET1_PD(1.0));
     }
 
-    // Diffuse Colour Computation
-    vec_mult_scalar(mat.surfCol, lambertian, v__tmp_res);
-    vec_mult_scalar(v__tmp_res, 1.0, v__tmp_res);
-    vec_mult(scene->light->emissionColor, v__tmp_res, v__vmult);
-    vec_mult_scalar(v__vmult, inv_dist, v__diffuseColor); // diffuse colour result
+    // Lamber's cosine law
+    SIMD_MMD simd_mmd_lambertian;
+    simd_vec_dot(&simd_vec_L, &simd_vec_N, &simd_mmd_lambertian);
+    simd_mmd_lambertian = MAX_PD(simd_mmd_lambertian, SET_ZERO_PD());
+    SIMD_MMD simd_mmd_lambertian_mask = CMP_PD(simd_mmd_lambertian, SET_ZERO_PD(), _CMP_GT_OS);
 
-    // Ambient Colour Computation
-    vec_mult_scalar(mat.surfCol, MATERIAL_AMBIENT_COEFF, v__tmp_res);
-    vec_add(v__ambientColor, v__tmp_res, v__ambientColor); // ambient colour result
+    // double specular = 0;
+    SIMD_MMD simd_mmd_specular = SET_ZERO_PD();
+    if (MOVEMASK_PD(simd_mmd_lambertian_mask) != 0b0000)
+    {
+        compute_simd_specular_coefficient(simd_vec_dir, &simd_vec_N, &simd_vec_L, &simd_mmd_mat_shininess, &simd_mmd_specular);
+    }
+
+    // START 0 - Compute diffuse color computation
+    SIMD_VEC simd_vec_diffuse_color;// = simd_vec_mat_surfCol
+    simd_vec_diffuse_color.x = MULT_PD(simd_vec_mat_surfCol.x, simd_mmd_lambertian);
+    simd_vec_diffuse_color.y = MULT_PD(simd_vec_mat_surfCol.y, simd_mmd_lambertian);
+    simd_vec_diffuse_color.z = MULT_PD(simd_vec_mat_surfCol.z, simd_mmd_lambertian);
+
+    simd_vec_diffuse_color.x = MULT_PD(simd_vec_diffuse_color.x, sdf_shadow_info.s); // TODO: replace 1.0 by s
+    simd_vec_diffuse_color.y = MULT_PD(simd_vec_diffuse_color.y, sdf_shadow_info.s); // for soft shadows
+    simd_vec_diffuse_color.z = MULT_PD(simd_vec_diffuse_color.z, sdf_shadow_info.s);
     
-    // Specular Colour Computation
-    vec_mult_scalar(v__specularColor, specular, v__tmp_res);
-    vec_mult(scene->light->emissionColor, v__tmp_res, v__vmult);
-    vec_mult_scalar(v__vmult, 1.0, v__tmp_res);
-    vec_mult_scalar(v__tmp_res, inv_dist, v__specularColor); // specular colour result
+    simd_vec_diffuse_color.x = MULT_PD(simd_vec_diffuse_color.x, scene->light->emissionColor->x); 
+    simd_vec_diffuse_color.y = MULT_PD(simd_vec_diffuse_color.y, scene->light->emissionColor->y); 
+    simd_vec_diffuse_color.z = MULT_PD(simd_vec_diffuse_color.z, scene->light->emissionColor->z); 
+    
+    simd_vec_diffuse_color.x = MULT_PD(simd_vec_diffuse_color.x, simd_mmd_light_inv_dist); 
+    simd_vec_diffuse_color.y = MULT_PD(simd_vec_diffuse_color.y, simd_mmd_light_inv_dist); 
+    simd_vec_diffuse_color.z = MULT_PD(simd_vec_diffuse_color.z, simd_mmd_light_inv_dist); 
+    // END 0 
+    
+    // START 1 - Compute Ambient Color - TODO: for now assume ambient color is always 0
+    SIMD_VEC simd_vec_ambient_color;
+    simd_vec_ambient_color.x = SET_ZERO_PD();
+    simd_vec_ambient_color.y = SET_ZERO_PD();
+    simd_vec_ambient_color.z = SET_ZERO_PD();
 
-    // Final Colour 
-    vec_add(v__ambientColor, v__diffuseColor, v__tmp_res);
-    vec_add(v__tmp_res, v__specularColor, v__tmp_res);
-    vec_add(vec_res_finalColor, v__tmp_res, vec_res_finalColor); // final colour result
+    simd_vec_ambient_color.x = MULT_PD(simd_vec_mat_surfCol.x, SET1_PD(MATERIAL_AMBIENT_COEFF));
+    simd_vec_ambient_color.y = MULT_PD(simd_vec_mat_surfCol.y, SET1_PD(MATERIAL_AMBIENT_COEFF));
+    simd_vec_ambient_color.z = MULT_PD(simd_vec_mat_surfCol.z, SET1_PD(MATERIAL_AMBIENT_COEFF));
+    // END 1 
+
+    // START 2 - Compute Specular color
+    SIMD_VEC simd_vec_specular_color;
+    simd_vec_specular_color.x = SET1_PD(SPECULAR_COEFF);
+    simd_vec_specular_color.y = SET1_PD(SPECULAR_COEFF);
+    simd_vec_specular_color.z = SET1_PD(SPECULAR_COEFF);
+
+    simd_vec_specular_color.x = MULT_PD(simd_vec_specular_color.x, simd_mmd_specular);
+    simd_vec_specular_color.y = MULT_PD(simd_vec_specular_color.y, simd_mmd_specular);
+    simd_vec_specular_color.z = MULT_PD(simd_vec_specular_color.z, simd_mmd_specular);
+
+    simd_vec_specular_color.x = MULT_PD(simd_vec_specular_color.x, sdf_shadow_info.s); // TODO: replace 1.0 by s
+    simd_vec_specular_color.y = MULT_PD(simd_vec_specular_color.y, sdf_shadow_info.s); // for soft shadows
+    simd_vec_specular_color.z = MULT_PD(simd_vec_specular_color.z, sdf_shadow_info.s);
+
+    simd_vec_specular_color.x = MULT_PD(simd_vec_specular_color.x, scene->light->emissionColor->x);
+    simd_vec_specular_color.y = MULT_PD(simd_vec_specular_color.y, scene->light->emissionColor->y);
+    simd_vec_specular_color.z = MULT_PD(simd_vec_specular_color.z, scene->light->emissionColor->z);
+
+    simd_vec_specular_color.x = MULT_PD(simd_vec_specular_color.x, simd_mmd_light_inv_dist);
+    simd_vec_specular_color.y = MULT_PD(simd_vec_specular_color.y, simd_mmd_light_inv_dist);
+    simd_vec_specular_color.z = MULT_PD(simd_vec_specular_color.z, simd_mmd_light_inv_dist);
+    // END 2
+
+    simd_vec_finalColor->x = ADD_PD(ADD_PD(simd_vec_diffuse_color.x, simd_vec_specular_color.x), simd_vec_ambient_color.x);
+    simd_vec_finalColor->y = ADD_PD(ADD_PD(simd_vec_diffuse_color.y, simd_vec_specular_color.y), simd_vec_ambient_color.y);
+    simd_vec_finalColor->z = ADD_PD(ADD_PD(simd_vec_diffuse_color.z, simd_vec_specular_color.z), simd_vec_ambient_color.z);
 
 #if FOG == 1
-    double t = vec_norm(intersection_pt);
-    vec_mult_scalar(vec_res_finalColor, exp(FOG_COEFF * t * t * t), vec_res_finalColor);
+
+    SIMD_MMD simd_mmd_t;
+    simd_vec_norm(&sdf_info.intersection_pt, &simd_mmd_t);
+
+    alignas(32) double t[NR_SIMD_VEC_ELEMS]; // TODO: implement exp func instead of doing this
+    STORE_PD(t, simd_mmd_t);
+
+    SIMD_MMD simd_mmd_fog_val = SET_PD(exp(FOG_COEFF * t[3] * t[3] * t[3]), exp(FOG_COEFF * t[2] * t[2] * t[2]), exp(FOG_COEFF * t[1] * t[1] * t[1]), exp(FOG_COEFF * t[0] * t[0] * t[0]));
+    simd_vec_finalColor->x = MULT_PD(simd_vec_finalColor->x, simd_mmd_fog_val);
+    simd_vec_finalColor->y = MULT_PD(simd_vec_finalColor->y, simd_mmd_fog_val);
+    simd_vec_finalColor->z = MULT_PD(simd_vec_finalColor->z, simd_mmd_fog_val);
 #endif
 
+    // mask out
+    simd_vec_finalColor->x = AND_PD(simd_vec_finalColor->x, sdf_info.intersected_mask);
+    simd_vec_finalColor->y = AND_PD(simd_vec_finalColor->y, sdf_info.intersected_mask);
+    simd_vec_finalColor->z = AND_PD(simd_vec_finalColor->z, sdf_info.intersected_mask);
 }
 
 /*
@@ -435,12 +496,9 @@ void render(Scene* scene)
     int width = scene->camera->widthPx;
     int height = scene->camera->heightPx;
 
-    // double dir[NR_VEC_ELEMENTS]; 
-    double px_col[NR_VEC_ELEMENTS];
-
     for (unsigned y = 0; y < height; ++y)
     {
-        for (unsigned x = 0; x < width; x++) // TODO: unroll by 4
+        for (unsigned x = 0; x < width; x+=4) 
         {
 
 #if AA > 1
@@ -490,18 +548,48 @@ void render(Scene* scene)
             simd_vec_orig.y = SET1_PD(scene->camera->pos[1]);
             simd_vec_orig.z = SET1_PD(scene->camera->pos[2]);
 
-            trace(&simd_vec_orig, &simd_vec_dir, scene, 0, px_col);
+            SIMD_VEC simd_vec_finalColor;
+            simd_vec_finalColor.x = SET_ZERO_PD(); 
+            simd_vec_finalColor.y = SET_ZERO_PD();
+            simd_vec_finalColor.z = SET_ZERO_PD();
+            trace(&simd_vec_orig, &simd_vec_dir, scene, 0, &simd_vec_finalColor);
+
+            // TODO: vectorize this
+            alignas(32) double px_col_x[NR_SIMD_VEC_ELEMS];
+            alignas(32) double px_col_y[NR_SIMD_VEC_ELEMS];
+            alignas(32) double px_col_z[NR_SIMD_VEC_ELEMS];
+            STORE_PD(px_col_x, simd_vec_finalColor.x);
+            STORE_PD(px_col_y, simd_vec_finalColor.y);
+            STORE_PD(px_col_z, simd_vec_finalColor.z);
 
 #endif
 
 #if GAMMA_CORR == 1
-            vec_pow_inplace(px_col, 0.4545);
+            // vec_pow_inplace(px_col, 0.4545);
+            px_col_x[0] = pow(px_col_x[0], 0.4545); px_col_x[1] = pow(px_col_x[1], 0.4545); px_col_x[2] = pow(px_col_x[2], 0.4545); px_col_x[3] = pow(px_col_x[3], 0.4545);
+            px_col_y[0] = pow(px_col_y[0], 0.4545); px_col_y[1] = pow(px_col_y[1], 0.4545); px_col_y[2] = pow(px_col_y[2], 0.4545); px_col_y[3] = pow(px_col_y[3], 0.4545);
+            px_col_z[0] = pow(px_col_z[0], 0.4545); px_col_z[1] = pow(px_col_z[1], 0.4545); px_col_z[2] = pow(px_col_z[2], 0.4545); px_col_z[3] = pow(px_col_z[3], 0.4545);
 #endif
             // save colors computed by trace into current pixel
-            scene->img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col[0]) * 255);
-            scene->img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col[1]) * 255);
-            scene->img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col[2]) * 255);
+            scene->img[y * width * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col_x[0]) * 255);
+            scene->img[y * width * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col_y[0]) * 255);
+            scene->img[y * width * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col_z[0]) * 255);
             scene->img[y * width * 4 + x * 4 + 3] = 255;
+
+            scene->img[y * width * 4 + (x+1) * 4 + 0] = (unsigned char)(min(1, px_col_x[1]) * 255);
+            scene->img[y * width * 4 + (x+1) * 4 + 1] = (unsigned char)(min(1, px_col_y[1]) * 255);
+            scene->img[y * width * 4 + (x+1) * 4 + 2] = (unsigned char)(min(1, px_col_z[1]) * 255);
+            scene->img[y * width * 4 + (x+1) * 4 + 3] = 255;
+
+            scene->img[y * width * 4 + (x+2) * 4 + 0] = (unsigned char)(min(1, px_col_x[2]) * 255);
+            scene->img[y * width * 4 + (x+2) * 4 + 1] = (unsigned char)(min(1, px_col_y[2]) * 255);
+            scene->img[y * width * 4 + (x+2) * 4 + 2] = (unsigned char)(min(1, px_col_z[2]) * 255);
+            scene->img[y * width * 4 + (x+2) * 4 + 3] = 255;
+
+            scene->img[y * width * 4 + (x+3) * 4 + 0] = (unsigned char)(min(1, px_col_x[3]) * 255);
+            scene->img[y * width * 4 + (x+3) * 4 + 1] = (unsigned char)(min(1, px_col_y[3]) * 255);
+            scene->img[y * width * 4 + (x+3) * 4 + 2] = (unsigned char)(min(1, px_col_z[3]) * 255);
+            scene->img[y * width * 4 + (x+3) * 4 + 3] = 255;
 
 #if DEBUG_MODE == 1
             progress += progress_step;

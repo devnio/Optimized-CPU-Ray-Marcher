@@ -25,6 +25,7 @@ typedef struct
 
 #define SET_PD _mm256_set_pd
 #define SET1_PD _mm256_set1_pd
+#define SET_ZERO_PD _mm256_setzero_pd
 
 #define ADD_PD _mm256_add_pd
 #define SUB_PD _mm256_sub_pd
@@ -37,6 +38,8 @@ typedef struct
 #define OR_PD _mm256_or_pd
 #define AND_PD _mm256_and_pd
 #define ANDNOT_PD _mm256_andnot_pd
+#define MAX_PD _mm256_max_pd
+#define MIN_PD _mm256_min_pd
 
 #define CMP_PD _mm256_cmp_pd
 #define MOVEMASK_PD _mm256_movemask_pd
