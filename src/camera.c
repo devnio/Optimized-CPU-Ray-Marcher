@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdalign.h>
+#include "simd.h"
 #include "camera.h"
 #include "utility.h"
 
@@ -99,6 +100,7 @@ void shoot_rays(Camera *camera, double i, double j, SIMD_VEC *simd_vec_dir)
     simd_vec_scale = SET1_PD(camera->scale);
     simd_vec_aspectRatio = SET1_PD(camera->scale);
     simd_vec_widthPx = SET1_PD(camera->scale);
+
     tmp1 = MULT_PD(simd_vec_scale, simd_vec_aspectRatio);
     tmp2 = SUB_PD(simd_vec_widthPx, SET1_PD(1));
     tmp3 = DIV_PD(SET1_PD(2), tmp2);
@@ -113,33 +115,23 @@ void shoot_rays(Camera *camera, double i, double j, SIMD_VEC *simd_vec_dir)
 
     z__ = SET1_PD(camera->dir[2]);
 
-    SIMD_MMD tmp_res_xxxx, tmp_res_yyyy, tmp_res_zzzz;
-
     Mat4 *m = &(camera->viewMatrix);
 
-    tmp_res_xxxx = FMA_PD(x__, SET1_PD(m->m[0][0]), y__); // xxxx
-    tmp_res_yyyy = FMA_PD(x__, SET1_PD(m->m[1][0]), y__); // yyyy
-    tmp_res_zzzz = FMA_PD(x__, SET1_PD(m->m[2][0]), y__); // zzzz
+    SIMD_VEC __simd_vec_dir;
 
-    tmp_res_xxxx = FMA_PD(tmp_res_xxxx, SET1_PD(m->m[0][1]), z__); // xxxx
-    tmp_res_yyyy = FMA_PD(tmp_res_yyyy, SET1_PD(m->m[1][1]), z__); // yyyy
-    tmp_res_zzzz = FMA_PD(tmp_res_zzzz, SET1_PD(m->m[2][1]), z__); // zzzz
+    __simd_vec_dir.x = _mm256_fmadd_pd(x__, SET1_PD(m->m[0][0]), y__); // xxxx
+    __simd_vec_dir.y = _mm256_fmadd_pd(x__, SET1_PD(m->m[1][0]), y__); // yyyy
+    __simd_vec_dir.z = _mm256_fmadd_pd(x__, SET1_PD(m->m[2][0]), y__); // zzzz
 
-    tmp_res_xxxx = MULT_PD(tmp_res_xxxx, SET1_PD(m->m[0][2])); // xxxx
-    tmp_res_yyyy = MULT_PD(tmp_res_xxxx, SET1_PD(m->m[1][2])); // yyyy
-    tmp_res_zzzz = MULT_PD(tmp_res_zzzz, SET1_PD(m->m[2][2])); // zzzz
+    __simd_vec_dir.x = _mm256_fmadd_pd(__simd_vec_dir.x, SET1_PD(m->m[0][1]), z__); // xxxx
+    __simd_vec_dir.y = _mm256_fmadd_pd(__simd_vec_dir.y, SET1_PD(m->m[1][1]), z__); // yyyy
+    __simd_vec_dir.z = _mm256_fmadd_pd(__simd_vec_dir.z, SET1_PD(m->m[2][1]), z__); // zzzz
 
+    __simd_vec_dir.x = MULT_PD(__simd_vec_dir.x, SET1_PD(m->m[0][2])); // xxxx
+    __simd_vec_dir.y = MULT_PD(__simd_vec_dir.y, SET1_PD(m->m[1][2])); // yyyy
+    __simd_vec_dir.z = MULT_PD(__simd_vec_dir.z, SET1_PD(m->m[2][2])); // zzzz
 
-    vec_normalize(vec_sRay_res);
-    vec_normalize(vec_sRay_res + NR_VEC_ELEMENTS);
-    vec_normalize(vec_sRay_res + 2*NR_VEC_ELEMENTS);
-    vec_normalize(vec_sRay_res + 3*NR_VEC_ELEMENTS);
-
-
-
-    // STORE_PD(simd_vec_dir->x, tmp_res_xxxx);
-    // STORE_PD(simd_vec_dir->y, tmp_res_yyyy);
-    // STORE_PD(simd_vec_dir->z, tmp_res_zzzz);
+    simd_vec_normalize(&__simd_vec_dir, simd_vec_dir);
 }
 
 

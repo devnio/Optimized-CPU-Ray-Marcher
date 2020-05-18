@@ -1,6 +1,6 @@
 IDIR =../include
 CC=gcc
-CFLAGS= -O3 -I$(IDIR) -mavx #-ffast-math -march=native
+CFLAGS= -O3 -I$(IDIR) -mavx2 -mfma
 export F
 
 ODIR=obj

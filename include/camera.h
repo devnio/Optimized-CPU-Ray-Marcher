@@ -23,6 +23,7 @@ void move_camera(Camera *camera, double vec_t[NR_VEC_ELEMENTS]);
 void rotate_camera(Camera *camera, double xRot, double yRot);
 
 void shoot_ray(Camera *camera, double i, double j, double vec_sRay_res[NR_VEC_ELEMENTS]);
+void shoot_rays(Camera *camera, double i, double j, SIMD_VEC *simd_vec_dir);
 
 void free_camera(Camera *camera);
 

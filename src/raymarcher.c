@@ -461,29 +461,31 @@ void render(Scene* scene)
             vec_mult_scalar(tot_col, inv_AA2, px_col);
 #else
 
-            double dir0[NR_VEC_ELEMENTS]; 
-            double dir1[NR_VEC_ELEMENTS]; 
-            double dir2[NR_VEC_ELEMENTS]; 
-            double dir3[NR_VEC_ELEMENTS]; 
+            // double dir0[NR_VEC_ELEMENTS]; 
+            // double dir1[NR_VEC_ELEMENTS]; 
+            // double dir2[NR_VEC_ELEMENTS]; 
+            // double dir3[NR_VEC_ELEMENTS]; 
 
             // shoot_rays()
-            shoot_ray(scene->camera, x, y, dir0); 
-            shoot_ray(scene->camera, x+1, y, dir1); 
-            shoot_ray(scene->camera, x+2, y, dir2); 
-            shoot_ray(scene->camera, x+3, y, dir3); 
+            // shoot_ray(scene->camera, x, y, dir0); 
+            // shoot_ray(scene->camera, x+1, y, dir1); 
+            // shoot_ray(scene->camera, x+2, y, dir2); 
+            // shoot_ray(scene->camera, x+3, y, dir3); 
 
             // create simd vec
-            alignas(32) double dir_x[NR_SIMD_VEC_ELEMS]; 
-            alignas(32) double dir_y[NR_SIMD_VEC_ELEMS]; 
-            alignas(32) double dir_z[NR_SIMD_VEC_ELEMS]; 
-            create_vec_x(dir0, dir1, dir2, dir3, dir_x);
-            create_vec_y(dir0, dir1, dir2, dir3, dir_y);
-            create_vec_z(dir0, dir1, dir2, dir3, dir_z);
+            // alignas(32) double dir_x[NR_SIMD_VEC_ELEMS]; 
+            // alignas(32) double dir_y[NR_SIMD_VEC_ELEMS]; 
+            // alignas(32) double dir_z[NR_SIMD_VEC_ELEMS]; 
+            // create_vec_x(dir0, dir1, dir2, dir3, dir_x);
+            // create_vec_y(dir0, dir1, dir2, dir3, dir_y);
+            // create_vec_z(dir0, dir1, dir2, dir3, dir_z);
 
             SIMD_VEC simd_vec_dir;
-            simd_vec_dir.x = LOAD_PD(dir_x);
-            simd_vec_dir.y = LOAD_PD(dir_y);
-            simd_vec_dir.z = LOAD_PD(dir_z);
+            // simd_vec_dir.x = LOAD_PD(dir_x);
+            // simd_vec_dir.y = LOAD_PD(dir_y);
+            // simd_vec_dir.z = LOAD_PD(dir_z);
+
+            shoot_rays(scene->camera, x, y, &simd_vec_dir);
 
             // Copy 4 times origin
             SIMD_VEC simd_vec_orig;
