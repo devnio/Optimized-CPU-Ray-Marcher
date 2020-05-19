@@ -26,6 +26,7 @@ void simd_vec_reflect(const SIMD_VEC* v, const SIMD_VEC* normal, SIMD_VEC* res);
 void simd_vec_max(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res);
 void simd_vec_rotate(const SIMD_VEC* simd_vec0, const SIMD_VEC* k, SIMD_MMD* theta, SIMD_VEC* simd_vec_res);
 void simd_vec_mod(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_VEC* simd_vec_res);
+void simd_mmd_log_func(const SIMD_MMD* simd_mmd0, SIMD_MMD* out_mmd);
 // void simd_vec_dot(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec1, SIMD_MMD* simd_mmd_out); // TODO remove
 // void simd_vec_reflect(const SIMD_VEC* simd_vec0, const SIMD_VEC* simd_vec_N, SIMD_VEC* simd_reflected_vec_out); // TODO remove
 void simd_mmd_pow_func(const SIMD_MMD* simd_mmd0, const SIMD_MMD* simd_mmd_pow0, SIMD_MMD* out_mmd);

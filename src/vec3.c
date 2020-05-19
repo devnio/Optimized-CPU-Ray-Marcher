@@ -228,6 +228,15 @@ void simd_mmd_pow_func(const SIMD_MMD* simd_mmd0, const SIMD_MMD* simd_mmd_pow0,
     *out_mmd = SET_PD(pow(v[3], val[3]), pow(v[2], val[2]), pow(v[1], val[1]), pow(v[0], val[0]));
 }
 
+void simd_mmd_log_func(const SIMD_MMD* simd_mmd0, SIMD_MMD* out_mmd)
+{
+    // TODO: do a proper pow using an approximation, e.g. taylor for exp and log and combine
+    alignas(32) double v[NR_SIMD_VEC_ELEMS];
+    STORE_PD(v, *simd_mmd0);
+
+    *out_mmd = SET_PD(log(v[3]), log(v[2]), log(v[1]), log(v[0]));
+}
+
 /*
  *Function: new_vector
  *----------------------------

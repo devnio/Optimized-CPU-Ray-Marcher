@@ -479,9 +479,7 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
             }
             else if (strcmp(name, "mandelbulb") == 0)
             {
-                // geom_obj->sdf = &sdf_mandelbulb;
-                printf("TODO: VECTORIZE MANDELBULB");
-                fflush(stdout);
+                geom_obj->sdf = &sdf_mandelbulb;
                 fprintf(logFile, " => assigned sdf of %s\n", "mandelbulb");
             }
 

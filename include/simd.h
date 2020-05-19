@@ -23,6 +23,9 @@ typedef struct
     SIMD_MMD z;
 } SIMD_VEC;
 
+SIMD_MMD log2d4(SIMD_MMD x);
+SIMD_MMD exp2d4(SIMD_MMD x);
+
 // Integers
 #define MASKLOAD_EPI _mm_maskload_epi32
 #define MASKSTORE_EPI _mm_maskstore_epi32

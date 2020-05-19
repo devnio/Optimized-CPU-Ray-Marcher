@@ -82,20 +82,3 @@ SIMD_MMD log2d4(SIMD_MMD x)
 
    return ADD_PD(p, e);
 }
-
-
-int main(){
-
-
-   SIMD_MMD vector = SET_PD(4.0, 3.0, 2.0, 1.0);
-
-   SIMD_MMD res = log2d4(vector);
-
-   double val[4];
-   memcpy(val, &res, sizeof(val));
-   //printf(" %lf , %lf \n %lf , %lf \n %lf , %lf \n %lf , %lf \n",exp2(vector[0]), val[0], exp2(vector[1]), val[1], exp2(vector[2]), val[2], exp2(vector[3]), val[3]);
-
-   printf(" %lf , %lf \n %lf , %lf \n %lf , %lf \n %lf , %lf \n",log2(vector[0]), val[0], log2(vector[1]), val[1], log2(vector[2]), val[2], log2(vector[3]), val[3]);
-
-   return 0;
-}
