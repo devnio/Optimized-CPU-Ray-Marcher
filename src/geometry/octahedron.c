@@ -1,7 +1,8 @@
 #include "geometry/octahedron.h"
 #include "utility.h"
-
-const int nr_octahedron_params = 1;
+#include <stdio.h>
+#include <stdalign.h>
+#include <math.h>
 
 /*
 Params are:  
@@ -25,24 +26,30 @@ void sdf_octahedron(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* dists
     SIMD_MMD mask_y = CMP_PD(res.y, mc, _CMP_LT_OS);
     SIMD_MMD mask_z = CMP_PD(res.z, mc, _CMP_LT_OS);
 
-    SIMD_MMD final_mask = ANDNOT_PD(mask_x, ANDNOT_PD(mask_y, ANDNOT_PD(mask_z, SET1_PD(0xFFFFFFFFFFFFFFFF))));
+    SIMD_MMD final_mask_0 = ANDNOT_PD(mask_y, SET1_PD(-1));
+    SIMD_MMD final_mask_1 = ANDNOT_PD(mask_z, final_mask_0);
+    SIMD_MMD final_mask_2 = ANDNOT_PD(mask_x, final_mask_1);
+    SIMD_MMD final_mask = ANDNOT_PD(mask_x, final_mask_1);
 
+   
     if (MOVEMASK_PD(final_mask) == 0b1111)
-    {
+    {   
         *dists = MULT_PD(m, SET1_PD(0.57735027));
         return;
     }
 
-    SIMD_MMD temp = ADD_PD(res.x, SET_ZERO_PD());
-    mask_z = ANDNOT_PD(mask_x, mask_z);
-    res.x = BLENDV_PD(res.x, res.z, mask_z);
-    res.z = BLENDV_PD(res.z, res.y, mask_z);
-    res.y = BLENDV_PD(res.y, temp, mask_z);
+    SIMD_MMD temp = res.x;
+    SIMD_MMD mask_z_2 = ANDNOT_PD(mask_x, mask_z);
+
+    res.x = BLENDV_PD(res.x, res.z, mask_z_2);
+    res.z = BLENDV_PD(res.z, res.y, mask_z_2);
+    res.y = BLENDV_PD(res.y, temp, mask_z_2);
 
     mask_y = ANDNOT_PD(mask_x, ANDNOT_PD(mask_z, mask_y));
+
     res.x = BLENDV_PD(res.x, res.y, mask_y);
-    res.z = BLENDV_PD(res.y, res.z, mask_y);
-    res.y = BLENDV_PD(res.z, temp, mask_y);
+    res.y = BLENDV_PD(res.y, res.z, mask_y);
+    res.z = BLENDV_PD(res.z, temp, mask_y);
 
     SIMD_MMD k = MIN_PD(MAX_PD(SET_ZERO_PD(), MULT_PD(SET1_PD(0.5), ADD_PD(SUB_PD(res.z, res.y), params0))), params0);
     res.y = ADD_PD(SUB_PD(res.y, params0), k);
@@ -51,5 +58,5 @@ void sdf_octahedron(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* dists
     SIMD_MMD norm;
     simd_vec_norm(&res, &norm);
 
-    *dists = BLENDV_PD(MULT_PD(m, SET1_PD(0.57735027)), norm, final_mask);
+    *dists = BLENDV_PD(norm, MULT_PD(m, SET1_PD(0.57735027)), final_mask);
 }
