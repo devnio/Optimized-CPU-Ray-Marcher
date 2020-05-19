@@ -326,7 +326,6 @@ void trace(SIMD_VEC *simd_vec_orig,
         simd_vec_N.z = BLENDV_PD(simd_vec_N.z, MULT_PD(simd_vec_N.z, simd_vec_minus_one), simd_mmd_flip_normals_mask);
     }
 
-    // TODO: REFLECTION
     if (depth < MAX_RAY_DEPTH) 
     {
         SIMD_MMD reflectivity_mask = CMP_PD(simd_mmd_mat_refl, SET_ZERO_PD(), _CMP_GT_OS);
@@ -357,24 +356,6 @@ void trace(SIMD_VEC *simd_vec_orig,
             simd_vec_mult_scalar(&simd_vec_tmp, &simd_mmd_refl_coeff, simd_vec_finalColor);
         }
     }
-    // if ((mat.refl > 0) && (depth < MAX_RAY_DEPTH))
-    // {
-    //     double v__reflDir[NR_VEC_ELEMENTS];
-    //     double v__reflectedCol[NR_VEC_ELEMENTS];
-
-    //     // Compute reflected dir
-    //     vec_reflect(vec_dir, v__N, v__reflDir);
-    //     vec_normalize(v__reflDir);
-
-    //     // Compute reflected color
-    //     vec_mult_scalar(v__N, EPSILON, v__tmp_res);
-    //     vec_add(sdf_info.intersection_pt, v__tmp_res, v__tmp_res);
-
-    //     trace(v__tmp_res, v__reflDir, scene, depth + 1, v__reflectedCol);
-
-    //     vec_mult_scalar(v__reflectedCol, mat.refl, v__tmp_res);
-    //     vec_mult_scalar(v__tmp_res, REFLECTIVE_COEFF, vec_res_finalColor);
-    // }
 
     SIMD_VEC simd_vec_L;
     simd_vec_sub(scene->light->c, &sdf_info.intersection_pt, &simd_vec_L);
