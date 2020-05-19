@@ -625,6 +625,10 @@ void render_all(SceneContainer scenes_container)
 int main(int argc, char **argv)
 {
 
+    // Compute Global Constants
+    log_base_e = log2d4(SET1_PD(2.71828182845904523536));
+    log_base_e = DIV_PD(SET1_PD(1.0), log_base_e);
+
     //--- Check if output directory exists, create otherwise ---//
     struct stat st = {0};
     if (stat(OUTPUT_PATH, &st) == -1)

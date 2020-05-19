@@ -23,6 +23,8 @@ typedef struct
     SIMD_MMD z;
 } SIMD_VEC;
 
+extern SIMD_MMD log_base_e;
+
 SIMD_MMD log2d4(SIMD_MMD x);
 SIMD_MMD exp2d4(SIMD_MMD x);
 

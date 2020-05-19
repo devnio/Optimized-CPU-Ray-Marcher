@@ -3,16 +3,14 @@
 
 const int nr_mandelbulb_params = 0;
 
+SIMD_MMD log_base_e;
+
 /*
 Params are:  
 - There are no params, mandelbulb spawned at position zero
  */
 void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_mmd_dists)
 {
-    // TODO: move out to global
-    // SIMD_MMD log_base_e = log2d4(SET1_PD(2.71828182845904523536));
-    // log_base_e = DIV_PD(SET1_PD(1.0), log_base_e);
-
     SIMD_MMD  x2 = MULT_PD(simd_vec_p->x, simd_vec_p->x);
     SIMD_MMD  y2 = MULT_PD(simd_vec_p->y, simd_vec_p->y);
     SIMD_MMD  z2 = MULT_PD(simd_vec_p->z, simd_vec_p->z);
@@ -64,8 +62,8 @@ void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_
     ret_mask = CMP_PD(m, m_threshold, _CMP_GT_OS);
     int int_ret_mask = MOVEMASK_PD(ret_mask);
 
-    SIMD_MMD ret_val;// MULT_PD(log_base_e, log2d4(m));
-    simd_mmd_log_func(&m, &ret_val);
+    SIMD_MMD ret_val = MULT_PD(log_base_e, log2d4(m));
+    // simd_mmd_log_func(&m, &ret_val);
     ret_val = DIV_PD(MULT_PD(SET1_PD(0.25), MULT_PD(ret_val, SQRT_PD(m))), dz);
     *simd_mmd_dists = AND_PD(ret_mask, ret_val);
 
@@ -120,8 +118,8 @@ void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_
     ret_mask = ANDNOT_PD(ret_mask, ret_mask_2);
 
     // ret_val = SET_ZERO_PD();
-    // ret_val = MULT_PD(log_base_e, log2d4(m));
-    simd_mmd_log_func(&m, &ret_val);
+    ret_val = MULT_PD(log_base_e, log2d4(m));
+    // simd_mmd_log_func(&m, &ret_val);
     ret_val = DIV_PD(MULT_PD(SET1_PD(0.25), MULT_PD(ret_val, SQRT_PD(m))), dz);
 
     *simd_mmd_dists = ADD_PD(*simd_mmd_dists, AND_PD(ret_mask, ret_val));
@@ -178,8 +176,8 @@ void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_
     ret_mask = ANDNOT_PD(ret_mask_tmp, ret_mask_2);
 
     ret_val = SET_ZERO_PD();
-    // ret_val = MULT_PD(log_base_e, log2d4(m));
-    simd_mmd_log_func(&m, &ret_val);
+    ret_val = MULT_PD(log_base_e, log2d4(m));
+    // simd_mmd_log_func(&m, &ret_val);
     ret_val = DIV_PD(MULT_PD(SET1_PD(0.25), MULT_PD(ret_val, SQRT_PD(m))), dz);
 
     *simd_mmd_dists = ADD_PD(*simd_mmd_dists, AND_PD(ret_mask, ret_val));
@@ -225,8 +223,8 @@ void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_
     m = ADD_PD(MULT_PD(x, x), ADD_PD(MULT_PD(y, y), MULT_PD(z, z)));
 
 
-    // ret_val = MULT_PD(log_base_e, log2d4(m));
-    simd_mmd_log_func(&m, &ret_val);
+    ret_val = MULT_PD(log_base_e, log2d4(m));
+    // simd_mmd_log_func(&m, &ret_val);
     ret_val = DIV_PD(MULT_PD(SET1_PD(0.25),MULT_PD(ret_val, SQRT_PD(m))), dz);
     *simd_mmd_dists = ADD_PD(*simd_mmd_dists, ANDNOT_PD(final_mask, ret_val));
     

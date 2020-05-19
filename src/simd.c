@@ -6,7 +6,7 @@
 
 
 #define EXP_POLY_DEGREE 3
-#define LOG_POLY_DEGREE 5
+#define LOG_POLY_DEGREE 6
 
 #define POLY0(x, c0) SET1_PD(c0)
 #define POLY1(x, c0, c1) ADD_PD(MULT_PD(POLY0(x, c1), x), SET1_PD(c0))
