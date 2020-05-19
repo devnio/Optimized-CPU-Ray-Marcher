@@ -61,7 +61,7 @@ void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_
     // -----------
     SIMD_MMD ret_mask;
     SIMD_MMD m_threshold = SET1_PD(256.0);
-    ret_mask = CMP_PD(m, m_threshold, _CMP_LE_OS);
+    ret_mask = CMP_PD(m, m_threshold, _CMP_GT_OS);
     int int_ret_mask = MOVEMASK_PD(ret_mask);
 
     SIMD_MMD ret_val;// MULT_PD(log_base_e, log2d4(m));
@@ -114,11 +114,12 @@ void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_
 
     // -----------
     SIMD_MMD ret_mask_2 = CMP_PD(m, m_threshold, _CMP_GT_OS);
-    int_ret_mask = MOVEMASK_PD(OR_PD(ret_mask, ret_mask_2));
+    SIMD_MMD ret_mask_tmp = OR_PD(ret_mask, ret_mask_2);
+    int_ret_mask = MOVEMASK_PD(ret_mask_tmp);
 
     ret_mask = ANDNOT_PD(ret_mask, ret_mask_2);
 
-    ret_val = SET_ZERO_PD();
+    // ret_val = SET_ZERO_PD();
     // ret_val = MULT_PD(log_base_e, log2d4(m));
     simd_mmd_log_func(&m, &ret_val);
     ret_val = DIV_PD(MULT_PD(SET1_PD(0.25), MULT_PD(ret_val, SQRT_PD(m))), dz);
@@ -171,10 +172,10 @@ void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_
 
     // -----------
     ret_mask_2 = CMP_PD(m, m_threshold, _CMP_GT_OS);
-    SIMD_MMD final_mask = OR_PD(ret_mask, ret_mask_2);
+    SIMD_MMD final_mask = OR_PD(ret_mask_tmp, ret_mask_2);
     int_ret_mask = MOVEMASK_PD(final_mask);
     
-    ret_mask = ANDNOT_PD(ret_mask, ret_mask_2);
+    ret_mask = ANDNOT_PD(ret_mask_tmp, ret_mask_2);
 
     ret_val = SET_ZERO_PD();
     // ret_val = MULT_PD(log_base_e, log2d4(m));
