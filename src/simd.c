@@ -21,7 +21,7 @@ SIMD_MMD exp2d4(SIMD_MMD x)
    SIMD_MMD dpart, expipart, expdpart;
 
    x = MIN_PD(x, SET1_PD( 129.00000));
-   x = MAX_PD(x, SET1_PD(-126.9999999999999999));
+   x = MAX_PD(x, SET1_PD(-126.99999));
 
    /* ipart = int(x - 0.5) */
    ipart = _mm256_cvtpd_epi32(SUB_PD(x, SET1_PD(0.5)));
@@ -54,13 +54,13 @@ SIMD_MMD log2d4(SIMD_MMD x)
    SIMD_MMI exp = _mm_set1_epi32(0x7F800000);
    SIMD_MMI mant = _mm_set1_epi32(0x007FFFFF);
 
-   SIMD_MMD one = SET1_PD(1.0);
+   __m128 one = _mm_set1_ps(1.0);
 
    SIMD_MMI i = _mm_castps_si128(_mm256_cvtpd_ps(x));
 
    SIMD_MMD e = _mm256_cvtepi32_pd(_mm_sub_epi32(_mm_srli_epi32(_mm_and_si128(i, exp), 23), _mm_set1_epi32(127)));
 
-   SIMD_MMD m = OR_PD(_mm256_cvtps_pd(_mm_castsi128_ps(_mm_and_si128(i, mant))), one);
+   SIMD_MMD m = _mm256_cvtps_pd(_mm_or_ps(_mm_castsi128_ps(_mm_and_si128(i, mant)), one));
 
    SIMD_MMD p;
 
@@ -78,7 +78,7 @@ SIMD_MMD log2d4(SIMD_MMD x)
 #endif
 
    /* This effectively increases the polynomial degree by one, but ensures that log2(1) == 0*/
-   p = MULT_PD(p, SUB_PD(m, one));
+   p = MULT_PD(p, SUB_PD(m, SET1_PD(1.0)));
 
    return ADD_PD(p, e);
 }
@@ -89,13 +89,13 @@ int main(){
 
    SIMD_MMD vector = SET_PD(4.0, 3.0, 2.0, 1.0);
 
-   SIMD_MMD res = exp2d4(vector);
+   SIMD_MMD res = log2d4(vector);
 
    double val[4];
    memcpy(val, &res, sizeof(val));
-   printf(" %lf , %lf \n %lf , %lf \n %lf , %lf \n %lf , %lf \n",exp2(vector[0]), val[0], exp2(vector[1]), val[1], exp2(vector[2]), val[2], exp2(vector[3]), val[3]);
+   //printf(" %lf , %lf \n %lf , %lf \n %lf , %lf \n %lf , %lf \n",exp2(vector[0]), val[0], exp2(vector[1]), val[1], exp2(vector[2]), val[2], exp2(vector[3]), val[3]);
 
-   //printf(" %lf , %lf \n %lf , %lf \n %lf , %lf \n %lf , %lf \n",log2(vector[0]), val[0], log2(vector[1]), val[1], log2(vector[2]), val[2], log2(vector[3]), val[3]);
+   printf(" %lf , %lf \n %lf , %lf \n %lf , %lf \n %lf , %lf \n",log2(vector[0]), val[0], log2(vector[1]), val[1], log2(vector[2]), val[2], log2(vector[3]), val[3]);
 
    return 0;
 }
