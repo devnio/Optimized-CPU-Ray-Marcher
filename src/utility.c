@@ -88,17 +88,30 @@ double sign(double val)
     return val / fabs(val);
 }
 
-FORCE_INLINE void rotate_point_xyz(const double vec_p[NR_VEC_ELEMENTS], const double* precomp_orient, double vec_res[NR_VEC_ELEMENTS])
+// FORCE_INLINE void rotate_point_xyz(const double vec_p[NR_VEC_ELEMENTS], const double* precomp_orient, double vec_res[NR_VEC_ELEMENTS])
+// {
+//     double qY = precomp_orient[0] * vec_p[1] - precomp_orient[1] * vec_p[2];
+//     double qZ = precomp_orient[1] * vec_p[1] + precomp_orient[0] * vec_p[2];
+
+//     double qX = precomp_orient[2] * vec_p[0] - precomp_orient[3] * qZ;
+//     double qZ2 = precomp_orient[3] * vec_p[0] + precomp_orient[2] * qZ;
+
+//     vec_res[0] = precomp_orient[4] * qX - precomp_orient[5] * qY;
+//     vec_res[1] = precomp_orient[5] * qX + precomp_orient[4] * qY;
+//     vec_res[2] = qZ2;
+// }
+
+FORCE_INLINE void rotate_point_xyz(SIMD_VEC *vec_p, const double* precomp_orient, SIMD_VEC *vec_res)
 {
-    double qY = precomp_orient[0] * vec_p[1] - precomp_orient[1] * vec_p[2];
-    double qZ = precomp_orient[1] * vec_p[1] + precomp_orient[0] * vec_p[2];
+    SIMD_MMD simd_mmd_q_y = SUB_PD(MULT_PD(SET1_PD(precomp_orient[0]), vec_p->y), MULT_PD(SET1_PD(precomp_orient[1]), vec_p->z));
+    SIMD_MMD simd_mmd_q_z1 = ADD_PD(MULT_PD(SET1_PD(precomp_orient[1]), vec_p->y), MULT_PD(SET1_PD(precomp_orient[0]), vec_p->z));
 
-    double qX = precomp_orient[2] * vec_p[0] - precomp_orient[3] * qZ;
-    double qZ2 = precomp_orient[3] * vec_p[0] + precomp_orient[2] * qZ;
+    SIMD_MMD simd_mmd_q_x = SUB_PD(MULT_PD(SET1_PD(precomp_orient[2]), vec_p->x), MULT_PD(SET1_PD(precomp_orient[3]), simd_mmd_q_z1));
+    SIMD_MMD simd_mmd_q_z2 = ADD_PD(MULT_PD(SET1_PD(precomp_orient[3]), vec_p->x), MULT_PD(SET1_PD(precomp_orient[2]), simd_mmd_q_z1));
 
-    vec_res[0] = precomp_orient[4] * qX - precomp_orient[5] * qY;
-    vec_res[1] = precomp_orient[5] * qX + precomp_orient[4] * qY;
-    vec_res[2] = qZ2;
+    vec_res->x = SUB_PD(MULT_PD(SET1_PD(precomp_orient[4]), simd_mmd_q_x), MULT_PD(SET1_PD(precomp_orient[5]), simd_mmd_q_y));
+    vec_res->y = ADD_PD(MULT_PD(SET1_PD(precomp_orient[5]), simd_mmd_q_x), MULT_PD(SET1_PD(precomp_orient[4]), simd_mmd_q_y));
+    vec_res->z = simd_mmd_q_z2;
 }
 
 

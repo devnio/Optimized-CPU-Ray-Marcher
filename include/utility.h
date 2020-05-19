@@ -13,7 +13,7 @@ double max(double a, double b);
 double mod(double x, double y);
 double clamp(double val, double min, double max);
 double sign(double val);
-void rotate_point_xyz(const double vec_p[NR_VEC_ELEMENTS], const double* precomp_orient, double vec_res[NR_VEC_ELEMENTS]);
+void rotate_point_xyz(SIMD_VEC *vec_p, const double* precomp_orient, SIMD_VEC *vec_res);
 double to_radians(double degrees);
 char* _concat(const char *str1, const char *str2);
 void encodeOneStep(const char *filename, const unsigned char *image, unsigned width, unsigned height);
