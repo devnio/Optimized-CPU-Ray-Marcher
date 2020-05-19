@@ -19,7 +19,7 @@ void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_
 
     SIMD_MMD  x2 = MULT_PD(x, x);
     SIMD_MMD  y2 = MULT_PD(y, y);
-    SIMD_MMD  z2 = MULT_PD(y, y);
+    SIMD_MMD  z2 = MULT_PD(z, z);
     SIMD_MMD m = ADD_PD(x2, ADD_PD(y2, z2));
 
 	SIMD_MMD dz = SET1_PD(1.5);
