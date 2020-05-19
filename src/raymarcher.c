@@ -327,6 +327,36 @@ void trace(SIMD_VEC *simd_vec_orig,
     }
 
     // TODO: REFLECTION
+    if (depth < MAX_RAY_DEPTH) 
+    {
+        SIMD_MMD reflectivity_mask = CMP_PD(simd_mmd_mat_refl, SET_ZERO_PD(), _CMP_GT_OS);
+        int int_reflectivity_mask = MOVEMASK_PD(reflectivity_mask);
+
+        if(int_reflectivity_mask != 0) {
+            SIMD_VEC simd_vec_reflDir;
+            SIMD_VEC simd_vec_reflectedCol;
+            SIMD_VEC simd_vec_tmp;
+            SIMD_MMD simd_mmd_eps = SET1_PD(EPSILON);
+            SIMD_MMD simd_mmd_refl_coeff = SET1_PD(REFLECTIVE_COEFF);
+
+            simd_vec_reflectedCol.x = SET_ZERO_PD();
+            simd_vec_reflectedCol.y = SET_ZERO_PD();
+            simd_vec_reflectedCol.z = SET_ZERO_PD();
+
+            // Compute reflected dir
+            simd_vec_reflect(simd_vec_dir, &simd_vec_N, &simd_vec_reflDir);
+            simd_vec_normalize(&simd_vec_reflDir, &simd_vec_reflDir);
+
+            // Compute reflected color
+            simd_vec_mult_scalar(&simd_vec_N, &simd_mmd_eps, &simd_vec_tmp);
+            simd_vec_add(&sdf_info.intersection_pt, &simd_vec_tmp, &simd_vec_tmp);
+
+            trace(&simd_vec_tmp, &simd_vec_reflDir, scene, depth + 1, &simd_vec_reflectedCol);
+
+            simd_vec_mult_scalar(&simd_vec_reflectedCol, &simd_mmd_mat_refl, &simd_vec_tmp);
+            simd_vec_mult_scalar(&simd_vec_tmp, &simd_mmd_refl_coeff, simd_vec_finalColor);
+        }
+    }
     // if ((mat.refl > 0) && (depth < MAX_RAY_DEPTH))
     // {
     //     double v__reflDir[NR_VEC_ELEMENTS];
@@ -444,9 +474,9 @@ void trace(SIMD_VEC *simd_vec_orig,
     simd_vec_specular_color.z = MULT_PD(simd_vec_specular_color.z, simd_mmd_light_inv_dist);
     // END 2
 
-    simd_vec_finalColor->x = ADD_PD(ADD_PD(simd_vec_diffuse_color.x, simd_vec_specular_color.x), simd_vec_ambient_color.x);
-    simd_vec_finalColor->y = ADD_PD(ADD_PD(simd_vec_diffuse_color.y, simd_vec_specular_color.y), simd_vec_ambient_color.y);
-    simd_vec_finalColor->z = ADD_PD(ADD_PD(simd_vec_diffuse_color.z, simd_vec_specular_color.z), simd_vec_ambient_color.z);
+    simd_vec_finalColor->x = ADD_PD(ADD_PD(ADD_PD(simd_vec_diffuse_color.x, simd_vec_specular_color.x), simd_vec_ambient_color.x), simd_vec_finalColor->x);
+    simd_vec_finalColor->y = ADD_PD(ADD_PD(ADD_PD(simd_vec_diffuse_color.y, simd_vec_specular_color.y), simd_vec_ambient_color.y), simd_vec_finalColor->y);
+    simd_vec_finalColor->z = ADD_PD(ADD_PD(ADD_PD(simd_vec_diffuse_color.z, simd_vec_specular_color.z), simd_vec_ambient_color.z), simd_vec_finalColor->z);
 
 #if FOG == 1
 
