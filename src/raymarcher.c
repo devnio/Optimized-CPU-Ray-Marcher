@@ -653,9 +653,9 @@ int main(int argc, char **argv)
     SceneContainer scenes_container;
     if (argc == 1)
     {
-        printf("Add scene shape0 into index 0.\n");
+        printf("Add scene scene0 into index 0.\n");
         scenes_container = create_scene_container(1);
-        add_scene(&scenes_container, "shape0", 0);
+        add_scene(&scenes_container, "scene0", 0);
     }
     else
     {   
