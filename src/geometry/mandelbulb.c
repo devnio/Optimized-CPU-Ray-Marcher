@@ -60,7 +60,7 @@ void sdf_mandelbulb(const SIMD_VEC_PS* simd_vec_p, float params[], SIMD_MMS* sim
     ret_mask = CMP_PS(m, m_threshold, _CMP_GT_OS);
     int int_ret_mask = MOVEMASK_PS(ret_mask);
 
-    SIMD_MMS ret_val = MULT_PS(log_base_e, log2d4(m));
+    SIMD_MMS ret_val = MULT_PS(log_base_e, log2f8(m));
     ret_val = DIV_PS(MULT_PS(SET1_PS(0.25), MULT_PS(ret_val, SQRT_PS(m))), dz);
     *simd_mmd_dists = AND_PS(ret_mask, ret_val);
 
@@ -109,7 +109,7 @@ void sdf_mandelbulb(const SIMD_VEC_PS* simd_vec_p, float params[], SIMD_MMS* sim
 
     ret_mask = ANDNOT_PS(ret_mask, ret_mask_2);
 
-    ret_val = MULT_PS(log_base_e, log2d4(m));
+    ret_val = MULT_PS(log_base_e, log2f8(m));
     ret_val = DIV_PS(MULT_PS(SET1_PS(0.25), MULT_PS(ret_val, SQRT_PS(m))), dz);
 
     *simd_mmd_dists = ADD_PS(*simd_mmd_dists, AND_PS(ret_mask, ret_val));
@@ -160,7 +160,7 @@ void sdf_mandelbulb(const SIMD_VEC_PS* simd_vec_p, float params[], SIMD_MMS* sim
     ret_mask = ANDNOT_PS(ret_mask_tmp, ret_mask_2);
 
     ret_val = SET_ZERO_PS();
-    ret_val = MULT_PS(log_base_e, log2d4(m));
+    ret_val = MULT_PS(log_base_e, log2f8(m));
     ret_val = DIV_PS(MULT_PS(SET1_PS(0.25), MULT_PS(ret_val, SQRT_PS(m))), dz);
     *simd_mmd_dists = ADD_PS(*simd_mmd_dists, AND_PS(ret_mask, ret_val));
 
@@ -199,7 +199,7 @@ void sdf_mandelbulb(const SIMD_VEC_PS* simd_vec_p, float params[], SIMD_MMS* sim
 
 
     // ----------- 
-    ret_val = MULT_PS(log_base_e, log2d4(m));
+    ret_val = MULT_PS(log_base_e, log2f8(m));
     ret_val = DIV_PS(MULT_PS(SET1_PS(0.25),MULT_PS(ret_val, SQRT_PS(m))), dz);
     *simd_mmd_dists = ADD_PS(*simd_mmd_dists, ANDNOT_PS(final_mask, ret_val));
     // -----------

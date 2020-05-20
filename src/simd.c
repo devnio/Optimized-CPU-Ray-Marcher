@@ -15,7 +15,7 @@
 #define POLY4(x, c0, c1, c2, c3, c4) ADD_PS(MULT_PS(POLY3(x, c1, c2, c3, c4), x), SET1_PS(c0))
 #define POLY5(x, c0, c1, c2, c3, c4, c5) ADD_PS(MULT_PS(POLY4(x, c1, c2, c3, c4, c5), x), SET1_PS(c0))
 
-SIMD_MMS exp2d4(SIMD_MMS x)
+SIMD_MMS exp2f8(SIMD_MMS x)
 {
    __m256i ipart;
    SIMD_MMS fpart, expipart, expfpart;
@@ -49,7 +49,7 @@ SIMD_MMS exp2d4(SIMD_MMS x)
 }
 
 
-SIMD_MMS log2d4(SIMD_MMS x)
+SIMD_MMS log2f8(SIMD_MMS x)
 {
    __m256i exp = _mm256_set1_epi32(0x7F800000);
    __m256i mant = _mm256_set1_epi32(0x007FFFFF);

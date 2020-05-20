@@ -671,7 +671,7 @@ int main(int argc, char **argv)
 {
 
     // Compute Global Constants
-    log_base_e = log2d4(SET1_PS(2.71828182845904523536));
+    log_base_e = log2f8(SET1_PS(2.71828182845904523536));
     log_base_e = DIV_PS(SET1_PS(1.0), log_base_e);
 
     //--- Check if output directory exists, create otherwise ---//

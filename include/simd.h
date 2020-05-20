@@ -32,8 +32,8 @@ typedef struct
 
 extern SIMD_MMS log_base_e;
 
-SIMD_MMS log2d4(SIMD_MMS x);
-SIMD_MMS exp2d4(SIMD_MMS x);
+SIMD_MMS log2f8(SIMD_MMS x);
+SIMD_MMS exp2f8(SIMD_MMS x);
 
 // Integers
 #define MASKLOAD_EPI _mm_maskload_epi32
