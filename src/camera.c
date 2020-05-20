@@ -63,6 +63,8 @@ void rotate_camera(Camera *camera, double xRot, double yRot)
 void update_width_height(Camera* camera, unsigned int width, unsigned int height) {
     camera->widthPx = width;
     camera->heightPx = height;
+    _div_widthPx = 2 / (float) width;
+    _div_heightPx = 2 / (float) height;
 }
 
 void shoot_ray(Camera *camera, double i, double j, double vec_sRay_res[NR_VEC_ELEMENTS])
