@@ -4,8 +4,8 @@
 #include "mat4.h"
 #include "vec3.h"
 
-extern float _div_widthPx;
-extern float _div_heightPx;
+// extern float _div_widthPx;
+// extern float _div_heightPx;
 
 typedef struct Camera
 {
@@ -17,6 +17,9 @@ typedef struct Camera
     double aspectRatio;
     double scale;
     Mat4 viewMatrix;
+
+    double _div_widthPx;
+    double _div_heightPx;
 } Camera;
 
 struct Camera *create_camera(double fov, unsigned int widthPx, unsigned int heightPx);

@@ -63,8 +63,8 @@ void rotate_camera(Camera *camera, double xRot, double yRot)
 void update_width_height(Camera* camera, unsigned int width, unsigned int height) {
     camera->widthPx = width;
     camera->heightPx = height;
-    _div_widthPx = 2 / (float) width;
-    _div_heightPx = 2 / (float) height;
+    camera->_div_widthPx = 2 / (float) width;
+    camera->_div_heightPx = 2 / (float) height;
 }
 
 void shoot_ray(Camera *camera, double i, double j, double vec_sRay_res[NR_VEC_ELEMENTS])
@@ -86,14 +86,14 @@ void shoot_ray(Camera *camera, double i, double j, double vec_sRay_res[NR_VEC_EL
 void shoot_rays(Camera *camera, double i, double j, SIMD_VEC *simd_vec_dir)
 {
     //Normalize screen coordinates
-    float y = (1 - (j + 0.5) * _div_heightPx) * camera->scale;
+    float y = (1 - (j + 0.5) * camera->_div_heightPx) * camera->scale;
 
     SIMD_MMD _const, tmp, x_vec, y_vec, z_vec;
 
     _const = SET_PD(3, 2, 1, 0);
 
     tmp = ADD_PD(ADD_PD(SET1_PD(i), _const), SET1_PD(0.5));
-    tmp = MULT_PD(tmp, SET1_PD((double) _div_widthPx));
+    tmp = MULT_PD(tmp, SET1_PD((double) camera->_div_widthPx));
     tmp = SUB_PD(tmp, SET1_PD(1));
 
     x_vec = MULT_PD(tmp, MULT_PD(SET1_PD(camera->scale), SET1_PD(camera->aspectRatio)));

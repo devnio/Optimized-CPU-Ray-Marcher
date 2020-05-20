@@ -40,7 +40,7 @@ void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
 
         // Create txt file for performance measurements, used to check for opening and path.
         FILE *fmeasurem = NULL;
-        char measurem_fileName[100];
+        char measurem_fileName[300];
         sprintf(measurem_fileName, "%s%s", newPathName, "/measurements.csv");
         fmeasurem = fopen(measurem_fileName, "w");
         if (fmeasurem == NULL)
@@ -116,7 +116,11 @@ void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
             save_image_to_disk(scene, filename);
             
             // Clean up
+            printf("\n\nCIAO");
+            fflush(stdout);
             destroy_image(scene);
+            printf("\n\nCIAO");
+            fflush(stdout);
         }
 
         // Clean-up allocated strings and handlers

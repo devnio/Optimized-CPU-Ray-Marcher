@@ -103,21 +103,6 @@ void compute_normal(const SIMD_VEC* simd_vec_p, const Scene *scene, SIMD_VEC* si
     simd_vec_normalize(&sub_res, simd_vec_normals_out);
 }
 
-// double compute_specular_coefficient(const double dir[NR_VEC_ELEMENTS], double N[NR_VEC_ELEMENTS], double L[NR_VEC_ELEMENTS], Material *mat)
-// {
-//     // Light reflected on normal
-//     double __R[NR_VEC_ELEMENTS];
-//     double __V[NR_VEC_ELEMENTS];
-//     vec_mult_scalar(L, -1, __V);
-//     vec_reflect(__V, N, __R);
-//     vec_mult_scalar(dir, -1, __V);
-//     vec_normalize(__V);
-
-//     // Specular term
-//     double specAngle = max(vec_dot(__R, __V), 0.0);
-//     return pow(specAngle, (*mat).shininess);
-// }
-
 void compute_simd_specular_coefficient(const SIMD_VEC* simd_vec_dir, const SIMD_VEC* N, const SIMD_VEC* L, const SIMD_MMD* mat_shininess, SIMD_MMD* spec_coeff_out)
 {
     SIMD_VEC R;
@@ -141,17 +126,6 @@ void compute_simd_specular_coefficient(const SIMD_VEC* simd_vec_dir, const SIMD_
 
     simd_mmd_pow_func(&dot, mat_shininess, spec_coeff_out);
 }
-
-
-// void compute_shadow_coefficient(SDF_Info *sdf_info, double *ph, double *t)
-// {
-//     double mid = sdf_info->min_dist * sdf_info->min_dist;
-//     double y = mid / (2.0 * (*ph));
-//     double d = sqrt(mid - y * y);
-//     sdf_info->s = min(sdf_info->s, LIGHT_STR * d / max(0.0, (*t) - y));
-//     *ph = sdf_info->min_dist;
-//     *t += sdf_info->min_dist;
-// }
 
 void compute_simd_shadow_coefficient(SDF_Info *sdf_info, SIMD_MMD* ph, SIMD_MMD* t)
 {
@@ -479,42 +453,15 @@ void trace(SIMD_VEC *simd_vec_orig,
     simd_vec_finalColor->z = AND_PD(simd_vec_finalColor->z, sdf_info.intersected_mask);
 }
 
-/*
- * Function: render
- * ----------------------------
- *   Render an image based on the defined scene and save it in ouput. 
- *
- *   sps: scene, spheres
- *   pLight: point light 
- *
- *   returns: void
- */
-void render(Scene* scene)
+
+
+FORCE_INLINE void shoot_rays_and_trace(Scene* scene, 
+                                       unsigned int x, 
+                                       unsigned int y,
+                                       double px_col_x_out[NR_SIMD_VEC_ELEMS],
+                                       double px_col_y_out[NR_SIMD_VEC_ELEMS],
+                                       double px_col_z_out[NR_SIMD_VEC_ELEMS])
 {
-#if DEBUG_MODE == 1
-    printf("%s", "RENDERING... ");
-    float progress = 0.;
-    float progress_step = 1. / (scene.camera->widthPx * scene.camera->heightPx);
-    progress += progress_step;
-#endif
-
-#if AA > 1
-    double inv_AA = 1.0 / AA;
-    double inv_AA2 = inv_AA / AA;
-    double tot_col[NR_VEC_ELEMENTS];
-#endif
-
-
-    int width = scene->camera->widthPx;
-    int height = scene->camera->heightPx;
-
-    for (unsigned y = 0; y < height; ++y)
-    {
-        int y_w_4 = y * width * 4;
-
-        for (unsigned x = 0; x < width; x+=4) 
-        {
-
 #if AA > 1
             set_zero(tot_col);
             for (int m = 0; m < AA; m++)
@@ -542,6 +489,7 @@ void render(Scene* scene)
             simd_vec_orig.y = SET1_PD(scene->camera->pos[1]);
             simd_vec_orig.z = SET1_PD(scene->camera->pos[2]);
 
+            // Init color 
             SIMD_VEC simd_vec_finalColor;
             simd_vec_finalColor.x = SET_ZERO_PD(); 
             simd_vec_finalColor.y = SET_ZERO_PD();
@@ -549,19 +497,13 @@ void render(Scene* scene)
 
             trace(&simd_vec_orig, &simd_vec_dir, scene, 0, &simd_vec_finalColor);
 
-#endif
-
 #if GAMMA_CORR == 1
-            // vec_pow_inplace(px_col, 0.4545);
+            
             SIMD_MMD _const_pd = SET1_PD(0.4545);
             simd_mmd_pow_func(&simd_vec_finalColor.x, &_const_pd, &simd_vec_finalColor.x);
             simd_mmd_pow_func(&simd_vec_finalColor.y, &_const_pd, &simd_vec_finalColor.y);
             simd_mmd_pow_func(&simd_vec_finalColor.z, &_const_pd, &simd_vec_finalColor.z);
 #endif
-            // TODO: vectorize this
-            alignas(32) double px_col_x[NR_SIMD_VEC_ELEMS];
-            alignas(32) double px_col_y[NR_SIMD_VEC_ELEMS];
-            alignas(32) double px_col_z[NR_SIMD_VEC_ELEMS];
 
             SIMD_MMD _m_255 = SET1_PD(255);
             SIMD_MMD _min_color_x = MIN_PD(SET1_PD(1.0), simd_vec_finalColor.x);
@@ -572,9 +514,52 @@ void render(Scene* scene)
             SIMD_MMD color_y = MULT_PD(_min_color_y, _m_255);
             SIMD_MMD color_z = MULT_PD(_min_color_z, _m_255);
 
-            STORE_PD(px_col_x, color_x);
-            STORE_PD(px_col_y, color_y);
-            STORE_PD(px_col_z, color_z);
+            STORE_PD(px_col_x_out, color_x);
+            STORE_PD(px_col_y_out, color_y);
+            STORE_PD(px_col_z_out, color_z);
+
+#endif
+
+}
+
+
+/*
+ * Function: render
+ * ----------------------------
+ *   Render an image based on the defined scene and save it in ouput. 
+ *
+ *   sps: scene, spheres
+ *   pLight: point light 
+ *
+ *   returns: void
+ */
+void render(Scene* scene)
+{
+#if AA > 1
+    double inv_AA = 1.0 / AA;
+    double inv_AA2 = inv_AA / AA;
+    double tot_col[NR_VEC_ELEMENTS];
+#endif
+
+    int width = scene->camera->widthPx;
+    int height = scene->camera->heightPx;
+
+    int rest_width = width % 4;
+    int mult_width = width - (rest_width != 0) * 4;
+
+    alignas(32) double px_col_x[NR_SIMD_VEC_ELEMS];
+    alignas(32) double px_col_y[NR_SIMD_VEC_ELEMS];
+    alignas(32) double px_col_z[NR_SIMD_VEC_ELEMS];
+
+    for (unsigned y = 0; y < height; ++y)
+    {
+        int y_w_4 = y * width * 4;
+
+        // NORMAL LOOP
+        unsigned x = 0;
+        for (; x < mult_width; x+=4) 
+        {
+            shoot_rays_and_trace(scene, x, y, px_col_x, px_col_y, px_col_z);
 
             // save colors computed by trace into current pixel
             scene->img[y_w_4 + x * 4 + 0] = (unsigned char)(px_col_x[0]);
@@ -596,14 +581,39 @@ void render(Scene* scene)
             scene->img[y_w_4 + (x+3) * 4 + 1] = (unsigned char)(px_col_y[3]);
             scene->img[y_w_4 + (x+3) * 4 + 2] = (unsigned char)(px_col_z[3]);
             scene->img[y_w_4 + (x+3) * 4 + 3] = 255;
-
-#if DEBUG_MODE == 1
-            progress += progress_step;
-            fflush(stdout);
-            printf(" %.2f\b\b\b\b\b", progress);
-            fflush(stdout);
-#endif
         }
+
+        // RESIDUAL LOOP (if width is not multiple of 4)
+        if (x < width) 
+        {
+            shoot_rays_and_trace(scene, mult_width, y, px_col_x, px_col_y, px_col_z);
+
+            // save colors computed by trace into current pixel
+            if (rest_width >= 1)
+            {
+                scene->img[y_w_4 + (mult_width) * 4 + 0] = (unsigned char)(px_col_x[0]);
+                scene->img[y_w_4 + (mult_width) * 4 + 1] = (unsigned char)(px_col_y[0]);
+                scene->img[y_w_4 + (mult_width) * 4 + 2] = (unsigned char)(px_col_z[0]);
+                scene->img[y_w_4 + (mult_width) * 4 + 3] = 255;
+            }
+            
+            if (rest_width >= 2)
+            {
+                scene->img[y_w_4 + (mult_width+1) * 4 + 0] = (unsigned char)(px_col_x[1]);
+                scene->img[y_w_4 + (mult_width+1) * 4 + 1] = (unsigned char)(px_col_y[1]);
+                scene->img[y_w_4 + (mult_width+1) * 4 + 2] = (unsigned char)(px_col_z[1]);
+                scene->img[y_w_4 + (mult_width+1) * 4 + 3] = 255;
+            }
+
+            if (rest_width == 3)
+            {
+                scene->img[y_w_4 + (mult_width+2) * 4 + 0] = (unsigned char)(px_col_x[2]);
+                scene->img[y_w_4 + (mult_width+2) * 4 + 1] = (unsigned char)(px_col_y[2]);
+                scene->img[y_w_4 + (mult_width+2) * 4 + 2] = (unsigned char)(px_col_z[2]);
+                scene->img[y_w_4 + (mult_width+2) * 4 + 3] = 255;
+            }
+        }
+
     }
 }
 
