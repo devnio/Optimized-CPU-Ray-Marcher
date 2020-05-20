@@ -1,362 +1,362 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <string.h>
+// #include <sys/types.h>
+// #include <sys/stat.h>
+// #include <unistd.h>
 
-#include "config.h"
-#include "utility.h"
-#include "benchmark/benchmark.h"
-#include "benchmark/tsc_x86.h"
-#include "camera.h"
-#include "lodepng.h"
+// #include "config.h"
+// #include "utility.h"
+// #include "benchmark/benchmark.h"
+// #include "benchmark/tsc_x86.h"
+// #include "camera.h"
+// #include "lodepng.h"
 
-// ===============================================================
-//                      BENCHMARK FUNCTIONS
-// ===============================================================
+// // ===============================================================
+// //                      BENCHMARK FUNCTIONS
+// // ===============================================================
 
-// ================================
-//             RENDER
-// ================================
-void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
-{
-    printf("\n||    BENCHMARKING [RENDER FUNCTION]    ||\n||  [CHECK FLAGS] (did you remove -g?)  ||\n||             [CLOSE APPS]             ||\n");
-    printf("||         [DISABLE TURBO BOOST]        ||\n");
+// // ================================
+// //             RENDER
+// // ================================
+// void benchmark_render(render_func_prot f, SceneContainer sceneContainer)
+// {
+//     printf("\n||    BENCHMARKING [RENDER FUNCTION]    ||\n||  [CHECK FLAGS] (did you remove -g?)  ||\n||             [CLOSE APPS]             ||\n");
+//     printf("||         [DISABLE TURBO BOOST]        ||\n");
 
-    // Create initial directory
-    char *dirName = create_dir_with_current_date(OUTPUT_PATH, __func__);
-    printf("\ndirName: %s\n", dirName);
+//     // Create initial directory
+//     char *dirName = create_dir_with_current_date(OUTPUT_PATH, __func__);
+//     printf("\ndirName: %s\n", dirName);
 
-    for (unsigned int i = 0; i < sceneContainer.num_scenes; ++i)
-    {
-        // Create sub-directory for this scene
-        char *newPathName = create_dir(dirName, (sceneContainer.scenes)[i]->name);
+//     for (unsigned int i = 0; i < sceneContainer.num_scenes; ++i)
+//     {
+//         // Create sub-directory for this scene
+//         char *newPathName = create_dir(dirName, (sceneContainer.scenes)[i]->name);
 
-        // Create txt file for parameters
-        char *time_ = malloc(100 + 1);
-        create_params_file(time_, (sceneContainer.scenes)[i]->name, dirName);
+//         // Create txt file for parameters
+//         char *time_ = malloc(100 + 1);
+//         create_params_file(time_, (sceneContainer.scenes)[i]->name, dirName);
 
-        // Create txt file for performance measurements, used to check for opening and path.
-        FILE *fmeasurem = NULL;
-        char measurem_fileName[100];
-        sprintf(measurem_fileName, "%s%s", newPathName, "/measurements.csv");
-        fmeasurem = fopen(measurem_fileName, "w");
-        if (fmeasurem == NULL)
-        {
-            printf("ERROR: Failed to create measurements.csv file");
-        }
+//         // Create txt file for performance measurements, used to check for opening and path.
+//         FILE *fmeasurem = NULL;
+//         char measurem_fileName[100];
+//         sprintf(measurem_fileName, "%s%s", newPathName, "/measurements.csv");
+//         fmeasurem = fopen(measurem_fileName, "w");
+//         if (fmeasurem == NULL)
+//         {
+//             printf("ERROR: Failed to create measurements.csv file");
+//         }
         
-        fprintf(fmeasurem, "n, ");
-        for (int i = 0; i < REPETITIONS; i++) fprintf(fmeasurem, "Run %d, ", i);
-        fprintf(fmeasurem, "AVG\n");
+//         fprintf(fmeasurem, "n, ");
+//         for (int i = 0; i < REPETITIONS; i++) fprintf(fmeasurem, "Run %d, ", i);
+//         fprintf(fmeasurem, "AVG\n");
 
-        // Get scene  
-        Scene* scene = (sceneContainer.scenes)[i];
+//         // Get scene  
+//         Scene* scene = (sceneContainer.scenes)[i];
 
-        // Run benchmark on specified resolutions
-        for (unsigned int n = START_H_RESOLUTION; n <= END_H_RESOLUTION; n += RESOLUTION_STEPS)
-        {
-            // Write n to file
-            fprintf(fmeasurem, "%d, ", n);
+//         // Run benchmark on specified resolutions
+//         for (unsigned int n = START_H_RESOLUTION; n <= END_H_RESOLUTION; n += RESOLUTION_STEPS)
+//         {
+//             // Write n to file
+//             fprintf(fmeasurem, "%d, ", n);
 
-            // Resolution settings
-            unsigned int height_ = n;
-            unsigned int width_ = n * SCALE_RATIO;
-            unsigned long long cycles = 0;
+//             // Resolution settings
+//             unsigned int height_ = n;
+//             unsigned int width_ = n * SCALE_RATIO;
+//             unsigned long long cycles = 0;
 
-            // Set up width and height for camera and image creation
-            update_width_height(scene->camera, width_, height_);
+//             // Set up width and height for camera and image creation
+//             update_width_height(scene->camera, width_, height_);
 
-            // Create image
-            create_image(scene, scene->camera->widthPx, scene->camera->heightPx);
+//             // Create image
+//             create_image(scene, scene->camera->widthPx, scene->camera->heightPx);
 
-            // Build index and add to path
-            char filename[300];
-            sprintf(filename, "%s/out_%d_%d.png", newPathName, (unsigned int)height_, (unsigned int)width_);
+//             // Build index and add to path
+//             char filename[300];
+//             sprintf(filename, "%s/out_%d_%d.png", newPathName, (unsigned int)height_, (unsigned int)width_);
 
-            printf("\n|||N = %d, res.: %d x %d, file: %s\n||||", n, (int)height_, (int)width_, filename);
+//             printf("\n|||N = %d, res.: %d x %d, file: %s\n||||", n, (int)height_, (int)width_, filename);
 
-            // ===================================================
-            //// --- WARM-UP --- ///
-            // ===================================================
-            for (unsigned int j = 0; j < WARM_UP_REPETITIONS; j++)
-            {
-                f(scene);
-            }
-            // ===================================================
-            //// --- START PERFORMANCE MEASUREMENT --- ///
-            // ===================================================
-            myInt64 start, end;
-            for (unsigned int j = 0; j < REPETITIONS; j++)
-            {
-                // Benchmark
-                start = start_tsc(); // start timer
-                f(scene);
-                end = stop_tsc(start); // end timer
+//             // ===================================================
+//             //// --- WARM-UP --- ///
+//             // ===================================================
+//             for (unsigned int j = 0; j < WARM_UP_REPETITIONS; j++)
+//             {
+//                 f(scene);
+//             }
+//             // ===================================================
+//             //// --- START PERFORMANCE MEASUREMENT --- ///
+//             // ===================================================
+//             myInt64 start, end;
+//             for (unsigned int j = 0; j < REPETITIONS; j++)
+//             {
+//                 // Benchmark
+//                 start = start_tsc(); // start timer
+//                 f(scene);
+//                 end = stop_tsc(start); // end timer
                 
-                // Accumulate
-                cycles += end;
+//                 // Accumulate
+//                 cycles += end;
                 
-                // Write to file
-                fprintf(fmeasurem, "%lld, ", end);
-                printf("Run %d, %lld, ", j, end);
-                fflush(fmeasurem);
-                fflush(stdout);
-            }
-            // ===================================================
-            //// --- END PERFORMANCE MEASUREMENT --- ///
-            // ===================================================
-            cycles = cycles / REPETITIONS;
-            printf("AVG: %lld, ", cycles);
-            fprintf(fmeasurem, "%lld\n", cycles);
+//                 // Write to file
+//                 fprintf(fmeasurem, "%lld, ", end);
+//                 printf("Run %d, %lld, ", j, end);
+//                 fflush(fmeasurem);
+//                 fflush(stdout);
+//             }
+//             // ===================================================
+//             //// --- END PERFORMANCE MEASUREMENT --- ///
+//             // ===================================================
+//             cycles = cycles / REPETITIONS;
+//             printf("AVG: %lld, ", cycles);
+//             fprintf(fmeasurem, "%lld\n", cycles);
 
-            // Save image to disk
-            save_image_to_disk(scene, filename);
+//             // Save image to disk
+//             save_image_to_disk(scene, filename);
             
-            // Clean up
-            destroy_image(scene);
-        }
+//             // Clean up
+//             destroy_image(scene);
+//         }
 
-        // Clean-up allocated strings and handlers
-        fclose(fmeasurem);
-        free(time_);
-        free(newPathName);
+//         // Clean-up allocated strings and handlers
+//         fclose(fmeasurem);
+//         free(time_);
+//         free(newPathName);
 
-        destroy_scene(scene);
-        free((sceneContainer.scenes)[i]);
-    }
+//         destroy_scene(scene);
+//         free((sceneContainer.scenes)[i]);
+//     }
 
-    free(dirName);
-    free(sceneContainer.scenes);
-}
+//     free(dirName);
+//     free(sceneContainer.scenes);
+// }
 
-// ================================
-//             TRACE
-// ================================
-void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
-{
-    printf("\n||    BENCHMARKING [TRACE  FUNCTION]    ||\n||  [CHECK FLAGS] (did you remove -g?)  ||\n||             [CLOSE APPS]             ||\n");
-    printf("||         [DISABLE TURBO BOOST]        ||\n");
+// // ================================
+// //             TRACE
+// // ================================
+// void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer)
+// {
+//     printf("\n||    BENCHMARKING [TRACE  FUNCTION]    ||\n||  [CHECK FLAGS] (did you remove -g?)  ||\n||             [CLOSE APPS]             ||\n");
+//     printf("||         [DISABLE TURBO BOOST]        ||\n");
 
-    // Create initial directory
-    char *dirName = create_dir_with_current_date(OUTPUT_PATH, __func__);
-    printf("\ndirName: %s\n", dirName);
+//     // Create initial directory
+//     char *dirName = create_dir_with_current_date(OUTPUT_PATH, __func__);
+//     printf("\ndirName: %s\n", dirName);
 
-    for (unsigned int i = 0; i < sceneContainer.num_scenes; ++i)
-    {
-        // Create sub-directory for this scene
-        char *newPathName = create_dir(dirName, (sceneContainer.scenes)[i]->name);
+//     for (unsigned int i = 0; i < sceneContainer.num_scenes; ++i)
+//     {
+//         // Create sub-directory for this scene
+//         char *newPathName = create_dir(dirName, (sceneContainer.scenes)[i]->name);
 
-        // Create txt file for parameters
-        char *time_ = malloc(100 + 1);
-        create_params_file(time_, (sceneContainer.scenes)[i]->name, dirName);
+//         // Create txt file for parameters
+//         char *time_ = malloc(100 + 1);
+//         create_params_file(time_, (sceneContainer.scenes)[i]->name, dirName);
 
-        // Create txt file for performance measurements
-        FILE *fmeasurem = NULL;
-        char measurem_fileName[100];
-        sprintf(measurem_fileName, "%s%s", newPathName, "/measurements.csv");
-        fmeasurem = fopen(measurem_fileName, "w");
-        if (fmeasurem == NULL)
-        {
-            printf("ERROR: Failed to create measurements.txt file");
-        }
+//         // Create txt file for performance measurements
+//         FILE *fmeasurem = NULL;
+//         char measurem_fileName[100];
+//         sprintf(measurem_fileName, "%s%s", newPathName, "/measurements.csv");
+//         fmeasurem = fopen(measurem_fileName, "w");
+//         if (fmeasurem == NULL)
+//         {
+//             printf("ERROR: Failed to create measurements.txt file");
+//         }
 
-        fprintf(fmeasurem, "n, AVG accum. cycles (run %d times for every px)\n", REPETITIONS);
+//         fprintf(fmeasurem, "n, AVG accum. cycles (run %d times for every px)\n", REPETITIONS);
 
-        // Get scene  
-        Scene* scene = (sceneContainer.scenes)[i];
+//         // Get scene  
+//         Scene* scene = (sceneContainer.scenes)[i];
 
-        // Run benchmark on specified resolutions
-        for (unsigned int n = START_H_RESOLUTION; n <= END_H_RESOLUTION; n += RESOLUTION_STEPS)
-        {
-            // Write n to file
-            fprintf(fmeasurem, "%d, ", n);
+//         // Run benchmark on specified resolutions
+//         for (unsigned int n = START_H_RESOLUTION; n <= END_H_RESOLUTION; n += RESOLUTION_STEPS)
+//         {
+//             // Write n to file
+//             fprintf(fmeasurem, "%d, ", n);
 
-            // Resolution settings
-            unsigned int height_ = n;
-            unsigned int width_ = n * SCALE_RATIO;
+//             // Resolution settings
+//             unsigned int height_ = n;
+//             unsigned int width_ = n * SCALE_RATIO;
 
-            // Build index and add to path
-            char filename[300];
-            sprintf(filename, "%s/out_%d_%d.png", newPathName, (unsigned int)height_, (unsigned int)width_);
+//             // Build index and add to path
+//             char filename[300];
+//             sprintf(filename, "%s/out_%d_%d.png", newPathName, (unsigned int)height_, (unsigned int)width_);
 
-            printf("\n|||N = %d, res.: %d x %d, file: %s\n||||", n, (int)height_, (int)width_, filename);
+//             printf("\n|||N = %d, res.: %d x %d, file: %s\n||||", n, (int)height_, (int)width_, filename);
 
-            // Set up width and height for camera and image creation
-            update_width_height(scene->camera, width_, height_);
+//             // Set up width and height for camera and image creation
+//             update_width_height(scene->camera, width_, height_);
             
-            // Create image
-            create_image(scene, scene->camera->widthPx, scene->camera->heightPx);
+//             // Create image
+//             create_image(scene, scene->camera->widthPx, scene->camera->heightPx);
 
-            myInt64 start, end;
-            double inv_AA = 1.0 / AA;
-            double inv_AA2 = inv_AA / AA;
-            double tot_col[NR_VEC_ELEMENTS];
-            double px_col[NR_VEC_ELEMENTS];
-            unsigned long long cycles = 0;
-            double dir[NR_VEC_ELEMENTS];
+//             myInt64 start, end;
+//             double inv_AA = 1.0 / AA;
+//             double inv_AA2 = inv_AA / AA;
+//             double tot_col[NR_VEC_ELEMENTS];
+//             double px_col[NR_VEC_ELEMENTS];
+//             unsigned long long cycles = 0;
+//             double dir[NR_VEC_ELEMENTS];
           
-            // ===================================================
-            //// ---  CODE --- ///
-            // ===================================================
-            for (unsigned y = 0; y < height_; y++)
-            {
-                for (unsigned x = 0; x < width_; x++)
-                {
-#if AA > 1
-                    set_zero(tot_col);
-                    for (int m = 0; m < AA; m++)
-                    {
-                        for (int n = 0; n < AA; n++)
-                        {
-                            // pixel coordinates
-                            double disp_x = (inv_AA * n - 0.5) + x;
-                            double disp_y = (inv_AA * m - 0.5) + y;
-                            shoot_ray(scene.camera, disp_x, disp_y, dir);
-                            // ===================================================
-                            //// --- START PERFORMANCE MEASUREMENT --- ///
-                            // ===================================================
-                            start = start_tsc(); // start timer
-                            for (unsigned int j = 0; j < REPETITIONS; j++)
-                            {
-                                f(scene.camera->pos, dir, scene, 0, dir);
-                            }
-                            end = stop_tsc(start); // end timer
-                            cycles += end * inv_AA2;
-                            // ===================================================
-                            //// --- END PERFORMANCE MEASUREMENT --- ///
-                            // ===================================================
-                            vec_add(tot_col, px_col, tot_col);
-                        }
-                    }
-                    double px_col[NR_VEC_ELEMENTS];
-                    vec_mult_scalar(tot_col, inv_AA2, px_col);
-#else
+//             // ===================================================
+//             //// ---  CODE --- ///
+//             // ===================================================
+//             for (unsigned y = 0; y < height_; y++)
+//             {
+//                 for (unsigned x = 0; x < width_; x++)
+//                 {
+// #if AA > 1
+//                     set_zero(tot_col);
+//                     for (int m = 0; m < AA; m++)
+//                     {
+//                         for (int n = 0; n < AA; n++)
+//                         {
+//                             // pixel coordinates
+//                             double disp_x = (inv_AA * n - 0.5) + x;
+//                             double disp_y = (inv_AA * m - 0.5) + y;
+//                             shoot_ray(scene.camera, disp_x, disp_y, dir);
+//                             // ===================================================
+//                             //// --- START PERFORMANCE MEASUREMENT --- ///
+//                             // ===================================================
+//                             start = start_tsc(); // start timer
+//                             for (unsigned int j = 0; j < REPETITIONS; j++)
+//                             {
+//                                 f(scene.camera->pos, dir, scene, 0, dir);
+//                             }
+//                             end = stop_tsc(start); // end timer
+//                             cycles += end * inv_AA2;
+//                             // ===================================================
+//                             //// --- END PERFORMANCE MEASUREMENT --- ///
+//                             // ===================================================
+//                             vec_add(tot_col, px_col, tot_col);
+//                         }
+//                     }
+//                     double px_col[NR_VEC_ELEMENTS];
+//                     vec_mult_scalar(tot_col, inv_AA2, px_col);
+// #else
                     
-                    shoot_ray(scene->camera, x, y, dir);
-                    // ===================================================
-                    //// --- START PERFORMANCE MEASUREMENT --- ///
-                    // ===================================================
-                    start = start_tsc(); // start timer
-                    for (unsigned int j = 0; j < REPETITIONS; j++)
-                    {
-                        f(scene->camera->pos, dir, scene, 0, px_col);
-                    }
-                    end = stop_tsc(start); // end timer
-                    cycles += end;
-                    // ===================================================
-                    //// --- END PERFORMANCE MEASUREMENT --- ///
-                    // ===================================================
-#endif
+//                     shoot_ray(scene->camera, x, y, dir);
+//                     // ===================================================
+//                     //// --- START PERFORMANCE MEASUREMENT --- ///
+//                     // ===================================================
+//                     start = start_tsc(); // start timer
+//                     for (unsigned int j = 0; j < REPETITIONS; j++)
+//                     {
+//                         f(scene->camera->pos, dir, scene, 0, px_col);
+//                     }
+//                     end = stop_tsc(start); // end timer
+//                     cycles += end;
+//                     // ===================================================
+//                     //// --- END PERFORMANCE MEASUREMENT --- ///
+//                     // ===================================================
+// #endif
 
-#if GAMMA_CORR == 1
-                    vec_pow_inplace(px_col, 0.4545);
-#endif
+// #if GAMMA_CORR == 1
+//                     vec_pow_inplace(px_col, 0.4545);
+// #endif
 
-                    // save colors computed by trace into current pixel
-                    scene->img[y * width_ * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col[0]) * 255);
-                    scene->img[y * width_ * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col[1]) * 255);
-                    scene->img[y * width_ * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col[2]) * 255);
-                    scene->img[y * width_ * 4 + x * 4 + 3] = 255;
-                }
-            }
-            // ===================================================
-            //// --- END PERFORMANCE MEASUREMENT --- ///
-            // ===================================================
-            cycles = cycles / REPETITIONS;
+//                     // save colors computed by trace into current pixel
+//                     scene->img[y * width_ * 4 + x * 4 + 0] = (unsigned char)(min(1, px_col[0]) * 255);
+//                     scene->img[y * width_ * 4 + x * 4 + 1] = (unsigned char)(min(1, px_col[1]) * 255);
+//                     scene->img[y * width_ * 4 + x * 4 + 2] = (unsigned char)(min(1, px_col[2]) * 255);
+//                     scene->img[y * width_ * 4 + x * 4 + 3] = 255;
+//                 }
+//             }
+//             // ===================================================
+//             //// --- END PERFORMANCE MEASUREMENT --- ///
+//             // ===================================================
+//             cycles = cycles / REPETITIONS;
 
-            // Write to file
-            fprintf(fmeasurem, "%lld\n", cycles);
-            fflush(fmeasurem);
+//             // Write to file
+//             fprintf(fmeasurem, "%lld\n", cycles);
+//             fflush(fmeasurem);
 
-            // Save image to disk 
-            save_image_to_disk(scene, filename);
+//             // Save image to disk 
+//             save_image_to_disk(scene, filename);
 
-            // Clean up
-            destroy_image(scene);
-        }
+//             // Clean up
+//             destroy_image(scene);
+//         }
 
-        // Clean-up allocated strings and handlers
-        fclose(fmeasurem);
-        free(time_);
-        free(newPathName);
+//         // Clean-up allocated strings and handlers
+//         fclose(fmeasurem);
+//         free(time_);
+//         free(newPathName);
 
-        destroy_scene(scene);
-        free((sceneContainer.scenes)[i]);
-    }
+//         destroy_scene(scene);
+//         free((sceneContainer.scenes)[i]);
+//     }
 
-    free(dirName);
-    free(sceneContainer.scenes);
-}
+//     free(dirName);
+//     free(sceneContainer.scenes);
+// }
 
-// ================================
-//        FILE MANAGEMENT
-// ================================
-void get_current_date(char *out_date)
-{
-  time_t now = time(NULL);
-  struct tm *t = localtime(&now);
-  strftime(out_date, 100, "%d_%m_%Y_%H_%M_%S", t);
-}
+// // ================================
+// //        FILE MANAGEMENT
+// // ================================
+// void get_current_date(char *out_date)
+// {
+//   time_t now = time(NULL);
+//   struct tm *t = localtime(&now);
+//   strftime(out_date, 100, "%d_%m_%Y_%H_%M_%S", t);
+// }
 
-void create_params_file(char *time_, char *scneneName, char *dirName)
-{
-    char param_fileName[100];
-    time_t now = time(NULL);
-    struct tm *t = localtime(&now);
-    strftime(time_, 100, "%d.%m.%Y %H:%M", t);
+// void create_params_file(char *time_, char *scneneName, char *dirName)
+// {
+//     char param_fileName[100];
+//     time_t now = time(NULL);
+//     struct tm *t = localtime(&now);
+//     strftime(time_, 100, "%d.%m.%Y %H:%M", t);
 
-    FILE *fparam = NULL;
-    sprintf(param_fileName, "%s%s", dirName, "/parameters.txt");
-    fparam = fopen(param_fileName, "w");
-    if (fparam != NULL)
-    {
-        fprintf(fparam, "\nScene name: %s", scneneName);
-        fprintf(fparam, "\nDate: %s", time_);
+//     FILE *fparam = NULL;
+//     sprintf(param_fileName, "%s%s", dirName, "/parameters.txt");
+//     fparam = fopen(param_fileName, "w");
+//     if (fparam != NULL)
+//     {
+//         fprintf(fparam, "\nScene name: %s", scneneName);
+//         fprintf(fparam, "\nDate: %s", time_);
 
-        fprintf(fparam, "\nWARM_UP_REPETITIONS: %d", WARM_UP_REPETITIONS);
-        fprintf(fparam, "\nREPETITIONS: %d", REPETITIONS);
-        fprintf(fparam, "\nSTART_H_RESOLUTION: %d", START_H_RESOLUTION);
-        fprintf(fparam, "\nEND_H_RESOLUTION: %d", END_H_RESOLUTION);
-        fprintf(fparam, "\nRESOLUTION_STEPS: %d", RESOLUTION_STEPS);
-        fprintf(fparam, "\nSCALE_RATIO: %f", SCALE_RATIO);
+//         fprintf(fparam, "\nWARM_UP_REPETITIONS: %d", WARM_UP_REPETITIONS);
+//         fprintf(fparam, "\nREPETITIONS: %d", REPETITIONS);
+//         fprintf(fparam, "\nSTART_H_RESOLUTION: %d", START_H_RESOLUTION);
+//         fprintf(fparam, "\nEND_H_RESOLUTION: %d", END_H_RESOLUTION);
+//         fprintf(fparam, "\nRESOLUTION_STEPS: %d", RESOLUTION_STEPS);
+//         fprintf(fparam, "\nSCALE_RATIO: %f", SCALE_RATIO);
         
-        fflush(fparam);
-        fclose(fparam);
-    }
-    else
-    {
-        printf("ERROR: Failed to create parameters.txt file");
-    }
-}
+//         fflush(fparam);
+//         fclose(fparam);
+//     }
+//     else
+//     {
+//         printf("ERROR: Failed to create parameters.txt file");
+//     }
+// }
 
-char *create_dir_with_current_date(char *path, const char* prepend)
-{
-    char date[100];
-    get_current_date(date);
+// char *create_dir_with_current_date(char *path, const char* prepend)
+// {
+//     char date[100];
+//     get_current_date(date);
 
-    char dirName[500];
-    sprintf(dirName, "%s_%s", prepend, date);
+//     char dirName[500];
+//     sprintf(dirName, "%s_%s", prepend, date);
 
-    return create_dir(path, dirName); // NOTE: need to free later.
-}
+//     return create_dir(path, dirName); // NOTE: need to free later.
+// }
 
-/* 
-    Creates a sub-directory from path and returns res = path/dirName
-*/
-char *create_dir(char *path, char *dirName)
-{
-    char *newDirName = _concat("/", dirName);
-    char *newPathName = _concat(path, newDirName);
-    struct stat st = {0};
+// /* 
+//     Creates a sub-directory from path and returns res = path/dirName
+// */
+// char *create_dir(char *path, char *dirName)
+// {
+//     char *newDirName = _concat("/", dirName);
+//     char *newPathName = _concat(path, newDirName);
+//     struct stat st = {0};
 
-    if (stat(newPathName, &st) == -1)
-    {
-        mkdir(newPathName, 0700);
-    }
-    free(newDirName);
+//     if (stat(newPathName, &st) == -1)
+//     {
+//         mkdir(newPathName, 0700);
+//     }
+//     free(newDirName);
 
-    return newPathName; // NOTE: need to free later.
-}
+//     return newPathName; // NOTE: need to free later.
+// }

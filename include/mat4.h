@@ -20,10 +20,10 @@ typedef struct
 
 // Mat4 mult_mat(Mat4 *m1, Mat4 *m2);
 
-void mult_vec_matrix_no_homo(Mat4 *m, double v[NR_VEC_ELEMENTS], double res[NR_VEC_ELEMENTS]);
+void mult_vec_matrix_no_homo(Mat4 *m, float v[NR_VEC_ELEMENTS], float res[NR_VEC_ELEMENTS]);
 
 // Vec3 mult_vec_matrix(Mat4 *m, Vec3 v);
 
-Mat4 look_at(double pos[NR_VEC_ELEMENTS], double dir[NR_VEC_ELEMENTS], double up[NR_VEC_ELEMENTS]);
+Mat4 look_at(float pos[NR_VEC_ELEMENTS], float dir[NR_VEC_ELEMENTS], float up[NR_VEC_ELEMENTS]);
 
 #endif

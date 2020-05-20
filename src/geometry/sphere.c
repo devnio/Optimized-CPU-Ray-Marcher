@@ -9,11 +9,11 @@ Params for plane are:
 - params[0]: radius
 -> 1 parameters in total
  */
-void sdf_sphere(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_mmd_dists)
+void sdf_sphere(const SIMD_VEC_PS* simd_vec_p, float params[], SIMD_MMS* simd_mmd_dists)
 {
-    SIMD_MMD simd_mmd_n;
+    SIMD_MMS simd_mmd_n;
     simd_vec_norm(simd_vec_p, &simd_mmd_n);
 
-    SIMD_MMD simd_mmd_param0 = SET1_PD(params[0]);
-    *simd_mmd_dists = SUB_PD(simd_mmd_n, simd_mmd_param0);
+    SIMD_MMS simd_mmd_param0 = SET1_PS(params[0]);
+    *simd_mmd_dists = SUB_PS(simd_mmd_n, simd_mmd_param0);
 }

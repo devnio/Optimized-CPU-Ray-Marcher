@@ -10,7 +10,7 @@
 Params are:  
 - There are no params, mandelbulb spawned at position zero
  */
-void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_mmd_dists);
+void sdf_mandelbulb(const SIMD_VEC_PS* simd_vec_p, float params[], SIMD_MMS* simd_mmd_dists);
 
 
 #endif // MANDELBULB_H_

@@ -34,9 +34,10 @@
 // =========================
 // RENDERING
 #define MAX_RAY_DEPTH 3              // max nr. bounces
-#define MARCH_COUNT 3000             // max marching steps
-#define BBOX_AXES 10000                // bounding box size
-#define INTERSECT_THRESHOLD 0.000001 // careful with this -> should be low enoguh for shadow to work
+#define MARCH_COUNT 6000             // max marching steps
+#define BBOX_AXES 100000                // bounding box size
+#define INTERSECT_THRESHOLD 0.00004 // careful with this -> should be low enoguh for shadow to work
+#define INTERSECT_THRESHOLD_SHADOW 0.000005 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING
 #define SPECULAR_COEFF 0.2
@@ -63,10 +64,10 @@
 #define GAMMA_CORR 1
 
 // Global Constants
-extern const double const_specularColour[3];
-extern const double const_eps_x[3];
-extern const double const_eps_y[3];
-extern const double const_eps_z[3];
+extern const float const_specularColour[3];
+extern const float const_eps_x[3];
+extern const float const_eps_y[3];
+extern const float const_eps_z[3];
 
 
 #endif // CONFIG_H_

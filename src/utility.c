@@ -8,7 +8,7 @@
 /*
  * Function:  mix 
  * --------------------
- *  Mix two doubles with a weithing 
+ *  Mix two floats with a weithing 
  *
  *  a: weighted with the third parameter weight
  *  b: weighted with the value (1-weight)
@@ -16,7 +16,7 @@
  *
  *  returns: The weighted value between a and b
  */
-double mix(double a, double b, double weight)
+float mix(float a, float b, float weight)
 {
     return b * weight + a * (1 - weight);
 }
@@ -26,12 +26,12 @@ double mix(double a, double b, double weight)
  * --------------------
  *  Compute the minimum between a and b 
  *
- *  a: double 
- *  b: double
+ *  a: float 
+ *  b: float
  *
  *  returns: minimum of a and b
  */
-double min(double a, double b)
+float min(float a, float b)
 {
     if (a < b)
         return a;
@@ -44,12 +44,12 @@ double min(double a, double b)
  * --------------------
  *  Compute the maximum between a and b 
  *
- *  a: double 
- *  b: double
+ *  a: float 
+ *  b: float
  *
  *  returns: maximum of a and b
  */
-double max(double a, double b)
+float max(float a, float b)
 {
     if (a < b)
         return b;
@@ -68,59 +68,46 @@ double max(double a, double b)
  * 
  *  returns: the input value clamped between bounds
  */
-double clamp(double val, double min, double max)
+float clamp(float val, float min, float max)
 {
     val = val > max ? max : val;
     val = val < min ? min : val;
     return val;
 }
-void simd_clamp(SIMD_MMD* val, SIMD_MMD min, SIMD_MMD max, SIMD_MMD* res)
+void simd_clamp(SIMD_MMS* val, SIMD_MMS min, SIMD_MMS max, SIMD_MMS* res)
 {
-    SIMD_MMD mask = _mm256_cmp_pd(*val, max, _CMP_GT_OQ);
-    *res = _mm256_blendv_pd(*val, max, mask);
-    SIMD_MMD mask2 = _mm256_cmp_pd(*val, max, _CMP_LT_OQ);
-    *res = _mm256_blendv_pd(*val, min, mask2);
+    SIMD_MMS mask = _mm256_cmp_ps(*val, max, _CMP_GT_OQ);
+    *res = _mm256_blendv_ps(*val, max, mask);
+    SIMD_MMS mask2 = _mm256_cmp_ps(*val, max, _CMP_LT_OQ);
+    *res = _mm256_blendv_ps(*val, min, mask2);
 
 }
 
-double sign(double val)
+float sign(float val)
 {
-    return val / fabs(val);
+    return val / fabsf(val);
 }
 
-// FORCE_INLINE void rotate_point_xyz(const double vec_p[NR_VEC_ELEMENTS], const double* precomp_orient, double vec_res[NR_VEC_ELEMENTS])
-// {
-//     double qY = precomp_orient[0] * vec_p[1] - precomp_orient[1] * vec_p[2];
-//     double qZ = precomp_orient[1] * vec_p[1] + precomp_orient[0] * vec_p[2];
-
-//     double qX = precomp_orient[2] * vec_p[0] - precomp_orient[3] * qZ;
-//     double qZ2 = precomp_orient[3] * vec_p[0] + precomp_orient[2] * qZ;
-
-//     vec_res[0] = precomp_orient[4] * qX - precomp_orient[5] * qY;
-//     vec_res[1] = precomp_orient[5] * qX + precomp_orient[4] * qY;
-//     vec_res[2] = qZ2;
-// }
-
-FORCE_INLINE void rotate_point_xyz(SIMD_VEC *vec_p, const double* precomp_orient, SIMD_VEC *vec_res)
+FORCE_INLINE void rotate_point_xyz(SIMD_VEC_PS *vec_p, const float* precomp_orient, SIMD_VEC_PS *vec_res)
 {
-    SIMD_MMD simd_mmd_q_y = SUB_PD(MULT_PD(SET1_PD(precomp_orient[0]), vec_p->y), MULT_PD(SET1_PD(precomp_orient[1]), vec_p->z));
-    SIMD_MMD simd_mmd_q_z1 = ADD_PD(MULT_PD(SET1_PD(precomp_orient[1]), vec_p->y), MULT_PD(SET1_PD(precomp_orient[0]), vec_p->z));
+    SIMD_MMS simd_mmd_q_y = SUB_PS(MULT_PS(SET1_PS(precomp_orient[0]), vec_p->y), MULT_PS(SET1_PS(precomp_orient[1]), vec_p->z));
+    SIMD_MMS simd_mmd_q_z1 = ADD_PS(MULT_PS(SET1_PS(precomp_orient[1]), vec_p->y), MULT_PS(SET1_PS(precomp_orient[0]), vec_p->z));
 
-    SIMD_MMD simd_mmd_q_x = SUB_PD(MULT_PD(SET1_PD(precomp_orient[2]), vec_p->x), MULT_PD(SET1_PD(precomp_orient[3]), simd_mmd_q_z1));
-    SIMD_MMD simd_mmd_q_z2 = ADD_PD(MULT_PD(SET1_PD(precomp_orient[3]), vec_p->x), MULT_PD(SET1_PD(precomp_orient[2]), simd_mmd_q_z1));
+    SIMD_MMS simd_mmd_q_x = SUB_PS(MULT_PS(SET1_PS(precomp_orient[2]), vec_p->x), MULT_PS(SET1_PS(precomp_orient[3]), simd_mmd_q_z1));
+    SIMD_MMS simd_mmd_q_z2 = ADD_PS(MULT_PS(SET1_PS(precomp_orient[3]), vec_p->x), MULT_PS(SET1_PS(precomp_orient[2]), simd_mmd_q_z1));
 
-    vec_res->x = SUB_PD(MULT_PD(SET1_PD(precomp_orient[4]), simd_mmd_q_x), MULT_PD(SET1_PD(precomp_orient[5]), simd_mmd_q_y));
-    vec_res->y = ADD_PD(MULT_PD(SET1_PD(precomp_orient[5]), simd_mmd_q_x), MULT_PD(SET1_PD(precomp_orient[4]), simd_mmd_q_y));
+    vec_res->x = SUB_PS(MULT_PS(SET1_PS(precomp_orient[4]), simd_mmd_q_x), MULT_PS(SET1_PS(precomp_orient[5]), simd_mmd_q_y));
+    vec_res->y = ADD_PS(MULT_PS(SET1_PS(precomp_orient[5]), simd_mmd_q_x), MULT_PS(SET1_PS(precomp_orient[4]), simd_mmd_q_y));
     vec_res->z = simd_mmd_q_z2;
 }
 
 
-double to_radians(double degrees)
+float to_radians(float degrees)
 {
     return degrees * 0.01745329251;
 }
 
-double mod(double x, double y)
+float mod(float x, float y)
 {
     return x - y * floor(x/y);
 }

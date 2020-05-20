@@ -9,7 +9,7 @@
 // AVX
 #if SIMD_V == 0
 
-#define NR_SIMD_VEC_ELEMS 4
+#define NR_SIMD_VEC_ELEMS 8
 
 
 #define SIMD_MMS __m256
@@ -23,10 +23,17 @@ typedef struct
     SIMD_MMD z;
 } SIMD_VEC;
 
-extern SIMD_MMD log_base_e;
+typedef struct
+{
+    SIMD_MMS x;
+    SIMD_MMS y;
+    SIMD_MMS z;
+} SIMD_VEC_PS;
 
-SIMD_MMD log2d4(SIMD_MMD x);
-SIMD_MMD exp2d4(SIMD_MMD x);
+extern SIMD_MMS log_base_e;
+
+SIMD_MMS log2d4(SIMD_MMS x);
+SIMD_MMS exp2d4(SIMD_MMS x);
 
 // Integers
 #define MASKLOAD_EPI _mm_maskload_epi32
@@ -44,12 +51,28 @@ SIMD_MMD exp2d4(SIMD_MMD x);
 
 #define SET_PS _mm256_set_ps
 #define SET1_PS _mm256_set1_ps
+#define SET_ZERO_PS _mm256_setzero_ps
 
 #define ADD_PS _mm256_add_ps
 #define SUB_PS _mm256_sub_ps
 #define MULT_PS _mm256_mul_ps
+#define FMADD_PS _mm256_fmadd_ps
+#define FMSUB_PS _mm256_fmsub_ps
 #define DIV_PS _mm256_div_ps
 #define SQRT_PS _mm256_sqrt_ps
+
+#define BLENDV_PS _mm256_blendv_ps
+#define BLEND_PS _mm256_blend_ps
+#define OR_PS _mm256_or_ps
+#define AND_PS _mm256_and_ps
+#define ANDNOT_PS _mm256_andnot_ps
+#define MAX_PS _mm256_max_ps
+#define MIN_PS _mm256_min_ps
+
+#define CONV_PS_TO_EPI _mm256_cvtps_epi32
+#define CMP_PS _mm256_cmp_ps
+#define MOVEMASK_PS _mm256_movemask_ps
+
 
 // Double precision
 #define LOAD_PD _mm256_load_pd
@@ -62,7 +85,6 @@ SIMD_MMD exp2d4(SIMD_MMD x);
 #define ADD_PD _mm256_add_pd
 #define SUB_PD _mm256_sub_pd
 #define MULT_PD _mm256_mul_pd
-#define FMA_PD _mm256_fmadd_pd
 #define DIV_PD _mm256_div_pd
 #define SQRT_PD _mm256_sqrt_pd
 #define FMADD_PD _mm256_fmadd_pd

@@ -118,14 +118,14 @@ static int get_int(const char *json_str, jsmntok_t *tok)
 }
 
 /*
-Parses a double.
+Parses a float.
 Input: 
    - json string.
-   - token containing double.
+   - token containing float.
 */
-static double get_double(const char *json_str, jsmntok_t *tok)
+static float get_float(const char *json_str, jsmntok_t *tok)
 {
-    return strtod(json_str + tok->start, NULL);
+    return strtof(json_str + tok->start, NULL);
 }
 
 /*
@@ -136,7 +136,7 @@ Input:
    - tokens.
    - index where the vector is (the block, not x).
 */
-static void parse_vec3(FILE *logFile, char *json_str, jsmntok_t *tokens, int idx, double vec_res[NR_VEC_ELEMENTS])
+static void parse_vec3(FILE *logFile, char *json_str, jsmntok_t *tokens, int idx, float vec_res[NR_VEC_ELEMENTS])
 {
     fprintf(logFile, "       +-- vector: ");
 
@@ -145,17 +145,17 @@ static void parse_vec3(FILE *logFile, char *json_str, jsmntok_t *tokens, int idx
     {
         if (jsoneq(json_str, &tokens[idx + j], "x") == 0)
         {
-            vec_res[0] = get_double(json_str, &tokens[idx + j + 1]);
+            vec_res[0] = get_float(json_str, &tokens[idx + j + 1]);
             fprintf(logFile, "x: %f, ", vec_res[0]);
         }
         else if (jsoneq(json_str, &tokens[idx + j], "y") == 0)
         {
-            vec_res[1] = get_double(json_str, &tokens[idx + j + 1]);
+            vec_res[1] = get_float(json_str, &tokens[idx + j + 1]);
             fprintf(logFile, "y: %f, ", vec_res[1]);
         }
         else if (jsoneq(json_str, &tokens[idx + j], "z") == 0)
         {
-            vec_res[2] = get_double(json_str, &tokens[idx + j + 1]);
+            vec_res[2] = get_float(json_str, &tokens[idx + j + 1]);
             fprintf(logFile, "z: %f\n", vec_res[2]);
         }
 
@@ -186,9 +186,9 @@ int create_cam(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, i
     // we start with 1 because we have to step inside the tokens of camera
     // (0: the whole camera block, 1: fov, 2: value of fox, 3: position, 4:value and so on...)
     int width, height;
-    double fov;
-    double position[NR_VEC_ELEMENTS];
-    double rotation[NR_VEC_ELEMENTS];
+    float fov;
+    float position[NR_VEC_ELEMENTS];
+    float rotation[NR_VEC_ELEMENTS];
 
     int j = 1;
     if (jsoneq(json_str, &tokens[idx_camera_properties + j], "width") == 0)
@@ -205,7 +205,7 @@ int create_cam(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, i
     }
     if (jsoneq(json_str, &tokens[idx_camera_properties + j], "fov") == 0)
     {
-        fov = get_double(json_str, &tokens[idx_camera_properties + j + 1]);
+        fov = get_float(json_str, &tokens[idx_camera_properties + j + 1]);
         fprintf(logFile, "+-- fov: %f\n", fov);
         j += tokens[idx_camera_properties + j].size + 1;
     }
@@ -248,8 +248,8 @@ int create_light(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens,
 {
     fprintf(logFile, "\n===================== LIGHT =====================\n");
     fprintf(logFile, "+-- parsing %d elements of light.\n", tokens[idx].size);
-    double center[NR_VEC_ELEMENTS];
-    double emission[NR_VEC_ELEMENTS];
+    float center[NR_VEC_ELEMENTS];
+    float emission[NR_VEC_ELEMENTS];
 
     int j = 1;
 
@@ -289,8 +289,8 @@ int create_transforms(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *to
     scene->nr_transforms = tokens[idx].size;
     scene->transforms = (Transform **)malloc(sizeof(Transform *) * scene->nr_transforms);
 
-    double pos[NR_VEC_ELEMENTS];
-    double rot[NR_VEC_ELEMENTS];
+    float pos[NR_VEC_ELEMENTS];
+    float rot[NR_VEC_ELEMENTS];
 
     int j = 2;
     for (int step = 0; step < tokens[idx].size; step++)
@@ -333,10 +333,10 @@ int create_materials(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tok
     scene->nr_materials = tokens[idx].size;
     scene->materials = (Material **)malloc(sizeof(Material *) * scene->nr_materials);
 
-    double refl;
-    double shininess;
+    float refl;
+    float shininess;
 
-    double surfaceCol[NR_VEC_ELEMENTS];
+    float surfaceCol[NR_VEC_ELEMENTS];
 
     int j = 2;
     for (int step = 0; step < tokens[idx].size; step++)
@@ -345,13 +345,13 @@ int create_materials(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tok
         fprintf(logFile, "\n+-- material %d\n", step);
         if (jsoneq(json_str, &tokens[idx + j], "reflection") == 0)
         {
-            refl = get_double(json_str, &tokens[idx + j + 1]);
+            refl = get_float(json_str, &tokens[idx + j + 1]);
             fprintf(logFile, "   +-- reflection: %f\n", refl);
             j += 2;
         }
         if (jsoneq(json_str, &tokens[idx + j], "shininess") == 0)
         {
-            shininess = get_double(json_str, &tokens[idx + j + 1]);
+            shininess = get_float(json_str, &tokens[idx + j + 1]);
             fprintf(logFile, "   +-- shininess: %f\n", shininess);
             j += 2;
         }
@@ -368,16 +368,16 @@ int create_materials(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tok
 }
 
 /*
-Parses an array of doubles and saves into the input array.
+Parses an array of floats and saves into the input array.
 Input: 
    - scene: scene we are creating
    - logFile: pointer to logFile used to store information abount parsed scene
    - json string.
    - tokens.
    - index where the vector is (the block, not x).
-   - pointer to double array that is going to be filled.
+   - pointer to float array that is going to be filled.
 */
-int create_params_array(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx, double *params, char* name)
+int create_params_array(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *tokens, int idx, float *params, char* name)
 {
     fprintf(logFile, "    +-- parsing %d params (array).\n", tokens[idx].size);
     int j = 1;
@@ -386,7 +386,7 @@ int create_params_array(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
     {
         if (tokens[idx + j].type == JSMN_PRIMITIVE)
         {
-            params[step] = get_double(json_str, &tokens[idx + j]);
+            params[step] = get_float(json_str, &tokens[idx + j]);
             fprintf(logFile, "p[%d]: %f, ", step, params[step]);
         }
         j++;
@@ -509,7 +509,7 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
                 params_size += 3; // precomp k1, k2, k22
             }
 
-            double *params = (double *)malloc(sizeof(double) * params_size);
+            float *params = (float *)malloc(sizeof(float) * params_size);
             j += create_params_array(scene, logFile, json_str, tokens, idx + j + 1, params, name) + 1;
             geom_obj->params = params;
         }

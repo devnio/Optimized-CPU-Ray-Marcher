@@ -5,11 +5,11 @@
 
 typedef struct
 {
-    double surfCol[NR_VEC_ELEMENTS];
-    double refl;
+    float surfCol[NR_VEC_ELEMENTS];
+    float refl;
     float shininess;
 } Material;
 
-Material *new_material(double surfCol[NR_VEC_ELEMENTS], double refl, float shininess);
+Material *new_material(float surfCol[NR_VEC_ELEMENTS], float refl, float shininess);
 
 #endif // MATERIAL_H_

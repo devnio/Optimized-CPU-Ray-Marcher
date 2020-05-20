@@ -114,13 +114,13 @@
  *
  *   returns: vector resulting from matrix multiplication
  */
-void mult_vec_matrix_no_homo(Mat4 *m, double v[NR_VEC_ELEMENTS], double res[NR_VEC_ELEMENTS])
-{
-    double x, y, z, w;
-    res[0] = v[0] * m->m[0][0] + v[1] * m->m[0][1] + v[2] * m->m[0][2]; // xxxx
-    res[1] = v[0] * m->m[1][0] + v[1] * m->m[1][1] + v[2] * m->m[1][2]; // yyyy
-    res[2] = v[0] * m->m[2][0] + v[1] * m->m[2][1] + v[2] * m->m[2][2]; // zzzz
-}
+// void mult_vec_matrix_no_homo(Mat4 *m, double v[NR_VEC_ELEMENTS], double res[NR_VEC_ELEMENTS])
+// {
+//     double x, y, z, w;
+//     res[0] = v[0] * m->m[0][0] + v[1] * m->m[0][1] + v[2] * m->m[0][2]; // xxxx
+//     res[1] = v[0] * m->m[1][0] + v[1] * m->m[1][1] + v[2] * m->m[1][2]; // yyyy
+//     res[2] = v[0] * m->m[2][0] + v[1] * m->m[2][1] + v[2] * m->m[2][2]; // zzzz
+// }
 
 /*
  * Function: mult_vec_matrix
@@ -155,7 +155,7 @@ void mult_vec_matrix_no_homo(Mat4 *m, double v[NR_VEC_ELEMENTS], double res[NR_V
  * ----------------------------
  * 
  */
-Mat4 look_at(double pos[NR_VEC_ELEMENTS], double dir[NR_VEC_ELEMENTS], double up[NR_VEC_ELEMENTS])
+Mat4 look_at(float pos[NR_VEC_ELEMENTS], float dir[NR_VEC_ELEMENTS], float up[NR_VEC_ELEMENTS])
 {
 
     Mat4 viewMatrix;
@@ -165,11 +165,11 @@ Mat4 look_at(double pos[NR_VEC_ELEMENTS], double dir[NR_VEC_ELEMENTS], double up
     viewMatrix.m[2][3] = pos[2];
     viewMatrix.m[3][3] = 1;
 
-    double tmp_vcross[NR_VEC_ELEMENTS]; 
+    float tmp_vcross[NR_VEC_ELEMENTS]; 
     vec_cross(up, dir, tmp_vcross);
     vec_normalize(tmp_vcross);
-    double *cRight = tmp_vcross;
-    double cUp[NR_VEC_ELEMENTS];
+    float *cRight = tmp_vcross;
+    float cUp[NR_VEC_ELEMENTS];
     vec_cross(dir, cRight, cUp);
 
     viewMatrix.m[0][0] = cRight[0];

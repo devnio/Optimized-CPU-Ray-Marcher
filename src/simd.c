@@ -8,61 +8,61 @@
 #define EXP_POLY_DEGREE 3
 #define LOG_POLY_DEGREE 6
 
-#define POLY0(x, c0) SET1_PD(c0)
-#define POLY1(x, c0, c1) ADD_PD(MULT_PD(POLY0(x, c1), x), SET1_PD(c0))
-#define POLY2(x, c0, c1, c2) ADD_PD(MULT_PD(POLY1(x, c1, c2), x), SET1_PD(c0))
-#define POLY3(x, c0, c1, c2, c3) ADD_PD(MULT_PD(POLY2(x, c1, c2, c3), x), SET1_PD(c0))
-#define POLY4(x, c0, c1, c2, c3, c4) ADD_PD(MULT_PD(POLY3(x, c1, c2, c3, c4), x), SET1_PD(c0))
-#define POLY5(x, c0, c1, c2, c3, c4, c5) ADD_PD(MULT_PD(POLY4(x, c1, c2, c3, c4, c5), x), SET1_PD(c0))
+#define POLY0(x, c0) SET1_PS(c0)
+#define POLY1(x, c0, c1) ADD_PS(MULT_PS(POLY0(x, c1), x), SET1_PS(c0))
+#define POLY2(x, c0, c1, c2) ADD_PS(MULT_PS(POLY1(x, c1, c2), x), SET1_PS(c0))
+#define POLY3(x, c0, c1, c2, c3) ADD_PS(MULT_PS(POLY2(x, c1, c2, c3), x), SET1_PS(c0))
+#define POLY4(x, c0, c1, c2, c3, c4) ADD_PS(MULT_PS(POLY3(x, c1, c2, c3, c4), x), SET1_PS(c0))
+#define POLY5(x, c0, c1, c2, c3, c4, c5) ADD_PS(MULT_PS(POLY4(x, c1, c2, c3, c4, c5), x), SET1_PS(c0))
 
-SIMD_MMD exp2d4(SIMD_MMD x)
+SIMD_MMS exp2d4(SIMD_MMS x)
 {
-   SIMD_MMI ipart;
-   SIMD_MMD dpart, expipart, expdpart;
+   __m256i ipart;
+   SIMD_MMS fpart, expipart, expfpart;
 
-   x = MIN_PD(x, SET1_PD( 129.00000));
-   x = MAX_PD(x, SET1_PD(-126.99999));
+   x = MIN_PS(x, SET1_PS( 129.00000));
+   x = MAX_PS(x, SET1_PS(-126.99999));
 
    /* ipart = int(x - 0.5) */
-   ipart = _mm256_cvtpd_epi32(SUB_PD(x, SET1_PD(0.5)));
+   ipart = _mm256_cvtps_epi32(SUB_PS(x, SET1_PS(0.5)));
 
-   /* dpart = x - ipart */
-   dpart = SUB_PD(x, _mm256_cvtepi32_pd(ipart));
+   /* fpart = x - ipart */
+   fpart = SUB_PS(x, _mm256_cvtepi32_ps(ipart));
 
    /* expipart = (float) (1 << ipart) */
-   expipart = _mm256_cvtps_pd(_mm_castsi128_ps(_mm_slli_epi32(_mm_add_epi32(ipart, _mm_set1_epi32(127)), 23)));
+   expipart = _mm256_castsi256_ps(_mm256_slli_epi64(_mm256_add_epi32(ipart, _mm256_set1_epi32(127)), 23));
 
    /* minimax polynomial fit of 2**x, in range [-0.5, 0.5[ */
 #if EXP_POLY_DEGREE == 5
-   expdpart = POLY5(dpart, 9.9999994e-1, 6.9315308e-1, 2.4015361e-1, 5.5826318e-2, 8.9893397e-3, 1.8775767e-3);
+   expfpart = POLY5(fpart, 9.9999994e-1, 6.9315308e-1, 2.4015361e-1, 5.5826318e-2, 8.9893397e-3, 1.8775767e-3);
 #elif EXP_POLY_DEGREE == 4
-   expdpart = POLY4(dpart, 1.0000026, 6.9300383e-1, 2.4144275e-1, 5.2011464e-2, 1.3534167e-2);
+   expfpart = POLY4(fpart, 1.0000026, 6.9300383e-1, 2.4144275e-1, 5.2011464e-2, 1.3534167e-2);
 #elif EXP_POLY_DEGREE == 3
-   expdpart = POLY3(dpart, 9.9992520e-1, 6.9583356e-1, 2.2606716e-1, 7.8024521e-2);
+   expfpart = POLY3(fpart, 9.9992520e-1, 6.9583356e-1, 2.2606716e-1, 7.8024521e-2);
 #elif EXP_POLY_DEGREE == 2
-   expdpart = POLY2(dpart, 1.0017247, 6.5763628e-1, 3.3718944e-1);
+   expfpart = POLY2(fpart, 1.0017247, 6.5763628e-1, 3.3718944e-1);
 #else
 #error
 #endif
 
-   return MULT_PD(expipart, expdpart);
+   return MULT_PS(expipart, expfpart);
 }
 
 
-SIMD_MMD log2d4(SIMD_MMD x)
+SIMD_MMS log2d4(SIMD_MMS x)
 {
-   SIMD_MMI exp = _mm_set1_epi32(0x7F800000);
-   SIMD_MMI mant = _mm_set1_epi32(0x007FFFFF);
+   __m256i exp = _mm256_set1_epi32(0x7F800000);
+   __m256i mant = _mm256_set1_epi32(0x007FFFFF);
 
-   __m128 one = _mm_set1_ps(1.0);
+   __m256 one = _mm256_set1_ps(1.0);
 
-   SIMD_MMI i = _mm_castps_si128(_mm256_cvtpd_ps(x));
+   __m256i i = _mm256_castps_si256(x);
 
-   SIMD_MMD e = _mm256_cvtepi32_pd(_mm_sub_epi32(_mm_srli_epi32(_mm_and_si128(i, exp), 23), _mm_set1_epi32(127)));
+   SIMD_MMS e = _mm256_cvtepi32_ps(_mm256_sub_epi32(_mm256_srli_epi32(_mm256_and_si256(i, exp), 23), _mm256_set1_epi32(127)));
 
-   SIMD_MMD m = _mm256_cvtps_pd(_mm_or_ps(_mm_castsi128_ps(_mm_and_si128(i, mant)), one));
+   SIMD_MMS m = _mm256_or_ps(_mm256_castsi256_ps(_mm256_and_si256(i, mant)), one);
 
-   SIMD_MMD p;
+   SIMD_MMS p;
 
    /* Minimax polynomial fit of log2(x)/(x - 1), for x in range [1, 2[ */
 #if LOG_POLY_DEGREE == 6
@@ -78,7 +78,7 @@ SIMD_MMD log2d4(SIMD_MMD x)
 #endif
 
    /* This effectively increases the polynomial degree by one, but ensures that log2(1) == 0*/
-   p = MULT_PD(p, SUB_PD(m, SET1_PD(1.0)));
+   p = MULT_PS(p, SUB_PS(m, SET1_PS(1.0)));
 
-   return ADD_PD(p, e);
+   return ADD_PS(p, e);
 }

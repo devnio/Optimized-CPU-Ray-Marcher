@@ -3,230 +3,204 @@
 
 const int nr_mandelbulb_params = 0;
 
-SIMD_MMD log_base_e;
+SIMD_MMS log_base_e;
 
 /*
 Params are:  
 - There are no params, mandelbulb spawned at position zero
  */
-void sdf_mandelbulb(const SIMD_VEC* simd_vec_p, double params[], SIMD_MMD* simd_mmd_dists)
+void sdf_mandelbulb(const SIMD_VEC_PS* simd_vec_p, float params[], SIMD_MMS* simd_mmd_dists)
 {
-    SIMD_MMD  x2 = MULT_PD(simd_vec_p->x, simd_vec_p->x);
-    SIMD_MMD  y2 = MULT_PD(simd_vec_p->y, simd_vec_p->y);
-    SIMD_MMD  z2 = MULT_PD(simd_vec_p->z, simd_vec_p->z);
-    SIMD_MMD m = ADD_PD(x2, ADD_PD(y2, z2));
+    SIMD_MMS  x2 = MULT_PS(simd_vec_p->x, simd_vec_p->x);
+    SIMD_MMS  y2 = MULT_PS(simd_vec_p->y, simd_vec_p->y);
+    SIMD_MMS  z2 = MULT_PS(simd_vec_p->z, simd_vec_p->z);
+    SIMD_MMS m = ADD_PS(x2, ADD_PS(y2, z2));
 
-	SIMD_MMD dz = SET1_PD(1.5);
+	SIMD_MMS dz = SET1_PS(1.5);
 
     
     // ==============================//
     // ---- Unrolled Loop Body 1 --- //
     // ==============================//
-    SIMD_MMD m2 = MULT_PD(m, m);
-    dz = ADD_PD(MULT_PD(SET1_PD(8.0), MULT_PD(m, MULT_PD(m2, MULT_PD(SQRT_PD(m), dz)))), SET1_PD(1.0));
+    SIMD_MMS m2 = MULT_PS(m, m);
+    dz = ADD_PS(MULT_PS(SET1_PS(8.0), MULT_PS(m, MULT_PS(m2, MULT_PS(SQRT_PS(m), dz)))), SET1_PS(1.0));
 
-    SIMD_MMD x4 = MULT_PD(x2, x2);
-    SIMD_MMD y4 = MULT_PD(y2, y2);
-    SIMD_MMD z4 = MULT_PD(z2, z2);
+    SIMD_MMS x4 = MULT_PS(x2, x2);
+    SIMD_MMS y4 = MULT_PS(y2, y2);
+    SIMD_MMS z4 = MULT_PS(z2, z2);
 
-    SIMD_MMD x2z2 = MULT_PD(x2, z2);
-    SIMD_MMD x4z4 = ADD_PD(x4, z4);
+    SIMD_MMS x2z2 = MULT_PS(x2, z2);
+    SIMD_MMS x4z4 = ADD_PS(x4, z4);
 
-    SIMD_MMD a = ADD_PD(x2, z2);
-    SIMD_MMD a2 = MULT_PD(a, a);
+    SIMD_MMS a = ADD_PS(x2, z2);
+    SIMD_MMS a2 = MULT_PS(a, a);
     
-    // OLD: double b = (a == 0) ? 0.0 : 1.0/sqrt(a*a*a*a*a*a*a); NEW:
-    SIMD_MMD b = DIV_PD(SET1_PD(1.0), MULT_PD(a, MULT_PD(a2,SQRT_PD(a)))); // changing from a*a*a*a*a*a*a to a*a2*a4 incurred some floating point errors
+    SIMD_MMS b = DIV_PS(SET1_PS(1.0), MULT_PS(a, MULT_PS(a2,SQRT_PS(a)))); 
 
-    // OLD: double c = x4 + y4 + z4 - 6.0*y2*z2 - 6.0*x2*y2 + 2.0*z2*x2;  NEW:
-    SIMD_MMD c = ADD_PD(x4z4, ADD_PD(y4, ADD_PD(MULT_PD(SET1_PD(-6.0), MULT_PD(y2,a)), MULT_PD(SET1_PD(2.0),x2z2)))); // incurred some floating point errors
+    SIMD_MMS c = ADD_PS(x4z4, ADD_PS(y4, ADD_PS(MULT_PS(SET1_PS(-6.0), MULT_PS(y2,a)), MULT_PS(SET1_PS(2.0),x2z2)))); 
     
-    SIMD_MMD d = ADD_PD(SUB_PD(x2,y2), z2);
+    SIMD_MMS d = ADD_PS(SUB_PS(x2,y2), z2);
     
-    SIMD_MMD cb = MULT_PD(c, b);
+    SIMD_MMS cb = MULT_PS(c, b);
 
-    SIMD_MMD x = ADD_PD(simd_vec_p->x, MULT_PD(SET1_PD(64.0), MULT_PD(simd_vec_p->x, MULT_PD(simd_vec_p->y, MULT_PD(simd_vec_p->z, MULT_PD(SUB_PD(x2,z2),MULT_PD(d,MULT_PD(ADD_PD(x4, ADD_PD(MULT_PD(SET1_PD(-6.0), x2z2), z4)), cb))))))));
-    // z = vec_p[2] +  -8.0*y*d*(x4*x4 - 28.0*x4*x2*z2 + 70.0*x4*z4 - 28.0*x2*z2*z4 + z4*z4)*c*b; // old
-    SIMD_MMD z = ADD_PD(simd_vec_p->z, MULT_PD(SET1_PD(8.0), MULT_PD(simd_vec_p->y,MULT_PD(d, MULT_PD(ADD_PD(MULT_PD(SET1_PD(28.0), MULT_PD(x2z2, x4z4)), SUB_PD(MULT_PD(SUB_PD(MULT_PD(SET1_PD(-70.0),x4),z4), z4), MULT_PD(x4,x4))), cb)))));
-    SIMD_MMD y = ADD_PD(simd_vec_p->y, ADD_PD(MULT_PD(MULT_PD(MULT_PD(MULT_PD(SET1_PD(-16.0), y2), a), d),d), MULT_PD(c,c)));
+    SIMD_MMS x = ADD_PS(simd_vec_p->x, MULT_PS(SET1_PS(64.0), MULT_PS(simd_vec_p->x, MULT_PS(simd_vec_p->y, MULT_PS(simd_vec_p->z, MULT_PS(SUB_PS(x2,z2),MULT_PS(d,MULT_PS(ADD_PS(x4, ADD_PS(MULT_PS(SET1_PS(-6.0), x2z2), z4)), cb))))))));
+    SIMD_MMS z = ADD_PS(simd_vec_p->z, MULT_PS(SET1_PS(8.0), MULT_PS(simd_vec_p->y,MULT_PS(d, MULT_PS(ADD_PS(MULT_PS(SET1_PS(28.0), MULT_PS(x2z2, x4z4)), SUB_PS(MULT_PS(SUB_PS(MULT_PS(SET1_PS(-70.0),x4),z4), z4), MULT_PS(x4,x4))), cb)))));
+    SIMD_MMS y = ADD_PS(simd_vec_p->y, ADD_PS(MULT_PS(MULT_PS(MULT_PS(MULT_PS(SET1_PS(-16.0), y2), a), d),d), MULT_PS(c,c)));
 
-    x2 = MULT_PD(x, x);
-    y2 = MULT_PD(y, y);
-    z2 = MULT_PD(z, z);
-    m = ADD_PD(x2, ADD_PD(y2, z2));
+    x2 = MULT_PS(x, x);
+    y2 = MULT_PS(y, y);
+    z2 = MULT_PS(z, z);
+    m = ADD_PS(x2, ADD_PS(y2, z2));
 
 
     // -----------
-    SIMD_MMD ret_mask;
-    SIMD_MMD m_threshold = SET1_PD(256.0);
-    ret_mask = CMP_PD(m, m_threshold, _CMP_GT_OS);
-    int int_ret_mask = MOVEMASK_PD(ret_mask);
+    SIMD_MMS ret_mask;
+    SIMD_MMS m_threshold = SET1_PS(256.0);
 
-    SIMD_MMD ret_val = MULT_PD(log_base_e, log2d4(m));
-    // simd_mmd_log_func(&m, &ret_val);
-    ret_val = DIV_PD(MULT_PD(SET1_PD(0.25), MULT_PD(ret_val, SQRT_PD(m))), dz);
-    *simd_mmd_dists = AND_PD(ret_mask, ret_val);
+    ret_mask = CMP_PS(m, m_threshold, _CMP_GT_OS);
+    int int_ret_mask = MOVEMASK_PS(ret_mask);
 
-    if(int_ret_mask == 0b1111) return;
+    SIMD_MMS ret_val = MULT_PS(log_base_e, log2d4(m));
+    ret_val = DIV_PS(MULT_PS(SET1_PS(0.25), MULT_PS(ret_val, SQRT_PS(m))), dz);
+    *simd_mmd_dists = AND_PS(ret_mask, ret_val);
 
-    //if(m > 256.0) return 0.25*log(m)*sqrt(m)/dz;
+    if(int_ret_mask == 0b11111111) return;
     // -----------
 
     // ==============================//
     // ---- Unrolled Loop Body 2 --- //
     // ==============================//
-    m2 = MULT_PD(m, m);
-    dz = ADD_PD(MULT_PD(SET1_PD(8.0), MULT_PD(m, MULT_PD(m2, MULT_PD(SQRT_PD(m), dz)))), SET1_PD(1.0));
+    m2 = MULT_PS(m, m);
+    dz = ADD_PS(MULT_PS(SET1_PS(8.0), MULT_PS(m, MULT_PS(m2, MULT_PS(SQRT_PS(m), dz)))), SET1_PS(1.0));
 
-    x4 = MULT_PD(x2, x2);
-    y4 = MULT_PD(y2, y2);
-    z4 = MULT_PD(z2, z2);
+    x4 = MULT_PS(x2, x2);
+    y4 = MULT_PS(y2, y2);
+    z4 = MULT_PS(z2, z2);
 
-    x2z2 = MULT_PD(x2, z2);
-    x4z4 = ADD_PD(x4, z4);
+    x2z2 = MULT_PS(x2, z2);
+    x4z4 = ADD_PS(x4, z4);
 
-    a = ADD_PD(x2, z2);
-    a2 = MULT_PD(a, a);
+    a = ADD_PS(x2, z2);
+    a2 = MULT_PS(a, a);
     
-    // OLD: double b = (a == 0) ? 0.0 : 1.0/sqrt(a*a*a*a*a*a*a); NEW:
-    b = DIV_PD(SET1_PD(1.0), MULT_PD(a, MULT_PD(a2,SQRT_PD(a)))); // changing from a*a*a*a*a*a*a to a*a2*a4 incurred some floating point errors
+    b = DIV_PS(SET1_PS(1.0), MULT_PS(a, MULT_PS(a2,SQRT_PS(a)))); 
 
-    // OLD: double c = x4 + y4 + z4 - 6.0*y2*z2 - 6.0*x2*y2 + 2.0*z2*x2;  NEW:
-    c = ADD_PD(x4z4, ADD_PD(y4, ADD_PD(MULT_PD(SET1_PD(-6.0), MULT_PD(y2,a)), MULT_PD(SET1_PD(2.0),x2z2)))); // incurred some floating point errors
+    c = ADD_PS(x4z4, ADD_PS(y4, ADD_PS(MULT_PS(SET1_PS(-6.0), MULT_PS(y2,a)), MULT_PS(SET1_PS(2.0),x2z2)))); 
     
-    d = ADD_PD(SUB_PD(x2,y2), z2);
+    d = ADD_PS(SUB_PS(x2,y2), z2);
     
-    cb = MULT_PD(c, b);
+    cb = MULT_PS(c, b);
 
-    x = ADD_PD(simd_vec_p->x, MULT_PD(SET1_PD(64.0), MULT_PD(x, MULT_PD(y, MULT_PD(z, MULT_PD(SUB_PD(x2,z2),MULT_PD(d,MULT_PD(ADD_PD(x4, ADD_PD(MULT_PD(SET1_PD(-6.0), x2z2), z4)), cb))))))));
-    // z = vec_p[2] +  -8.0*y*d*(x4*x4 - 28.0*x4*x2*z2 + 70.0*x4*z4 - 28.0*x2*z2*z4 + z4*z4)*c*b; // old
-    z = ADD_PD(simd_vec_p->z, MULT_PD(SET1_PD(8.0), MULT_PD(y, MULT_PD(d, MULT_PD(ADD_PD(MULT_PD(SET1_PD(28.0), MULT_PD(x2z2, x4z4)), SUB_PD(MULT_PD(SUB_PD(MULT_PD(SET1_PD(-70.0),x4),z4), z4), MULT_PD(x4,x4))), cb)))));
-    y = ADD_PD(simd_vec_p->y, ADD_PD(MULT_PD(MULT_PD(MULT_PD(MULT_PD(SET1_PD(-16.0), y2), a), d),d), MULT_PD(c,c)));
+    x = ADD_PS(simd_vec_p->x, MULT_PS(SET1_PS(64.0), MULT_PS(x, MULT_PS(y, MULT_PS(z, MULT_PS(SUB_PS(x2,z2),MULT_PS(d,MULT_PS(ADD_PS(x4, ADD_PS(MULT_PS(SET1_PS(-6.0), x2z2), z4)), cb))))))));
+    z = ADD_PS(simd_vec_p->z, MULT_PS(SET1_PS(8.0), MULT_PS(y, MULT_PS(d, MULT_PS(ADD_PS(MULT_PS(SET1_PS(28.0), MULT_PS(x2z2, x4z4)), SUB_PS(MULT_PS(SUB_PS(MULT_PS(SET1_PS(-70.0),x4),z4), z4), MULT_PS(x4,x4))), cb)))));
+    y = ADD_PS(simd_vec_p->y, ADD_PS(MULT_PS(MULT_PS(MULT_PS(MULT_PS(SET1_PS(-16.0), y2), a), d),d), MULT_PS(c,c)));
 
-    x2 = MULT_PD(x, x);
-    y2 = MULT_PD(y, y);
-    z2 = MULT_PD(z, z);
-    m = ADD_PD(x2, ADD_PD(y2, z2));
+    x2 = MULT_PS(x, x);
+    y2 = MULT_PS(y, y);
+    z2 = MULT_PS(z, z);
+    m = ADD_PS(x2, ADD_PS(y2, z2));
 
 
 
     // -----------
-    SIMD_MMD ret_mask_2 = CMP_PD(m, m_threshold, _CMP_GT_OS);
-    SIMD_MMD ret_mask_tmp = OR_PD(ret_mask, ret_mask_2);
-    int_ret_mask = MOVEMASK_PD(ret_mask_tmp);
+    SIMD_MMS ret_mask_2 = CMP_PS(m, m_threshold, _CMP_GT_OS);
+    SIMD_MMS ret_mask_tmp = OR_PS(ret_mask, ret_mask_2);
+    int_ret_mask = MOVEMASK_PS(ret_mask_tmp);
 
-    ret_mask = ANDNOT_PD(ret_mask, ret_mask_2);
+    ret_mask = ANDNOT_PS(ret_mask, ret_mask_2);
 
-    // ret_val = SET_ZERO_PD();
-    ret_val = MULT_PD(log_base_e, log2d4(m));
-    // simd_mmd_log_func(&m, &ret_val);
-    ret_val = DIV_PD(MULT_PD(SET1_PD(0.25), MULT_PD(ret_val, SQRT_PD(m))), dz);
+    ret_val = MULT_PS(log_base_e, log2d4(m));
+    ret_val = DIV_PS(MULT_PS(SET1_PS(0.25), MULT_PS(ret_val, SQRT_PS(m))), dz);
 
-    *simd_mmd_dists = ADD_PD(*simd_mmd_dists, AND_PD(ret_mask, ret_val));
+    *simd_mmd_dists = ADD_PS(*simd_mmd_dists, AND_PS(ret_mask, ret_val));
 
-    if(int_ret_mask == 0b1111) return;
-
-    //if(m > 256.0) return 0.25*log(m)*sqrt(m)/dz;
+    if(int_ret_mask == 0b11111111) return;
     // -----------
 
 
     // ==============================//
     // ---- Unrolled Loop Body 3 --- //
     // ==============================//
-    m2 = MULT_PD(m, m);
-    dz = ADD_PD(MULT_PD(SET1_PD(8.0), MULT_PD(m, MULT_PD(m2, MULT_PD(SQRT_PD(m), dz)))), SET1_PD(1.0));
+    m2 = MULT_PS(m, m);
+    dz = ADD_PS(MULT_PS(SET1_PS(8.0), MULT_PS(m, MULT_PS(m2, MULT_PS(SQRT_PS(m), dz)))), SET1_PS(1.0));
 
-    x4 = MULT_PD(x2, x2);
-    y4 = MULT_PD(y2, y2);
-    z4 = MULT_PD(z2, z2);
+    x4 = MULT_PS(x2, x2);
+    y4 = MULT_PS(y2, y2);
+    z4 = MULT_PS(z2, z2);
 
-    x2z2 = MULT_PD(x2, z2);
-    x4z4 = ADD_PD(x4, z4);
+    x2z2 = MULT_PS(x2, z2);
+    x4z4 = ADD_PS(x4, z4);
 
-    a = ADD_PD(x2, z2);
-    a2 = MULT_PD(a, a);
+    a = ADD_PS(x2, z2);
+    a2 = MULT_PS(a, a);
     
-    // OLD: double b = (a == 0) ? 0.0 : 1.0/sqrt(a*a*a*a*a*a*a); NEW:
-    b = DIV_PD(SET1_PD(1.0), MULT_PD(a, MULT_PD(a2,SQRT_PD(a)))); // changing from a*a*a*a*a*a*a to a*a2*a4 incurred some floating point errors
-
-    // OLD: double c = x4 + y4 + z4 - 6.0*y2*z2 - 6.0*x2*y2 + 2.0*z2*x2;  NEW:
-    c = ADD_PD(x4z4, ADD_PD(y4, ADD_PD(MULT_PD(SET1_PD(-6.0), MULT_PD(y2,a)), MULT_PD(SET1_PD(2.0),x2z2)))); // incurred some floating point errors
+    b = DIV_PS(SET1_PS(1.0), MULT_PS(a, MULT_PS(a2,SQRT_PS(a)))); 
+    c = ADD_PS(x4z4, ADD_PS(y4, ADD_PS(MULT_PS(SET1_PS(-6.0), MULT_PS(y2,a)), MULT_PS(SET1_PS(2.0),x2z2)))); 
     
-    d = ADD_PD(SUB_PD(x2,y2), z2);
+    d = ADD_PS(SUB_PS(x2,y2), z2);
     
-    cb = MULT_PD(c, b);
+    cb = MULT_PS(c, b);
 
-    x = ADD_PD(simd_vec_p->x, MULT_PD(SET1_PD(64.0), MULT_PD(x, MULT_PD(y, MULT_PD(z, MULT_PD(SUB_PD(x2,z2),MULT_PD(d,MULT_PD(ADD_PD(x4, ADD_PD(MULT_PD(SET1_PD(-6.0), x2z2), z4)), cb))))))));
-    // z = vec_p[2] +  -8.0*y*d*(x4*x4 - 28.0*x4*x2*z2 + 70.0*x4*z4 - 28.0*x2*z2*z4 + z4*z4)*c*b; // old
-    z = ADD_PD(simd_vec_p->z, MULT_PD(SET1_PD(8.0), MULT_PD(y,MULT_PD(d, MULT_PD(ADD_PD(MULT_PD(SET1_PD(28.0), MULT_PD(x2z2, x4z4)), SUB_PD(MULT_PD(SUB_PD(MULT_PD(SET1_PD(-70.0),x4),z4), z4), MULT_PD(x4,x4))), cb)))));
-    y = ADD_PD(simd_vec_p->y, ADD_PD(MULT_PD(MULT_PD(MULT_PD(MULT_PD(SET1_PD(-16.0), y2), a), d),d), MULT_PD(c,c)));
+    x = ADD_PS(simd_vec_p->x, MULT_PS(SET1_PS(64.0), MULT_PS(x, MULT_PS(y, MULT_PS(z, MULT_PS(SUB_PS(x2,z2),MULT_PS(d,MULT_PS(ADD_PS(x4, ADD_PS(MULT_PS(SET1_PS(-6.0), x2z2), z4)), cb))))))));
+    z = ADD_PS(simd_vec_p->z, MULT_PS(SET1_PS(8.0), MULT_PS(y,MULT_PS(d, MULT_PS(ADD_PS(MULT_PS(SET1_PS(28.0), MULT_PS(x2z2, x4z4)), SUB_PS(MULT_PS(SUB_PS(MULT_PS(SET1_PS(-70.0),x4),z4), z4), MULT_PS(x4,x4))), cb)))));
+    y = ADD_PS(simd_vec_p->y, ADD_PS(MULT_PS(MULT_PS(MULT_PS(MULT_PS(SET1_PS(-16.0), y2), a), d),d), MULT_PS(c,c)));
 
-    x2 = MULT_PD(x, x);
-    y2 = MULT_PD(y, y);
-    z2 = MULT_PD(z, z);
-    m = ADD_PD(x2, ADD_PD(y2, z2));
+    x2 = MULT_PS(x, x);
+    y2 = MULT_PS(y, y);
+    z2 = MULT_PS(z, z);
+    m = ADD_PS(x2, ADD_PS(y2, z2));
 
 
 
     // -----------
-    ret_mask_2 = CMP_PD(m, m_threshold, _CMP_GT_OS);
-    SIMD_MMD final_mask = OR_PD(ret_mask_tmp, ret_mask_2);
-    int_ret_mask = MOVEMASK_PD(final_mask);
+    ret_mask_2 = CMP_PS(m, m_threshold, _CMP_GT_OS);
+    SIMD_MMS final_mask = OR_PS(ret_mask_tmp, ret_mask_2);
+    int_ret_mask = MOVEMASK_PS(final_mask);
     
-    ret_mask = ANDNOT_PD(ret_mask_tmp, ret_mask_2);
+    ret_mask = ANDNOT_PS(ret_mask_tmp, ret_mask_2);
 
-    ret_val = SET_ZERO_PD();
-    ret_val = MULT_PD(log_base_e, log2d4(m));
-    // simd_mmd_log_func(&m, &ret_val);
-    ret_val = DIV_PD(MULT_PD(SET1_PD(0.25), MULT_PD(ret_val, SQRT_PD(m))), dz);
+    ret_val = SET_ZERO_PS();
+    ret_val = MULT_PS(log_base_e, log2d4(m));
+    ret_val = DIV_PS(MULT_PS(SET1_PS(0.25), MULT_PS(ret_val, SQRT_PS(m))), dz);
+    *simd_mmd_dists = ADD_PS(*simd_mmd_dists, AND_PS(ret_mask, ret_val));
 
-    *simd_mmd_dists = ADD_PD(*simd_mmd_dists, AND_PD(ret_mask, ret_val));
-    // *simd_mmd_dists = ANDNOT_PD(ret_mask, ret_val);
-
-    if(int_ret_mask == 0b1111) return;
-
-    //if(m > 256.0) return 0.25*log(m)*sqrt(m)/dz;
+    if(int_ret_mask == 0b11111111) return;
     // -----------
 
 
     // ==============================//
     // ---- Unrolled Loop Body 4 --- //
     // ==============================//
-    m2 = MULT_PD(m, m);
-    dz = ADD_PD(MULT_PD(SET1_PD(8.0), MULT_PD(m, MULT_PD(m2, MULT_PD(SQRT_PD(m), dz)))), SET1_PD(1.0));
+    m2 = MULT_PS(m, m);
+    dz = ADD_PS(MULT_PS(SET1_PS(8.0), MULT_PS(m, MULT_PS(m2, MULT_PS(SQRT_PS(m), dz)))), SET1_PS(1.0));
 
-    x4 = MULT_PD(x2, x2);
-    y4 = MULT_PD(y2, y2);
-    z4 = MULT_PD(z2, z2);
+    x4 = MULT_PS(x2, x2);
+    y4 = MULT_PS(y2, y2);
+    z4 = MULT_PS(z2, z2);
 
-    x2z2 = MULT_PD(x2, z2);
-    x4z4 = ADD_PD(x4, z4);
+    x2z2 = MULT_PS(x2, z2);
+    x4z4 = ADD_PS(x4, z4);
 
-    a = ADD_PD(x2, z2);
-    a2 = MULT_PD(a, a);
+    a = ADD_PS(x2, z2);
+    a2 = MULT_PS(a, a);
     
-    // OLD: double b = (a == 0) ? 0.0 : 1.0/sqrt(a*a*a*a*a*a*a); NEW:
-    b = DIV_PD(SET1_PD(1.0), MULT_PD(a, MULT_PD(a2,SQRT_PD(a)))); // changing from a*a*a*a*a*a*a to a*a2*a4 incurred some floating point errors
 
-    // OLD: double c = x4 + y4 + z4 - 6.0*y2*z2 - 6.0*x2*y2 + 2.0*z2*x2;  NEW:
-    c = ADD_PD(x4z4, ADD_PD(y4, ADD_PD(MULT_PD(SET1_PD(-6.0), MULT_PD(y2,a)), MULT_PD(SET1_PD(2.0),x2z2)))); // incurred some floating point errors
+    b = DIV_PS(SET1_PS(1.0), MULT_PS(a, MULT_PS(a2,SQRT_PS(a)))); 
+    c = ADD_PS(x4z4, ADD_PS(y4, ADD_PS(MULT_PS(SET1_PS(-6.0), MULT_PS(y2,a)), MULT_PS(SET1_PS(2.0),x2z2)))); 
+    d = ADD_PS(SUB_PS(x2,y2), z2);
     
-    d = ADD_PD(SUB_PD(x2,y2), z2);
-    
-    cb = MULT_PD(c, b);
+    cb = MULT_PS(c, b);
 
-    x = ADD_PD(simd_vec_p->x, MULT_PD(SET1_PD(64.0), MULT_PD(x, MULT_PD(y, MULT_PD(z, MULT_PD(SUB_PD(x2,z2),MULT_PD(d,MULT_PD(ADD_PD(x4, ADD_PD(MULT_PD(SET1_PD(-6.0), x2z2), z4)), cb))))))));
-    // z = vec_p[2] +  -8.0*y*d*(x4*x4 - 28.0*x4*x2*z2 + 70.0*x4*z4 - 28.0*x2*z2*z4 + z4*z4)*c*b; // old
-    z = ADD_PD(simd_vec_p->z, MULT_PD(SET1_PD(8.0), MULT_PD(y,MULT_PD(d, MULT_PD(ADD_PD(MULT_PD(SET1_PD(28.0), MULT_PD(x2z2, x4z4)), SUB_PD(MULT_PD(SUB_PD(MULT_PD(SET1_PD(-70.0),x4),z4), z4), MULT_PD(x4,x4))), cb)))));
-    y = ADD_PD(simd_vec_p->y, ADD_PD(MULT_PD(MULT_PD(MULT_PD(MULT_PD(SET1_PD(-16.0), y2), a), d),d), MULT_PD(c,c)));
+    x = ADD_PS(simd_vec_p->x, MULT_PS(SET1_PS(64.0), MULT_PS(x, MULT_PS(y, MULT_PS(z, MULT_PS(SUB_PS(x2,z2),MULT_PS(d,MULT_PS(ADD_PS(x4, ADD_PS(MULT_PS(SET1_PS(-6.0), x2z2), z4)), cb))))))));
+    z = ADD_PS(simd_vec_p->z, MULT_PS(SET1_PS(8.0), MULT_PS(y,MULT_PS(d, MULT_PS(ADD_PS(MULT_PS(SET1_PS(28.0), MULT_PS(x2z2, x4z4)), SUB_PS(MULT_PS(SUB_PS(MULT_PS(SET1_PS(-70.0),x4),z4), z4), MULT_PS(x4,x4))), cb)))));
+    y = ADD_PS(simd_vec_p->y, ADD_PS(MULT_PS(MULT_PS(MULT_PS(MULT_PS(SET1_PS(-16.0), y2), a), d),d), MULT_PS(c,c)));
 
-    m = ADD_PD(MULT_PD(x, x), ADD_PD(MULT_PD(y, y), MULT_PD(z, z)));
+    m = ADD_PS(MULT_PS(x, x), ADD_PS(MULT_PS(y, y), MULT_PS(z, z)));
 
 
-    ret_val = MULT_PD(log_base_e, log2d4(m));
-    // simd_mmd_log_func(&m, &ret_val);
-    ret_val = DIV_PD(MULT_PD(SET1_PD(0.25),MULT_PD(ret_val, SQRT_PD(m))), dz);
-    *simd_mmd_dists = ADD_PD(*simd_mmd_dists, ANDNOT_PD(final_mask, ret_val));
-    
-    // return 0.25*log(m)*sqrt(m)/dz
+    // ----------- 
+    ret_val = MULT_PS(log_base_e, log2d4(m));
+    ret_val = DIV_PS(MULT_PS(SET1_PS(0.25),MULT_PS(ret_val, SQRT_PS(m))), dz);
+    *simd_mmd_dists = ADD_PS(*simd_mmd_dists, ANDNOT_PS(final_mask, ret_val));
+    // -----------
 }
