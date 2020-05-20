@@ -47,15 +47,12 @@ void sdf(const SIMD_VEC *simd_vec_p, const Scene *scene, SDF_Info *sdf_info_out)
 void apply_transform(const SIMD_VEC* simd_vec_p, const Transform *tr, SIMD_VEC* simd_vec_transf_pt)
 {
     // apply translation
-    // vec_sub(vec_p, tr->center, vec_res);
-
     simd_vec_sub(simd_vec_p, tr->center, simd_vec_transf_pt);
 
-    // TODO: orientation
-    // if(tr->orientation[1] != 0.0 || tr->orientation[3] != 0.0 || tr->orientation[5] != 0.0){
-    //     // apply rotation
-    //     rotate_point_xyz(vec_res, tr->orientation, vec_res);
-    // }
+    if(tr->orientation[1] != 0.0 || tr->orientation[3] != 0.0 || tr->orientation[5] != 0.0){
+        // apply rotation
+        rotate_point_xyz(simd_vec_transf_pt, tr->orientation, simd_vec_transf_pt);
+    }
 
 /// TODO:
 #if INFINITE_REP == 1

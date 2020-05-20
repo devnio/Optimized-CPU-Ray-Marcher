@@ -460,9 +460,7 @@ int create_geom_objects(Scene *scene, FILE *logFile, char *json_str, jsmntok_t *
             }
             else if (strcmp(name, "cone") == 0)
             {
-                // geom_obj->sdf = &sdf_cone;
-                printf("TODO: VECTORIZE CONE");
-                fflush(stdout);
+                geom_obj->sdf = &sdf_cone;
                 fprintf(logFile, " => assigned sdf of %s\n", "cone");
             }
             else if (strcmp(name, "octahedron") == 0)

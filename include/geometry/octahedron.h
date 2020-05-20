@@ -9,7 +9,6 @@ Params are:
 -> 1 parameter in total
  */
 //double sdf_octahedron(const double vec_p[NR_VEC_ELEMENTS], double params[]);
-void sdf_octahedron(const SIMD_VEC* simd_vec, double params[], SIMD_MMD* res);
-extern const int nr_octahedron_params;
+void sdf_octahedron(const SIMD_VEC* simd_vec, double params[], SIMD_MMD* dists);
 
 #endif // OCTAHEDRON_H_
