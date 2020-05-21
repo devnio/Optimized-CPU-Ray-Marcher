@@ -545,7 +545,7 @@ void render(Scene* scene)
     int height = scene->camera->heightPx;
 
     int rest_width = width % 4;
-    int mult_width = width - (rest_width != 0) * 4;
+    int mult_width = width - rest_width;
 
     alignas(32) double px_col_x[NR_SIMD_VEC_ELEMS];
     alignas(32) double px_col_y[NR_SIMD_VEC_ELEMS];
@@ -589,28 +589,12 @@ void render(Scene* scene)
             shoot_rays_and_trace(scene, mult_width, y, px_col_x, px_col_y, px_col_z);
 
             // save colors computed by trace into current pixel
-            if (rest_width >= 1)
+            for (unsigned i = 0; i < rest_width; i++)
             {
-                scene->img[y_w_4 + (mult_width) * 4 + 0] = (unsigned char)(px_col_x[0]);
-                scene->img[y_w_4 + (mult_width) * 4 + 1] = (unsigned char)(px_col_y[0]);
-                scene->img[y_w_4 + (mult_width) * 4 + 2] = (unsigned char)(px_col_z[0]);
-                scene->img[y_w_4 + (mult_width) * 4 + 3] = 255;
-            }
-            
-            if (rest_width >= 2)
-            {
-                scene->img[y_w_4 + (mult_width+1) * 4 + 0] = (unsigned char)(px_col_x[1]);
-                scene->img[y_w_4 + (mult_width+1) * 4 + 1] = (unsigned char)(px_col_y[1]);
-                scene->img[y_w_4 + (mult_width+1) * 4 + 2] = (unsigned char)(px_col_z[1]);
-                scene->img[y_w_4 + (mult_width+1) * 4 + 3] = 255;
-            }
-
-            if (rest_width == 3)
-            {
-                scene->img[y_w_4 + (mult_width+2) * 4 + 0] = (unsigned char)(px_col_x[2]);
-                scene->img[y_w_4 + (mult_width+2) * 4 + 1] = (unsigned char)(px_col_y[2]);
-                scene->img[y_w_4 + (mult_width+2) * 4 + 2] = (unsigned char)(px_col_z[2]);
-                scene->img[y_w_4 + (mult_width+2) * 4 + 3] = 255;
+                scene->img[y_w_4 + (mult_width + i) * 4 + 0] = (unsigned char)(px_col_x[i]);
+                scene->img[y_w_4 + (mult_width + i) * 4 + 1] = (unsigned char)(px_col_y[i]);
+                scene->img[y_w_4 + (mult_width + i) * 4 + 2] = (unsigned char)(px_col_z[i]);
+                scene->img[y_w_4 + (mult_width + i) * 4 + 3] = 255;
             }
         }
 
