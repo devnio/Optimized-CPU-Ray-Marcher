@@ -18,9 +18,9 @@
 
 typedef struct
 {
-    SIMD_MMD x;
-    SIMD_MMD y;
-    SIMD_MMD z;
+    SIMD_MMS x;
+    SIMD_MMS y;
+    SIMD_MMS z;
 } SIMD_VEC;
 
 typedef struct

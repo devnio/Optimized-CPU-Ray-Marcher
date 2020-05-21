@@ -14,12 +14,12 @@
 
 // Function pointers to functions that we benchmark
 typedef void(*render_func_prot)(Scene*);
-typedef void(*trace_func_prot)(double *, double *, Scene *, int, double *);
+// typedef void(*trace_func_prot)(float *, float *, Scene *, int, float *);
 
 // Benchmark functions
-// void benchmark_render(render_func_prot f, SceneContainer sceneContainer);
+void benchmark_render(render_func_prot f, SceneContainer sceneContainer);
 // void benchmark_trace(trace_func_prot f, SceneContainer sceneContainer);
 
-// void create_params_file(char* time, char* scneneName, char* dirName);
-// char* create_dir_with_current_date(char *path, const char* prepend);
-// char* create_dir(char* path, char* dirName);
+void create_params_file(char* time, char* scneneName, char* dirName);
+char* create_dir_with_current_date(char *path, const char* prepend);
+char* create_dir(char* path, char* dirName);

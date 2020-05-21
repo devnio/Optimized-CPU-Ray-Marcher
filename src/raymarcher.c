@@ -491,42 +491,18 @@ void trace(SIMD_VEC_PS *simd_vec_orig,
     simd_vec_finalColor->z = AND_PS(simd_vec_finalColor->z, sdf_info.intersected_mask);
 }
 
+
 /*
- * Function: render
- * ----------------------------
- *   Render an image based on the defined scene and save it in ouput. 
- *
- *   sps: scene, spheres
- *   pLight: point light 
- *
- *   returns: void
+ * Shoot 8 packed floating-point rays and 
+ * trace them through the scene.
  */
-void render(Scene* scene)
+FORCE_INLINE void shoot_rays_and_trace(Scene* scene, 
+                                       unsigned int x, 
+                                       unsigned int y,
+                                       float px_col_x_out[NR_SIMD_VEC_ELEMS],
+                                       float px_col_y_out[NR_SIMD_VEC_ELEMS],
+                                       float px_col_z_out[NR_SIMD_VEC_ELEMS])
 {
-#if DEBUG_MODE == 1
-    printf("%s", "RENDERING... ");
-    float progress = 0.;
-    float progress_step = 1. / (scene.camera->widthPx * scene.camera->heightPx);
-    progress += progress_step;
-#endif
-
-#if AA > 1
-    float inv_AA = 1.0 / AA;
-    float inv_AA2 = inv_AA / AA;
-    float tot_col[NR_VEC_ELEMENTS];
-#endif
-
-
-    int width = scene->camera->widthPx;
-    int height = scene->camera->heightPx;
-
-    for (unsigned y = 0; y < height; ++y)
-    {
-        int y_w_4 = y * width * 4;
-
-        for (unsigned x = 0; x < width; x+=8) 
-        {
-
 #if AA > 1
             set_zero(tot_col);
             for (int m = 0; m < AA; m++)
@@ -554,6 +530,7 @@ void render(Scene* scene)
             simd_vec_orig.y = SET1_PS(scene->camera->pos[1]);
             simd_vec_orig.z = SET1_PS(scene->camera->pos[2]);
 
+            // Init color 
             SIMD_VEC_PS simd_vec_finalColor;
             simd_vec_finalColor.x = SET_ZERO_PS(); 
             simd_vec_finalColor.y = SET_ZERO_PS();
@@ -561,19 +538,13 @@ void render(Scene* scene)
 
             trace(&simd_vec_orig, &simd_vec_dir, scene, 0, &simd_vec_finalColor);
 
-#endif
-
 #if GAMMA_CORR == 1
-            // vec_pow_inplace(px_col, 0.4545);
-            SIMD_MMS _const_ps = SET1_PS(0.4545);
-            simd_mmd_pow_func(&simd_vec_finalColor.x, &_const_ps, &simd_vec_finalColor.x);
-            simd_mmd_pow_func(&simd_vec_finalColor.y, &_const_ps, &simd_vec_finalColor.y);
-            simd_mmd_pow_func(&simd_vec_finalColor.z, &_const_ps, &simd_vec_finalColor.z);
+            
+            SIMD_MMS _const_pd = SET1_PS(0.4545);
+            simd_mmd_pow_func(&simd_vec_finalColor.x, &_const_pd, &simd_vec_finalColor.x);
+            simd_mmd_pow_func(&simd_vec_finalColor.y, &_const_pd, &simd_vec_finalColor.y);
+            simd_mmd_pow_func(&simd_vec_finalColor.z, &_const_pd, &simd_vec_finalColor.z);
 #endif
-            // TODO: vectorize this
-            alignas(32) float px_col_x[NR_SIMD_VEC_ELEMS];
-            alignas(32) float px_col_y[NR_SIMD_VEC_ELEMS];
-            alignas(32) float px_col_z[NR_SIMD_VEC_ELEMS];
 
             SIMD_MMS _m_255 = SET1_PS(255);
             SIMD_MMS _min_color_x = MIN_PS(SET1_PS(1.0), simd_vec_finalColor.x);
@@ -584,9 +555,52 @@ void render(Scene* scene)
             SIMD_MMS color_y = MULT_PS(_min_color_y, _m_255);
             SIMD_MMS color_z = MULT_PS(_min_color_z, _m_255);
 
-            STORE_PS(px_col_x, color_x);
-            STORE_PS(px_col_y, color_y);
-            STORE_PS(px_col_z, color_z);
+            STORE_PS(px_col_x_out, color_x);
+            STORE_PS(px_col_y_out, color_y);
+            STORE_PS(px_col_z_out, color_z);
+
+#endif
+
+}
+
+
+/*
+ * Function: render
+ * ----------------------------
+ *   Render an image based on the defined scene and save it in ouput. 
+ *
+ *   sps: scene, spheres
+ *   pLight: point light 
+ *
+ *   returns: void
+ */
+void render(Scene* scene)
+{
+#if AA > 1
+    float inv_AA = 1.0 / AA;
+    float inv_AA2 = inv_AA / AA;
+    float tot_col[NR_VEC_ELEMENTS];
+#endif
+
+    int width = scene->camera->widthPx;
+    int height = scene->camera->heightPx;
+
+    int rest_width = width % NR_SIMD_VEC_ELEMS;
+    int mult_width = width - rest_width;
+
+    alignas(32) float px_col_x[NR_SIMD_VEC_ELEMS];
+    alignas(32) float px_col_y[NR_SIMD_VEC_ELEMS];
+    alignas(32) float px_col_z[NR_SIMD_VEC_ELEMS];
+
+    for (unsigned y = 0; y < height; ++y)
+    {
+        int y_w_4 = y * width * 4;
+
+        // NORMAL LOOP
+        unsigned x = 0;
+        for (; x < mult_width; x += NR_SIMD_VEC_ELEMS) 
+        {
+            shoot_rays_and_trace(scene, x, y, px_col_x, px_col_y, px_col_z);
 
             // save colors computed by trace into current pixel
             scene->img[y_w_4 + x * 4 + 0] = (unsigned char)(px_col_x[0]);
@@ -628,16 +642,178 @@ void render(Scene* scene)
             scene->img[y_w_4 + (x+7) * 4 + 1] = (unsigned char)(px_col_y[7]);
             scene->img[y_w_4 + (x+7) * 4 + 2] = (unsigned char)(px_col_z[7]);
             scene->img[y_w_4 + (x+7) * 4 + 3] = 255;
-
-#if DEBUG_MODE == 1
-            progress += progress_step;
-            fflush(stdout);
-            printf(" %.2f\b\b\b\b\b", progress);
-            fflush(stdout);
-#endif
         }
+
+        // RESIDUAL LOOP (if width is not multiple of 4)
+        if (x < width) 
+        {
+            shoot_rays_and_trace(scene, mult_width, y, px_col_x, px_col_y, px_col_z);
+
+            // save colors computed by trace into current pixel
+            for (size_t i = 0; i < rest_width; i++)
+            {
+                scene->img[y_w_4 + (mult_width + i) * 4 + 0] = (unsigned char)(px_col_x[i]);
+                scene->img[y_w_4 + (mult_width + i) * 4 + 1] = (unsigned char)(px_col_y[i]);
+                scene->img[y_w_4 + (mult_width + i) * 4 + 2] = (unsigned char)(px_col_z[i]);
+                scene->img[y_w_4 + (mult_width + i) * 4 + 3] = 255;
+            }
+            
+            
+
+        }
+
     }
 }
+
+
+
+// /*
+//  * Function: render
+//  * ----------------------------
+//  *   Render an image based on the defined scene and save it in ouput. 
+//  *
+//  *   sps: scene, spheres
+//  *   pLight: point light 
+//  *
+//  *   returns: void
+//  */
+// void render(Scene* scene)
+// {
+// #if DEBUG_MODE == 1
+//     printf("%s", "RENDERING... ");
+//     float progress = 0.;
+//     float progress_step = 1. / (scene.camera->widthPx * scene.camera->heightPx);
+//     progress += progress_step;
+// #endif
+
+// #if AA > 1
+//     float inv_AA = 1.0 / AA;
+//     float inv_AA2 = inv_AA / AA;
+//     float tot_col[NR_VEC_ELEMENTS];
+// #endif
+
+
+//     int width = scene->camera->widthPx;
+//     int height = scene->camera->heightPx;
+
+//     for (unsigned y = 0; y < height; ++y)
+//     {
+//         int y_w_4 = y * width * 4;
+
+//         for (unsigned x = 0; x < width; x+=8) 
+//         {
+
+// #if AA > 1
+//             set_zero(tot_col);
+//             for (int m = 0; m < AA; m++)
+//             {
+//                 for (int n = 0; n < AA; n++)
+//                 {
+//                     // pixel coordinates
+//                     float disp_x = (inv_AA * n - 0.5) + x;
+//                     float disp_y = (inv_AA * m - 0.5) + y;
+//                     shoot_ray(scene->camera, disp_x, disp_y, dir);
+//                     trace(scene->camera->pos, dir, &scene, 0, px_col);
+//                     vec_add(tot_col, px_col, tot_col);
+//                 }
+//             }
+//             float px_col[NR_VEC_ELEMENTS];
+//             vec_mult_scalar(tot_col, inv_AA2, px_col);
+// #else
+
+//             SIMD_VEC_PS simd_vec_dir;
+//             shoot_rays(scene->camera, x, y, &simd_vec_dir);
+
+//             // Copy 4 times origin
+//             SIMD_VEC_PS simd_vec_orig;
+//             simd_vec_orig.x = SET1_PS(scene->camera->pos[0]);
+//             simd_vec_orig.y = SET1_PS(scene->camera->pos[1]);
+//             simd_vec_orig.z = SET1_PS(scene->camera->pos[2]);
+
+//             SIMD_VEC_PS simd_vec_finalColor;
+//             simd_vec_finalColor.x = SET_ZERO_PS(); 
+//             simd_vec_finalColor.y = SET_ZERO_PS();
+//             simd_vec_finalColor.z = SET_ZERO_PS();
+
+//             trace(&simd_vec_orig, &simd_vec_dir, scene, 0, &simd_vec_finalColor);
+
+// #endif
+
+// #if GAMMA_CORR == 1
+//             // vec_pow_inplace(px_col, 0.4545);
+//             SIMD_MMS _const_ps = SET1_PS(0.4545);
+//             simd_mmd_pow_func(&simd_vec_finalColor.x, &_const_ps, &simd_vec_finalColor.x);
+//             simd_mmd_pow_func(&simd_vec_finalColor.y, &_const_ps, &simd_vec_finalColor.y);
+//             simd_mmd_pow_func(&simd_vec_finalColor.z, &_const_ps, &simd_vec_finalColor.z);
+// #endif
+//             // TODO: vectorize this
+//             alignas(32) float px_col_x[NR_SIMD_VEC_ELEMS];
+//             alignas(32) float px_col_y[NR_SIMD_VEC_ELEMS];
+//             alignas(32) float px_col_z[NR_SIMD_VEC_ELEMS];
+
+//             SIMD_MMS _m_255 = SET1_PS(255);
+//             SIMD_MMS _min_color_x = MIN_PS(SET1_PS(1.0), simd_vec_finalColor.x);
+//             SIMD_MMS _min_color_y = MIN_PS(SET1_PS(1.0), simd_vec_finalColor.y);
+//             SIMD_MMS _min_color_z = MIN_PS(SET1_PS(1.0), simd_vec_finalColor.z);
+
+//             SIMD_MMS color_x = MULT_PS(_min_color_x, _m_255);
+//             SIMD_MMS color_y = MULT_PS(_min_color_y, _m_255);
+//             SIMD_MMS color_z = MULT_PS(_min_color_z, _m_255);
+
+//             STORE_PS(px_col_x, color_x);
+//             STORE_PS(px_col_y, color_y);
+//             STORE_PS(px_col_z, color_z);
+
+//             // save colors computed by trace into current pixel
+//             scene->img[y_w_4 + x * 4 + 0] = (unsigned char)(px_col_x[0]);
+//             scene->img[y_w_4 + x * 4 + 1] = (unsigned char)(px_col_y[0]);
+//             scene->img[y_w_4 + x * 4 + 2] = (unsigned char)(px_col_z[0]);
+//             scene->img[y_w_4 + x * 4 + 3] = 255;
+
+//             scene->img[y_w_4 + (x+1) * 4 + 0] = (unsigned char)(px_col_x[1]);
+//             scene->img[y_w_4 + (x+1) * 4 + 1] = (unsigned char)(px_col_y[1]);
+//             scene->img[y_w_4 + (x+1) * 4 + 2] = (unsigned char)(px_col_z[1]);
+//             scene->img[y_w_4 + (x+1) * 4 + 3] = 255;
+
+//             scene->img[y_w_4 + (x+2) * 4 + 0] = (unsigned char)(px_col_x[2]);
+//             scene->img[y_w_4 + (x+2) * 4 + 1] = (unsigned char)(px_col_y[2]);
+//             scene->img[y_w_4 + (x+2) * 4 + 2] = (unsigned char)(px_col_z[2]);
+//             scene->img[y_w_4 + (x+2) * 4 + 3] = 255;
+
+//             scene->img[y_w_4 + (x+3) * 4 + 0] = (unsigned char)(px_col_x[3]);
+//             scene->img[y_w_4 + (x+3) * 4 + 1] = (unsigned char)(px_col_y[3]);
+//             scene->img[y_w_4 + (x+3) * 4 + 2] = (unsigned char)(px_col_z[3]);
+//             scene->img[y_w_4 + (x+3) * 4 + 3] = 255;
+
+//             scene->img[y_w_4 + (x+4) * 4 + 0] = (unsigned char)(px_col_x[4]);
+//             scene->img[y_w_4 + (x+4) * 4 + 1] = (unsigned char)(px_col_y[4]);
+//             scene->img[y_w_4 + (x+4) * 4 + 2] = (unsigned char)(px_col_z[4]);
+//             scene->img[y_w_4 + (x+4) * 4 + 3] = 255;
+
+//             scene->img[y_w_4 + (x+5) * 4 + 0] = (unsigned char)(px_col_x[5]);
+//             scene->img[y_w_4 + (x+5) * 4 + 1] = (unsigned char)(px_col_y[5]);
+//             scene->img[y_w_4 + (x+5) * 4 + 2] = (unsigned char)(px_col_z[5]);
+//             scene->img[y_w_4 + (x+5) * 4 + 3] = 255;
+
+//             scene->img[y_w_4 + (x+6) * 4 + 0] = (unsigned char)(px_col_x[6]);
+//             scene->img[y_w_4 + (x+6) * 4 + 1] = (unsigned char)(px_col_y[6]);
+//             scene->img[y_w_4 + (x+6) * 4 + 2] = (unsigned char)(px_col_z[6]);
+//             scene->img[y_w_4 + (x+6) * 4 + 3] = 255;
+
+//             scene->img[y_w_4 + (x+7) * 4 + 0] = (unsigned char)(px_col_x[7]);
+//             scene->img[y_w_4 + (x+7) * 4 + 1] = (unsigned char)(px_col_y[7]);
+//             scene->img[y_w_4 + (x+7) * 4 + 2] = (unsigned char)(px_col_z[7]);
+//             scene->img[y_w_4 + (x+7) * 4 + 3] = 255;
+
+// #if DEBUG_MODE == 1
+//             progress += progress_step;
+//             fflush(stdout);
+//             printf(" %.2f\b\b\b\b\b", progress);
+//             fflush(stdout);
+// #endif
+//         }
+//     }
+// }
 
 /*
  * Function: render_all
@@ -728,7 +904,7 @@ int main(int argc, char **argv)
     {
         //--- BENCHMARKING ---//
         /// TODO:
-        // benchmark_render(&render, scenes_container);
+        benchmark_render(&render, scenes_container);
         // benchmark_trace(&trace, scenes_container);
     }
     else
