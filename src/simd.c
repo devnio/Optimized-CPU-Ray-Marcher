@@ -5,7 +5,7 @@
 
 
 
-#define EXP_POLY_DEGREE 3
+#define EXP_POLY_DEGREE 4
 #define LOG_POLY_DEGREE 6
 
 #define POLY0(x, c0) SET1_PS(c0)
