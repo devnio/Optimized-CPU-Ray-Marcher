@@ -59,7 +59,10 @@ SIMD_MMS exp2f8(SIMD_MMS x);
 #define FMADD_PS _mm256_fmadd_ps
 #define FMSUB_PS _mm256_fmsub_ps
 #define DIV_PS _mm256_div_ps
+#define RSQRT_PS _mm256_rsqrt_ps
 #define SQRT_PS _mm256_sqrt_ps
+#define SQRT_PS_A(x) MULT_PS(x, RSQRT_PS(x))
+
 
 #define BLENDV_PS _mm256_blendv_ps
 #define BLEND_PS _mm256_blend_ps

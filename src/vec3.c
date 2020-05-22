@@ -97,7 +97,7 @@ void simd_vec_normalize(const SIMD_VEC_PS* simd_vec0, SIMD_VEC_PS* simd_vec0_nor
 }
 void simd_vec_norm(const SIMD_VEC_PS* simd_vec, SIMD_MMS* simd_mmd_out)
 {
-    *simd_mmd_out = SQRT_PS(ADD_PS(ADD_PS(MULT_PS(simd_vec->x, simd_vec->x), MULT_PS(simd_vec->y, simd_vec->y)), MULT_PS(simd_vec->z, simd_vec->z)));
+    *simd_mmd_out = SQRT_PS_A(ADD_PS(ADD_PS(MULT_PS(simd_vec->x, simd_vec->x), MULT_PS(simd_vec->y, simd_vec->y)), MULT_PS(simd_vec->z, simd_vec->z)));
 }
 void simd_vec_norm_squared(const SIMD_VEC_PS* simd_vec, SIMD_MMS* simd_mmd_out)
 {
