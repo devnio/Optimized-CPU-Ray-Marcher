@@ -20,6 +20,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <stdalign.h>
+#include "omp.h"
 
 #include "config.h"
 #include "geometry/scene.h"
@@ -551,14 +552,22 @@ void render(Scene* scene)
     alignas(32) double px_col_y[NR_SIMD_VEC_ELEMS];
     alignas(32) double px_col_z[NR_SIMD_VEC_ELEMS];
 
-    for (unsigned y = 0; y < height; ++y)
+    omp_set_num_threads(omp_get_max_threads());
+
+    unsigned int x = 0; 
+    unsigned int y = 0; 
+
+    int s = width * 4;
+
+    #pragma omp parallel for schedule(guided) collapse(2) private(px_col_x, px_col_y, px_col_z)
+    for (y = 0; y < height; ++y)
     {
-        int y_w_4 = y * width * 4;
 
         // NORMAL LOOP
-        unsigned x = 0;
-        for (; x < mult_width; x+=4) 
+        for (x = 0; x < mult_width; x+=4) 
         {
+            int y_w_4 = y * s;
+
             shoot_rays_and_trace(scene, x, y, px_col_x, px_col_y, px_col_z);
 
             // save colors computed by trace into current pixel
@@ -583,7 +592,7 @@ void render(Scene* scene)
             scene->img[y_w_4 + (x+3) * 4 + 3] = 255;
         }
 
-        // RESIDUAL LOOP (if width is not multiple of 4)
+        /*// RESIDUAL LOOP (if width is not multiple of 4)
         if (x < width) 
         {
             shoot_rays_and_trace(scene, mult_width, y, px_col_x, px_col_y, px_col_z);
@@ -596,7 +605,7 @@ void render(Scene* scene)
                 scene->img[y_w_4 + (mult_width + i) * 4 + 2] = (unsigned char)(px_col_z[i]);
                 scene->img[y_w_4 + (mult_width + i) * 4 + 3] = 255;
             }
-        }
+        }*/
 
     }
 }
