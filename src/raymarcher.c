@@ -200,7 +200,6 @@ void ray_march(SIMD_VEC_PS *simd_vec_orig, SIMD_VEC_PS *simd_vec_dir, const Scen
         sdf(&simd_vec_march_pt, scene, sdf_info_out);
 
         // Compute intersection mask
-        // debug_simd_mmd(&sdf_info.min_dist);
         intersection_mask = CMP_PS(sdf_info_out->min_dist, simd_mmd_THRESHOLD, _CMP_LT_OS);
         int int_intersection_mask = MOVEMASK_PS(intersection_mask);
         
@@ -213,18 +212,17 @@ void ray_march(SIMD_VEC_PS *simd_vec_orig, SIMD_VEC_PS *simd_vec_dir, const Scen
         simd_vec_march_pt.y = ADD_PS(simd_vec_march_pt.y, MULT_PS(simd_vec_dir->y, min_dist_for_marching));
         simd_vec_march_pt.z = ADD_PS(simd_vec_march_pt.z, MULT_PS(simd_vec_dir->z, min_dist_for_marching));
 
-        // EXIT CONDITIONS [TODO: can move before march to precompute final_mask | but we do it like this now like we always did]
         // Check intersection
         if (current_int_intersection_mask != int_intersection_mask)
         {
             current_int_intersection_mask = int_intersection_mask;
             sdf_info_out->intersected_mask = intersection_mask;
 
-            // Compute last shadow coeff only for intersected ray
-            SIMD_MMS filter_intersected_rays = XOR_PS(intersection_mask, sdf_info_out->intersected_mask);
             // Shadow
             if (doShadowSteps == 1)
             {
+                // Compute last shadow coeff only for intersected ray
+                SIMD_MMS filter_intersected_rays = XOR_PS(intersection_mask, sdf_info_out->intersected_mask);
                 compute_simd_shadow_coefficient(sdf_info_out, &ph, &t, &filter_intersected_rays);
             }
 
@@ -385,15 +383,15 @@ void trace(SIMD_VEC_PS *simd_vec_orig,
     SIMD_MMS simd_mmd_light_dist;
     simd_vec_norm(&simd_vec_L, &simd_mmd_light_dist);
 
-    SIMD_MMS simd_mmd_light_inv_dist = DIV_PS(SET1_PS(1.0), simd_mmd_light_dist); // TODO: use rcp operation
+    SIMD_MMS simd_mmd_light_inv_dist = DIV_PS(SET1_PS(1.0), simd_mmd_light_dist); 
 
     // Normalize light direction
     simd_vec_L.x = MULT_PS(simd_vec_L.x, simd_mmd_light_inv_dist);
     simd_vec_L.y = MULT_PS(simd_vec_L.y, simd_mmd_light_inv_dist);
     simd_vec_L.z = MULT_PS(simd_vec_L.z, simd_mmd_light_inv_dist);
 
-    // TODO: SHADOWS
     SDF_Info sdf_shadow_info;
+    sdf_shadow_info.s = SET1_PS(1.0);
     if (scene->nr_geom_objs > 1)
     {
         SIMD_VEC_PS simd_mmd_offset_towards_L;
