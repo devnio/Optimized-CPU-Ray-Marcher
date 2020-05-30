@@ -67,6 +67,7 @@ SIMD_MMS exp2f8(SIMD_MMS x);
 #define BLENDV_PS _mm256_blendv_ps
 #define BLEND_PS _mm256_blend_ps
 #define OR_PS _mm256_or_ps
+#define XOR_PS _mm256_xor_ps
 #define AND_PS _mm256_and_ps
 #define ANDNOT_PS _mm256_andnot_ps
 #define MAX_PS _mm256_max_ps

@@ -153,7 +153,7 @@ void compute_simd_specular_coefficient(const SIMD_VEC_PS* simd_vec_dir, const SI
 //     *t += sdf_info->min_dist;
 // }
 
-void compute_simd_shadow_coefficient(SDF_Info *sdf_info, SIMD_MMS* ph, SIMD_MMS* t)
+void compute_simd_shadow_coefficient(SDF_Info *sdf_info, SIMD_MMS* ph, SIMD_MMS* t, SIMD_MMS* mask)
 {
     SIMD_MMS simd_mmd_mid = MULT_PS(sdf_info->min_dist, sdf_info->min_dist);
     SIMD_MMS simd_mmd_y = DIV_PS(simd_mmd_mid, MULT_PS(*ph, SET1_PS(2.0)));
@@ -162,7 +162,7 @@ void compute_simd_shadow_coefficient(SDF_Info *sdf_info, SIMD_MMS* ph, SIMD_MMS*
     SIMD_MMS simd_mmd_tmp0 = MULT_PS(SET1_PS(LIGHT_STR), simd_mmd_d);
     SIMD_MMS simd_mmd_tmp1 = MAX_PS(SET_ZERO_PS(), SUB_PS(*t, simd_mmd_y));
 
-    sdf_info->s = BLENDV_PS(MIN_PS(sdf_info->s, DIV_PS(simd_mmd_tmp0, simd_mmd_tmp1)), sdf_info->s, sdf_info->finish_ray_mask);
+    sdf_info->s = BLENDV_PS(MIN_PS(sdf_info->s, DIV_PS(simd_mmd_tmp0, simd_mmd_tmp1)), sdf_info->s, *mask);
 
     *ph = sdf_info->min_dist;
     *t = ADD_PS(*t, sdf_info->min_dist);
@@ -220,6 +220,14 @@ void ray_march(SIMD_VEC_PS *simd_vec_orig, SIMD_VEC_PS *simd_vec_dir, const Scen
             current_int_intersection_mask = int_intersection_mask;
             sdf_info_out->intersected_mask = intersection_mask;
 
+            // Compute last shadow coeff only for intersected ray
+            SIMD_MMS filter_intersected_rays = XOR_PS(intersection_mask, sdf_info_out->intersected_mask);
+            // Shadow
+            if (doShadowSteps == 1)
+            {
+                compute_simd_shadow_coefficient(sdf_info_out, &ph, &t, &filter_intersected_rays);
+            }
+
             // printf("\n\n current_int_intersection_mask is: %d", current_int_intersection_mask);
             if (current_int_intersection_mask == 0b11111111)
             {
@@ -258,9 +266,13 @@ void ray_march(SIMD_VEC_PS *simd_vec_orig, SIMD_VEC_PS *simd_vec_dir, const Scen
         {
             // Update the finish ray mask for this iteration
             sdf_info_out->finish_ray_mask = OR_PS(sdf_info_out->intersected_mask, overshoot_mask);
-            compute_simd_shadow_coefficient(sdf_info_out, &ph, &t);
+            compute_simd_shadow_coefficient(sdf_info_out, &ph, &t, &sdf_info_out->finish_ray_mask);
         }
     }
+
+    sdf_info_out->finish_ray_mask = SET1_PS(1.0);
+    sdf_info_out->intersection_pt = simd_vec_march_pt;
+
 }
 
 /*
@@ -326,14 +338,14 @@ void trace(SIMD_VEC_PS *simd_vec_orig,
     SIMD_MMS simd_mmd_flip_normals_mask = CMP_PS(simd_mmd_normals_dot, SET1_PS(0.0), _CMP_GT_OS);
     
     // Flip normals check for all simd
-    if (MOVEMASK_PS(simd_mmd_flip_normals_mask) != 0b00000000) 
-    {
-        // Masked mult scalar
-        SIMD_MMS simd_vec_minus_one = SET1_PS(-1.0);
-        simd_vec_N.x = BLENDV_PS(simd_vec_N.x, MULT_PS(simd_vec_N.x, simd_vec_minus_one), simd_mmd_flip_normals_mask);
-        simd_vec_N.y = BLENDV_PS(simd_vec_N.y, MULT_PS(simd_vec_N.y, simd_vec_minus_one), simd_mmd_flip_normals_mask);
-        simd_vec_N.z = BLENDV_PS(simd_vec_N.z, MULT_PS(simd_vec_N.z, simd_vec_minus_one), simd_mmd_flip_normals_mask);
-    }
+    // if (MOVEMASK_PS(simd_mmd_flip_normals_mask) != 0b00000000) 
+    // {
+    //     // Masked mult scalar
+    //     SIMD_MMS simd_vec_minus_one = SET1_PS(-1.0);
+    //     simd_vec_N.x = BLENDV_PS(simd_vec_N.x, MULT_PS(simd_vec_N.x, simd_vec_minus_one), simd_mmd_flip_normals_mask);
+    //     simd_vec_N.y = BLENDV_PS(simd_vec_N.y, MULT_PS(simd_vec_N.y, simd_vec_minus_one), simd_mmd_flip_normals_mask);
+    //     simd_vec_N.z = BLENDV_PS(simd_vec_N.z, MULT_PS(simd_vec_N.z, simd_vec_minus_one), simd_mmd_flip_normals_mask);
+    // }
 
     if (depth < MAX_RAY_DEPTH) 
     {

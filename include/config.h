@@ -34,14 +34,9 @@
 // =========================
 // RENDERING
 #define MAX_RAY_DEPTH 3              // max nr. bounces
-#define MARCH_COUNT 6000             // max marching steps
-#define BBOX_AXES 100000                // bounding box size
-#define INTERSECT_THRESHOLD 0.000025 // careful with this -> should be low enoguh for shadow to work
-#define INTERSECT_THRESHOLD_SHADOW 0.00001 // careful with this -> should be low enoguh for shadow to work
-
-// best
-// #define INTERSECT_THRESHOLD 0.000025 // careful with this -> should be low enoguh for shadow to work
-// #define INTERSECT_THRESHOLD_SHADOW 0.00001 // careful with this -> should be low enoguh for shadow to work
+#define MARCH_COUNT 3000             // max marching steps
+#define BBOX_AXES 10000                // bounding box size
+#define INTERSECT_THRESHOLD 0.000005 // careful with this -> should be low enoguh for shadow to work
 
 // SHADING
 #define SPECULAR_COEFF 0.2
@@ -52,7 +47,7 @@
 
 // FOG
 #define FOG 1
-#define FOG_COEFF -0.000005
+#define FOG_COEFF -0.000007
 
 // PRECISION
 #define EPSILON 0.001
