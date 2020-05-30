@@ -153,7 +153,7 @@ void compute_simd_specular_coefficient(const SIMD_VEC_PS* simd_vec_dir, const SI
 //     *t += sdf_info->min_dist;
 // }
 
-void compute_simd_shadow_coefficient(SDF_Info *sdf_info, SIMD_MMS* ph, SIMD_MMS* t, SIMD_MMS* mask)
+void compute_simd_shadow_coefficient(SDF_Info *sdf_info, SIMD_MMS* ph, SIMD_MMS* t, SIMD_MMS* mask, int update_t_ph)
 {
     SIMD_MMS simd_mmd_mid = MULT_PS(sdf_info->min_dist, sdf_info->min_dist);
     SIMD_MMS simd_mmd_y = DIV_PS(simd_mmd_mid, MULT_PS(*ph, SET1_PS(2.0)));
@@ -164,8 +164,13 @@ void compute_simd_shadow_coefficient(SDF_Info *sdf_info, SIMD_MMS* ph, SIMD_MMS*
 
     sdf_info->s = BLENDV_PS(MIN_PS(sdf_info->s, DIV_PS(simd_mmd_tmp0, simd_mmd_tmp1)), sdf_info->s, *mask);
 
-    *ph = sdf_info->min_dist;
-    *t = ADD_PS(*t, sdf_info->min_dist);
+    // check if better the branch or 2 BLENDV ops
+    if (update_t_ph == 1)
+    {
+        *ph = sdf_info->min_dist;
+        *t = ADD_PS(*t, sdf_info->min_dist);        
+    }
+    
 }
 
 void ray_march(SIMD_VEC_PS *simd_vec_orig, SIMD_VEC_PS *simd_vec_dir, const Scene *scene, const int doShadowSteps, SDF_Info* sdf_info_out)
@@ -215,18 +220,17 @@ void ray_march(SIMD_VEC_PS *simd_vec_orig, SIMD_VEC_PS *simd_vec_dir, const Scen
         // Check intersection
         if (current_int_intersection_mask != int_intersection_mask)
         {
-            current_int_intersection_mask = int_intersection_mask;
-            sdf_info_out->intersected_mask = intersection_mask;
-
             // Shadow
             if (doShadowSteps == 1)
             {
-                // Compute last shadow coeff only for intersected ray
-                SIMD_MMS filter_intersected_rays = XOR_PS(intersection_mask, sdf_info_out->intersected_mask);
-                compute_simd_shadow_coefficient(sdf_info_out, &ph, &t, &filter_intersected_rays);
+
+                SIMD_MMS filter_intersected_rays = ANDNOT_PS(XOR_PS(intersection_mask, sdf_info_out->intersected_mask), SET1_PS(-0.0));
+                compute_simd_shadow_coefficient(sdf_info_out, &ph, &t, &filter_intersected_rays, 0);
             }
 
-            // printf("\n\n current_int_intersection_mask is: %d", current_int_intersection_mask);
+            current_int_intersection_mask = int_intersection_mask;
+            sdf_info_out->intersected_mask = intersection_mask;
+
             if (current_int_intersection_mask == 0b11111111)
             {
                 // Save intersected ray (min_dist and nearest_obj_idx should already be right)
@@ -264,7 +268,7 @@ void ray_march(SIMD_VEC_PS *simd_vec_orig, SIMD_VEC_PS *simd_vec_dir, const Scen
         {
             // Update the finish ray mask for this iteration
             sdf_info_out->finish_ray_mask = OR_PS(sdf_info_out->intersected_mask, overshoot_mask);
-            compute_simd_shadow_coefficient(sdf_info_out, &ph, &t, &sdf_info_out->finish_ray_mask);
+            compute_simd_shadow_coefficient(sdf_info_out, &ph, &t, &sdf_info_out->finish_ray_mask, 1);
         }
     }
 
