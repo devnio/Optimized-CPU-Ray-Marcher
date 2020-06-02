@@ -1,8 +1,12 @@
 # Ray Marcher
-Implementation of a fast ray marcher.
+Implementation of a fast ray marcher based on sphere tracing.
 
 
 # How to compile and run
+### Dependencies
+No dependencies are required to run our raymarcher. 
+Everything is self-contained.
+
 ### Compile
 First compile the project by running these commands from the root directory:
 ```
@@ -33,15 +37,6 @@ The creation of a scene is defined via a JSON file that gets parsed via a custom
 With this pipeline we built you can create and customize any scene you want.
 
 The currently available scenes are in the team049/scenes/ folder.
-
-
-# Organizational
-In order to have the best team work we also use additional tools:
-
-- **Working directory**: Google Drive.
-- **Task management**: Trello.
-
-If access to these platform is required contact us.
 
 
 ## Authors
