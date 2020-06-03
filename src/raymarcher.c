@@ -398,16 +398,16 @@ void trace(SIMD_VEC_PS *simd_vec_orig,
     sdf_shadow_info.s = SET1_PS(1.0);
     if (scene->nr_geom_objs > 1)
     {
-        SIMD_VEC_PS simd_mmd_offset_towards_L;
-        simd_mmd_offset_towards_L.x = MULT_PS(SET1_PS(EPSILON), simd_vec_L.x);
-        simd_mmd_offset_towards_L.y = MULT_PS(SET1_PS(EPSILON), simd_vec_L.y);
-        simd_mmd_offset_towards_L.z = MULT_PS(SET1_PS(EPSILON), simd_vec_L.z);
+        SIMD_VEC_PS simd_mmd_offset_towards_N;
+        simd_mmd_offset_towards_N.x = MULT_PS(SET1_PS(EPSILON), simd_vec_N.x);
+        simd_mmd_offset_towards_N.y = MULT_PS(SET1_PS(EPSILON), simd_vec_N.y);
+        simd_mmd_offset_towards_N.z = MULT_PS(SET1_PS(EPSILON), simd_vec_N.z);
 
-        simd_mmd_offset_towards_L.x = ADD_PS(sdf_info.intersection_pt.x, simd_mmd_offset_towards_L.x);
-        simd_mmd_offset_towards_L.y = ADD_PS(sdf_info.intersection_pt.y, simd_mmd_offset_towards_L.y);
-        simd_mmd_offset_towards_L.z = ADD_PS(sdf_info.intersection_pt.z, simd_mmd_offset_towards_L.z);
+        simd_mmd_offset_towards_N.x = ADD_PS(sdf_info.intersection_pt.x, simd_mmd_offset_towards_N.x);
+        simd_mmd_offset_towards_N.y = ADD_PS(sdf_info.intersection_pt.y, simd_mmd_offset_towards_N.y);
+        simd_mmd_offset_towards_N.z = ADD_PS(sdf_info.intersection_pt.z, simd_mmd_offset_towards_N.z);
         
-        ray_march(&simd_mmd_offset_towards_L, &simd_vec_L, scene, 1, &sdf_shadow_info);
+        ray_march(&simd_mmd_offset_towards_N, &simd_vec_L, scene, 1, &sdf_shadow_info);
         sdf_shadow_info.s = MIN_PS(MAX_PS(sdf_shadow_info.s, SET1_PS(SHADOW_LIGHTNESS)), SET1_PS(1.0));
     }
 
