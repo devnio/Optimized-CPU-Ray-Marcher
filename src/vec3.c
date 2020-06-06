@@ -219,6 +219,10 @@ void simd_vec_reflect(const SIMD_VEC_PS* simd_vec0, const SIMD_VEC_PS* simd_vec_
 void simd_mmd_pow_func(const SIMD_MMS* simd_mmd0, const SIMD_MMS* simd_mmd_pow0, SIMD_MMS* out_mmd)
 {
     // TODO: do a proper pow using an approximation, e.g. taylor for exp and log and combine
+
+    *out_mmd = exp2f8(MULT_PS(log2f8(*simd_mmd0), *simd_mmd_pow0));
+
+/*
     alignas(32) float v[NR_SIMD_VEC_ELEMS];
     STORE_PS(v, *simd_mmd0);
 
@@ -228,7 +232,7 @@ void simd_mmd_pow_func(const SIMD_MMS* simd_mmd0, const SIMD_MMS* simd_mmd_pow0,
     *out_mmd = SET_PS(pow(v[7], val[7]), pow(v[6], val[6]), 
                       pow(v[5], val[5]), pow(v[4], val[4]), 
                       pow(v[3], val[3]), pow(v[2], val[2]), 
-                      pow(v[1], val[1]), pow(v[0], val[0]));
+                      pow(v[1], val[1]), pow(v[0], val[0]));*/
 }
 
 void simd_mmd_log_func(const SIMD_MMS* simd_mmd0, SIMD_MMS* out_mmd)

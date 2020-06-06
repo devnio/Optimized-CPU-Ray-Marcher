@@ -1,6 +1,7 @@
 IDIR =../include
 CC=gcc
-CFLAGS= -O3 -I$(IDIR) -mavx2 -mfma
+CFLAGS= -O3 -I$(IDIR) -mavx2 -mfma -fopenmp
+
 export F
 
 ODIR=obj
