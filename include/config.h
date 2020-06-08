@@ -57,7 +57,7 @@
 #define AA 1
 
 //Infinite repetition
-#define INFINITE_REP 0
+#define INFINITE_REP 1
 
 // GAMMA CORRECTION
 #define GAMMA_CORR 1

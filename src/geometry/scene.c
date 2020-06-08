@@ -56,15 +56,35 @@ void apply_transform(const SIMD_VEC_PS* simd_vec_p, const Transform *tr, SIMD_VE
 
 /// TODO:
 #if INFINITE_REP == 1
-    Vec3 c;
-    set_vec_from_double(&c, 7.5);
-    Vec3 period;
-    vec_mult_scalar(&c, 0.5, &period);
-    Vec3 add;
-    vec_add(&t, &period, &add);
-    Vec3 mod;
-    vec_mod(&add,&c, &mod);
-    vec_sub(&mod, &period, &t);
+    SIMD_VEC_PS simd_vec_c;
+    simd_vec_c.x = SET1_PS(7.5);
+    simd_vec_c.y = simd_vec_c.x;
+    simd_vec_c.z = simd_vec_c.x;
+
+    SIMD_VEC_PS simd_vec_period;
+    simd_vec_period.x = SET1_PS(3.75);
+    simd_vec_period.y = simd_vec_period.x;
+    simd_vec_period.z = simd_vec_period.x;
+
+    SIMD_VEC_PS simd_vec_add;
+    simd_vec_add.x = ADD_PS(simd_vec_transf_pt->x, simd_vec_period.x);
+    simd_vec_add.y = ADD_PS(simd_vec_transf_pt->y, simd_vec_period.y);
+    simd_vec_add.z = ADD_PS(simd_vec_transf_pt->z, simd_vec_period.z);
+
+    // Mod
+    SIMD_VEC_PS simd_vec_mod;
+    simd_vec_mod.x = MULT_PS(simd_vec_c.x, _mm256_floor_ps(DIV_PS(simd_vec_add.x, simd_vec_c.x)));
+    simd_vec_mod.y = MULT_PS(simd_vec_c.y, _mm256_floor_ps(DIV_PS(simd_vec_add.y, simd_vec_c.y)));
+    simd_vec_mod.z = MULT_PS(simd_vec_c.z, _mm256_floor_ps(DIV_PS(simd_vec_add.z, simd_vec_c.z)));
+
+    simd_vec_mod.x = SUB_PS(simd_vec_add.x, simd_vec_mod.x);
+    simd_vec_mod.y = SUB_PS(simd_vec_add.y, simd_vec_mod.y);
+    simd_vec_mod.z = SUB_PS(simd_vec_add.z, simd_vec_mod.z);  
+
+    simd_vec_transf_pt->x = SUB_PS(simd_vec_mod.x, simd_vec_period.x);
+    simd_vec_transf_pt->y = SUB_PS(simd_vec_mod.y, simd_vec_period.y);
+    simd_vec_transf_pt->z = SUB_PS(simd_vec_mod.z, simd_vec_period.z);
+
 #endif
 }
 
