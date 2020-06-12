@@ -70,6 +70,12 @@ Runtime plots of baseline, phase1, phase2 and phase3 for scene0 and mandelbulb. 
 More detailed explanations and analysis are explained in the presentation and the report.
 >>>
 
+## Comparison with AMD CPU, gcc and icc compilers and some compiler flags
+Table to show the differences in performance resulting by changing processor, compiler and flag combinations.
+<p align="middle">
+  <img src="plot6.png" width="600" /> 
+</p>
+
 # Timeline Overview
 
 Here we show a rough timeline overview which is locally matched with documents for each phase of optimization that goes into more detail.
