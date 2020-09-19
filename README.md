@@ -1,3 +1,5 @@
+![HD Mandelbulb](output_examples/out_1080_0.png)
+
 # Ray Marcher
 Implementation of a fast ray marcher based on sphere tracing.
 
@@ -15,6 +17,8 @@ make
 ```
 
 A file called `raymarcher` will be created.
+
+![Inception scene using a repeat modifier](output_examples/inception_0.png)
 
 ### Run
 In the build folder run `./raymarcher`.
@@ -37,6 +41,8 @@ The creation of a scene is defined via a JSON file that gets parsed via a custom
 With this pipeline we built you can create and customize any scene you want.
 
 The currently available scenes are in the team049/scenes/ folder.
+
+![Scene containing all the sdfs we implemented](output_examples/scene0.png)
 
 
 ## Authors
