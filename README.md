@@ -1,6 +1,7 @@
+# Ray Marcher
+
 ![HD Mandelbulb](output_examples/out_1080_0.png)
 
-# Ray Marcher
 Implementation of a fast ray marcher based on sphere tracing.
 
 
