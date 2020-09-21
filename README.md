@@ -4,6 +4,9 @@
 
 Implementation of a fast ray marcher based on sphere tracing.
 
+This project was part of the ETH Course - Advanced Systems Lab. In a team of 4 members, we had to optimize a specific algorithm following some guidelines learned in class.
+
+[Here](https://github.com/devnio/Optimized-CPU-Ray-Marcher/blob/master/49_report.pdf) is the final report.
 
 # How to compile and run
 ### Dependencies
@@ -54,6 +57,3 @@ The currently available scenes are in the team049/scenes/ folder.
 **Alexandre Cavaleri - (github: cavEpfl)** 
 
 **David Graf  - (github: fxd24)**
-
-Note that some commits were done on computers with different global git configurations, which ultimately resulted in commits authored by our github (and not gitlab) user names. 
-For the sake of clarity we attach the github name on the right of each team member name.
