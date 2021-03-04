@@ -8,6 +8,10 @@ This project was part of the ETH Course - Advanced Systems Lab. In a team of 4 m
 
 [Here](https://github.com/devnio/Optimized-CPU-Ray-Marcher/blob/master/49_report.pdf) is the final report.
 
+# Multiple Optimizations
+On the branches of this repository you find all the optimization steps we performed to reach a high performant vectorized implementation of a raymarcher.
+The branches are labeled as `master_optX` where X goes from 1 to 5 (5 being the most performant of all).
+
 # How to compile and run
 ### Dependencies
 No dependencies are required to run our raymarcher. 
